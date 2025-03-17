@@ -25,7 +25,7 @@ const isHeaderShow = computed(() => {
 
 // 计算属性：底部是否显示
 const isFooterShow = computed(() => {
-  const routerNameList = ['file', 'login', 'register'];
+  const routerNameList = ['login', 'register'];
   return !routerNameList.includes(route.name);
 });
 

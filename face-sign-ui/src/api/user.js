@@ -2,7 +2,7 @@
 import { request } from '@/utils/Request.js';
 
 // 接口配置项
-var prefix = '/api/cloud/disks/user/';
+var prefix = '/api/face/sign/user/';
 var managerUrl = {
     login: prefix + 'login',
     register: prefix + 'register',

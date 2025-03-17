@@ -3,18 +3,20 @@
     <div class="bg"></div>
     <div class="login-panel">
       <el-form class="login-register" :model="formData" :rules="rules" ref="formDataRef" @submit.prevent>
-        <div class="login-title">QST网盘</div>
+        <div class="login-title">考勤系统</div>
         <!-- 账号 -->
         <el-form-item prop="userName">
-          <el-input size="large" clearable placeholder="请输入账号" v-model.trim="formData.userName" maxLength="150">
+          <el-input size="large" clearable placeholder="请输入员工账号" v-model.trim="formData.userName"
+                    maxLength="150">
             <template #prefix>
               <span class="iconfont icon-account"></span>
             </template>
           </el-input>
         </el-form-item>
+
         <!-- 密码 -->
-        <el-form-item prop="pwd">
-          <el-input type="password" size="large" placeholder="请输入密码" v-model.trim="formData.pwd" show-password
+        <el-form-item prop="password">
+          <el-input type="password" size="large" placeholder="请输入密码" v-model.trim="formData.password" show-password
                     maxLength="150">
             <template #prefix>
               <span class="iconfont icon-password"></span>
@@ -22,7 +24,15 @@
           </el-input>
         </el-form-item>
 
-        <el-form-item >
+        <!-- 角色选择框 -->
+        <el-form-item prop="role">
+          <el-select v-model="formData.role" placeholder="请选择角色">
+            <el-option label="学生" value="STUDENT"></el-option>
+            <el-option label="教师" value="TEACHER"></el-option>
+          </el-select>
+        </el-form-item>
+
+        <el-form-item>
           <div class="rememberme-panel">
             <el-checkbox>记住我</el-checkbox>
           </div>
@@ -46,21 +56,27 @@ import {login} from "@/api/user.js"
 import router from "@/router/index.js";
 import {getCurrentInstance, ref, watch} from "vue";
 import {ElMessage} from "element-plus";
+
 const {proxy} = getCurrentInstance()
 
-const formData = ref({}); // 表单数据
+const formData = ref({
+  role: 'STUDENT' // 默认选择学生角色
+}); // 表单数据
 
 // 表单验证规则
 const rules = {
   userName: [{required: true, message: "请输入正确的账号"},],
-  pwd: [{required: true, message: "请输入正确的密码"},],
+  password: [{required: true, message: "请输入正确的密码"},],
 };
 
+// 获取表单引用
+const formDataRef = ref(null);
 
 /**
- * 跳转到注册页面方法
+ * 跳转到联系管理员页面方法
  */
 function toRegister() {
+  // 这里可以根据实际情况修改跳转逻辑
   router.push('/register')
 }
 
@@ -68,24 +84,33 @@ function toRegister() {
  * 提交表单方法
  */
 function doSubmit() {
-  login(formData.value).then(res => {
-    if (res.code === 200) {
-      proxy.$common.setCookies(proxy.$config.tokenKeyName, res.data.token) //  存储登录状态
-      proxy.$common.setCookies('name', res.data.userName)
-      ElMessage.success("登录成功");
-      router.push('/home/file');
+  // 调用 validate 方法校验表单
+  formDataRef.value.validate((valid) => {
+    if (valid) {
+      login(formData.value).then(res => {
+        if (res.code === 200) {
+          proxy.$common.setCookies(proxy.$config.tokenKeyName, res.data.token) //  存储登录状态
+          proxy.$common.setCookies('name', res.data.userName)
+          ElMessage.success("登录成功");
+          // 根据角色跳转到不同页面
+          if (formData.value.role === 'TEACHER') {
+            router.push('/teacher'); // 教师端主页
+          } else if (formData.value.role === 'STUDENT') {
+            router.push('/student'); // 学生端主页
+          }
+        } else {
+          ElMessage.error("账号或密码错误");
+        }
+      }).catch(err => {
+        //请求失败，做相应处理
+        console.log(err)
+      })
     } else {
-      ElMessage.error("账号或密码错误");
+      // 如果校验不通过，提示用户补全信息
+      ElMessage.error("请补全信息");
     }
-  }).catch(err => {
-    //请求失败，做相应处理
-    console.log(err)
-  })
+  });
 }
-
-
-
-
 </script>
 
 <style lang="scss" scoped>
