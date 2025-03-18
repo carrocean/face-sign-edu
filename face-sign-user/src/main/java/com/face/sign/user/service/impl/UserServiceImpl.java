@@ -1,5 +1,7 @@
 package com.face.sign.user.service.impl;
 
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.face.sign.common.base.IBaseServiceImpl;
 import com.face.sign.common.util.SecurityUtils;
 import com.face.sign.common.util.exception.BizException;
 import com.face.sign.user.mapper.UserMapper;
@@ -12,10 +14,15 @@ import java.util.Date;
 import java.util.List;
 
 @Service
-public class UserServiceImpl implements IUserService {
+public class UserServiceImpl extends IBaseServiceImpl<UserEntity, UserMapper> implements IUserService {
+
+    private UserMapper userMapper;
 
     @Autowired
-    private UserMapper userMapper;
+    public void setUserMapper(UserMapper userMapper) {
+        this.userMapper = userMapper;
+        init(userMapper);
+    }
 
     @Override
     public UserEntity login(String username, String password, String ip) {

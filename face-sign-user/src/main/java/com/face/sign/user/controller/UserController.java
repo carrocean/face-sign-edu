@@ -1,8 +1,11 @@
 package com.face.sign.user.controller;
 
+import com.face.sign.common.base.BaseController;
+import com.face.sign.common.util.ConvertUtil;
 import com.face.sign.common.util.JsonMsgDataBean;
 import com.face.sign.common.util.jwt.JwtUtils;
 import com.face.sign.user.entity.UserEntity;
+import com.face.sign.user.entity.vo.UserVo;
 import com.face.sign.user.service.IUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -11,10 +14,15 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/face/sign/user")
-public class UserController {
+public class UserController extends BaseController<UserEntity, IUserService> {
+
+    IUserService userService;
 
     @Autowired
-    IUserService userService;
+    public void setUserService(IUserService userService) {
+        this.userService = userService;
+        init(userService);
+    }
 
     @Autowired
     JwtUtils jwtUtils;
@@ -31,7 +39,9 @@ public class UserController {
         UserEntity loginUser = userService.login(user.getUsername(), user.getPassword(), user.getLastLoginIp());
         if (loginUser != null) {
             String token = jwtUtils.getJwtToken(loginUser.getUsername(), loginUser.getUserId().toString(), loginUser.getUsername());
-            return JsonMsgDataBean.buildSuccess(token);
+            UserVo userVo = ConvertUtil.entityToVo(loginUser, UserVo.class);
+            userVo.setToken(token);
+            return JsonMsgDataBean.buildSuccess(userVo);
         }
         return JsonMsgDataBean.buildFail("用户名或密码错误");
     }

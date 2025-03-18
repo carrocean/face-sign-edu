@@ -1,10 +1,11 @@
 package com.face.sign.user.service;
+import com.face.sign.common.base.IBaseService;
 import com.face.sign.user.entity.UserEntity;
 
 import java.util.Date;
 import java.util.List;
 
-public interface IUserService {
+public interface IUserService extends IBaseService<UserEntity> {
 
     /**
      * 用户登录

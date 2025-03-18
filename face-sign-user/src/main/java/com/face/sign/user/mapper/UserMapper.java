@@ -1,14 +1,14 @@
 package com.face.sign.user.mapper;
 
+import com.face.sign.common.base.IBaseMapper;
 import com.face.sign.user.entity.UserEntity;
 import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Param;
 
 import java.util.Date;
 import java.util.List;
 
 @Mapper
-public interface UserMapper {
+public interface UserMapper extends IBaseMapper<UserEntity> {
 
     /**
      * 根据用户名查询用户

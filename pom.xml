@@ -52,6 +52,8 @@
         <mysql.version>8.0.33</mysql.version>
         <!-- MyBatis版本 -->
         <mybatis.version>3.0.3</mybatis.version>
+        <!-- MyBatis-Plus版本 -->
+        <mybatis-plus.version>3.5.3.2</mybatis-plus.version>
     </properties>
 
     <dependencyManagement>
@@ -108,6 +110,13 @@
             <groupId>org.mybatis.spring.boot</groupId>
             <artifactId>mybatis-spring-boot-starter</artifactId>
             <version>${mybatis.version}</version>
+        </dependency>
+
+        <!-- MyBatis Plus Starter -->
+        <dependency>
+            <groupId>com.baomidou</groupId>
+            <artifactId>mybatis-plus-boot-starter</artifactId>
+            <version>${mybatis-plus.version}</version>
         </dependency>
 
         <!-- MySQL驱动 -->
