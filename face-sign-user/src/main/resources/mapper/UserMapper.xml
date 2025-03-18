@@ -67,4 +67,20 @@
           AND is_deleted = 0
     </select>
 
+    <!-- 更新用户最后登录时间、IP和登录次数 -->
+    <update id="updateUserLoginInfo">
+        UPDATE user
+        SET last_login_time = #{lastLoginTime},
+            last_login_ip = #{lastLoginIp},
+            login_count = login_count + 1
+        WHERE user_id = #{userId}
+    </update>
+
+    <!-- 更新用户状态 -->
+    <update id="updateUserStatus">
+        UPDATE user
+        SET status = #{status}
+        WHERE user_id = #{userId}
+    </update>
+
 </mapper>

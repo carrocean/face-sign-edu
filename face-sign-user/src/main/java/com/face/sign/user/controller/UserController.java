@@ -28,7 +28,7 @@ public class UserController {
      */
     @PostMapping("/login")
     public JsonMsgDataBean login(@RequestBody UserEntity user) {
-        UserEntity loginUser = userService.login(user.getUsername(), user.getPassword());
+        UserEntity loginUser = userService.login(user.getUsername(), user.getPassword(), user.getLastLoginIp());
         if (loginUser != null) {
             String token = jwtUtils.getJwtToken(loginUser.getUsername(), loginUser.getUserId().toString(), loginUser.getUsername());
             return JsonMsgDataBean.buildSuccess(token);
@@ -106,6 +106,19 @@ public class UserController {
     @PutMapping("/resetPassword")
     public JsonMsgDataBean resetPassword(@RequestParam Integer userId, @RequestParam String newPassword) {
         boolean result = userService.resetPassword(userId, newPassword);
+        return JsonMsgDataBean.buildSuccess();
+    }
+
+    /**
+     * 更新用户状态
+     *
+     * @param userId 用户ID
+     * @param status 用户状态
+     * @return 操作结果
+     */
+    @PutMapping("/status/{userId}")
+    public JsonMsgDataBean updateUserStatus(@PathVariable Integer userId, @RequestParam Integer status) {
+        boolean result = userService.updateUserStatus(userId, status);
         return JsonMsgDataBean.buildSuccess();
     }
 

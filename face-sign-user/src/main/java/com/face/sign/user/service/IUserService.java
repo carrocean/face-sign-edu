@@ -1,5 +1,7 @@
 package com.face.sign.user.service;
 import com.face.sign.user.entity.UserEntity;
+
+import java.util.Date;
 import java.util.List;
 
 public interface IUserService {
@@ -11,7 +13,7 @@ public interface IUserService {
      * @param password 密码
      * @return 登录成功的用户对象，若登录失败返回 null
      */
-    UserEntity login(String username, String password);
+    UserEntity login(String username, String password, String ip);
 
     /**
      * 注册新用户
@@ -62,11 +64,12 @@ public interface IUserService {
     boolean resetPassword(Integer userId, String newPassword);
 
     /**
-     * 验证用户名是否已存在
+     * 更新用户状态
      *
-     * @param username 用户名
-     * @return 用户名已存在返回 true，不存在返回 false
+     * @param userId 用户ID
+     * @param status 用户状态
+     * @return 是否更新成功
      */
-    boolean checkUsernameExists(String username);
+    Boolean updateUserStatus(Integer userId, Integer status);
 
 }
