@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.face.sign.notification.mapper.NotificationMapper">
+
+    <resultMap id="NotificationResultMap" type="com.face.sign.notification.entity.NotificationEntity">
+        <id property="id" column="id"/>
+        <result property="senderId" column="sender_id"/>
+        <result property="receiverId" column="receiver_id"/>
+        <result property="title" column="title"/>
+        <result property="content" column="content"/>
+        <result property="sendTime" column="send_time"/>
+        <result property="isRead" column="is_read"/>
+        <result property="addTime" column="add_time"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="deleteTime" column="delete_time"/>
+        <result property="hasDelete" column="has_delete"/>
+    </resultMap>
+
+    <insert id="insert" parameterType="com.face.sign.notification.entity.NotificationEntity">
+        INSERT INTO notification (id, sender_id, receiver_id, title, content, send_time, is_read, add_time, update_time, has_delete)
+        VALUES (#{id}, #{senderId}, #{receiverId}, #{title}, #{content}, #{sendTime}, #{isRead}, #{addTime}, #{updateTime}, #{hasDelete})
+    </insert>
+
+    <delete id="deleteById" parameterType="Long">
+        UPDATE notification SET has_delete = 1, delete_time = NOW() WHERE id = #{id}
+    </delete>
+
+    <update id="updateById" parameterType="com.face.sign.notification.entity.NotificationEntity">
+        UPDATE notification
+        SET sender_id = #{senderId},
+            receiver_id = #{receiverId},
+            title = #{title},
+            content = #{content},
+            send_time = #{sendTime},
+            is_read = #{isRead},
+            update_time = NOW()
+        WHERE id = #{id}
+    </update>
+
+    <select id="selectById" parameterType="Long" resultType="com.face.sign.notification.entity.NotificationEntity">
+        SELECT * FROM notification WHERE id = #{id} AND has_delete = 0
+    </select>
+
+    <select id="selectAll" resultType="com.face.sign.notification.entity.NotificationEntity">
+        SELECT * FROM notification WHERE has_delete = 0
+    </select>
+</mapper>

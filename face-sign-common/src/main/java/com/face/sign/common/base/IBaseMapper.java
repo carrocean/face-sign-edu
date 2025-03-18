@@ -10,19 +10,13 @@ import java.util.List;
  *
  */
 public interface IBaseMapper<Entity> {
-    @Insert("INSERT INTO ${table} (${columns}) VALUES (${values})")
-    @Options(useGeneratedKeys = true, keyProperty = "id")
-    void insert(Entity entity);
+    int insert(Entity entity);
 
-    @Delete("DELETE FROM ${table} WHERE id = #{id}")
-    void deleteById(Integer id);
+    int deleteById(Long id);
 
-    @Update("UPDATE ${table} SET ${updates} WHERE id = #{id}")
-    void updateById(Entity entity);
+    int updateById(Entity entity);
 
-    @Select("SELECT * FROM ${table} WHERE id = #{id}")
-    Entity selectById(Integer id);
+    Entity selectById(Long id);
 
-    @Select("SELECT * FROM ${table}")
     List<Entity> selectAll();
 }

@@ -1,9 +1,5 @@
 package com.face.sign.common.base;
 
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.baomidou.mybatisplus.extension.service.IService;
-
-import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -11,10 +7,10 @@ import java.util.List;
  *
  */
 public interface IBaseService<Entity> {
-	void save(Entity entity);
-	void deleteById(Integer id);
-	void update(Entity entity);
-	Entity getById(Integer id);
+	int save(Entity entity);
+	int deleteById(Long id);
+	int update(Entity entity);
+	Entity getById(Long id);
 	List<Entity> getAll();
 
 }

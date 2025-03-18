@@ -1,8 +1,6 @@
 package com.face.sign.common.base;
 
 import com.face.sign.common.util.JsonMsgDataBean;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -21,7 +19,7 @@ public abstract class BaseController<E extends BaseEntity, S extends IBaseServic
     }
 
     @DeleteMapping("/delete/{id}")
-    public JsonMsgDataBean deleteById(@PathVariable Integer id) {
+    public JsonMsgDataBean deleteById(@PathVariable Long id) {
         baseService.deleteById(id);
         return JsonMsgDataBean.buildSuccess();
     }
@@ -33,9 +31,9 @@ public abstract class BaseController<E extends BaseEntity, S extends IBaseServic
     }
 
     @GetMapping("/getById/{id}")
-    public JsonMsgDataBean getById(@PathVariable Integer id) {
+    public JsonMsgDataBean getById(@PathVariable Long id) {
         E entity = baseService.getById(id);
-        return JsonMsgDataBean.buildSuccess();
+        return JsonMsgDataBean.buildSuccess(entity);
     }
 
     @GetMapping("/list")

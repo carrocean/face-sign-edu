@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.face.sign.course.mapper.CourseScheduleMapper">
+
+    <resultMap id="CourseScheduleResultMap" type="com.face.sign.course.entity.CourseScheduleEntity">
+        <id property="id" column="id"/>
+        <result property="courseId" column="course_id"/>
+        <result property="weekDay" column="week_day"/>
+        <result property="startTime" column="start_time"/>
+        <result property="endTime" column="end_time"/>
+        <result property="classroom" column="classroom"/>
+        <result property="addTime" column="add_time"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="deleteTime" column="delete_time"/>
+        <result property="hasDelete" column="has_delete"/>
+    </resultMap>
+
+    <insert id="insert" parameterType="com.face.sign.course.entity.CourseScheduleEntity">
+        INSERT INTO course_schedule (id, course_id, week_day, start_time, end_time, classroom, add_time, update_time, has_delete)
+        VALUES (#{id}, #{courseId}, #{weekDay}, #{startTime}, #{endTime}, #{classroom}, #{addTime}, #{updateTime}, #{hasDelete})
+    </insert>
+
+    <delete id="deleteById" parameterType="Long">
+        UPDATE course_schedule SET has_delete = 1, delete_time = NOW() WHERE id = #{id}
+    </delete>
+
+    <update id="updateById" parameterType="com.face.sign.course.entity.CourseScheduleEntity">
+        UPDATE course_schedule
+        SET course_id = #{courseId},
+            week_day = #{weekDay},
+            start_time = #{startTime},
+            end_time = #{endTime},
+            classroom = #{classroom},
+            update_time = NOW()
+        WHERE id = #{id}
+    </update>
+
+    <select id="selectById" parameterType="Long" resultType="com.face.sign.course.entity.CourseScheduleEntity">
+        SELECT * FROM course_schedule WHERE id = #{id} AND has_delete = 0
+    </select>
+
+    <select id="selectAll" resultType="com.face.sign.course.entity.CourseScheduleEntity">
+        SELECT * FROM course_schedule WHERE has_delete = 0
+    </select>
+</mapper>

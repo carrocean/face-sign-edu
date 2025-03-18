@@ -1,4 +1,6 @@
 package com.face.sign.user.service;
 
-public interface ITeacherService {
-}
+import com.face.sign.common.base.IBaseService;
+import com.face.sign.user.entity.TeacherEntity;
+
+public interface ITeacherService extends IBaseService<TeacherEntity> {}

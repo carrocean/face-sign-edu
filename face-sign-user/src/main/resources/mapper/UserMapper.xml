@@ -1,86 +1,82 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.face.sign.mapper.UserMapper">
+<mapper namespace="com.face.sign.user.mapper.UserMapper">
 
     <!-- 查询用户表结构对应 -->
     <resultMap id="UserResultMap" type="com.face.sign.user.entity.UserEntity">
-        <id property="userId" column="user_id"/>
-        <result property="username" column="username"/>
-        <result property="password" column="password"/>
-        <result property="role" column="role"/>
-        <result property="createdAt" column="created_at"/>
-        <result property="updatedAt" column="updated_at"/>
-        <result property="isDeleted" column="is_deleted"/>
+        <id property="id" column="id" />
+        <result property="username" column="username" />
+        <result property="password" column="password" />
+        <result property="role" column="role" />
+        <result property="lastLoginTime" column="last_login_time" />
+        <result property="lastLoginIp" column="last_login_ip" />
+        <result property="loginCount" column="login_count" />
+        <result property="status" column="status" />
+        <result property="addTime" column="add_time" />
+        <result property="updateTime" column="update_time" />
+        <result property="deleteTime" column="delete_time" />
+        <result property="hasDelete" column="has_delete" />
     </resultMap>
 
-    <!-- 根据用户名查询用户 -->
-    <select id="selectUserByUsername" resultMap="UserResultMap">
-        SELECT user_id, username, password, role, created_at, updated_at, is_deleted
-        FROM user
-        WHERE username = #{username}
-          AND is_deleted = 0
-    </select>
+    <!-- 插入用户 -->
+    <insert id="insert" parameterType="com.face.sign.user.entity.UserEntity">
+        INSERT INTO user (id, user_name, password, role, last_login_time, last_login_ip, login_count, status, add_time, update_time, has_delete)
+        VALUES (#{id}, #{username}, #{password}, #{role}, #{lastLoginTime}, #{lastLoginIp}, #{loginCount}, #{status}, #{addTime}, #{updateTime}, #{hasDelete})
+    </insert>
 
-    <!-- 根据用户ID查询用户 -->
-    <select id="selectUserById" resultMap="UserResultMap" parameterType="int">
-        SELECT user_id, username, password, role, created_at, updated_at, is_deleted
-        FROM user
-        WHERE user_id = #{userId}
-          AND is_deleted = 0
+    <!-- 根据ID删除用户 -->
+    <delete id="deleteById" parameterType="Long">
+        UPDATE user SET has_delete = 1, delete_time = NOW() WHERE id = #{id}
+    </delete>
+
+    <!-- 根据ID更新用户 -->
+    <update id="updateById" parameterType="com.face.sign.user.entity.UserEntity">
+        UPDATE user
+        SET user_name = #{username},
+            password = #{password},
+            role = #{role},
+            last_login_time = #{lastLoginTime},
+            last_login_ip = #{lastLoginIp},
+            login_count = #{loginCount},
+            status = #{status},
+            update_time = NOW()
+        WHERE id = #{id}
+    </update>
+
+    <!-- 根据ID查询用户 -->
+    <select id="selectById" parameterType="Long" resultType="com.face.sign.user.entity.UserEntity">
+        SELECT * FROM user WHERE id = #{id} AND has_delete = 0
     </select>
 
     <!-- 查询所有用户 -->
-    <select id="selectAllUsers" resultMap="UserResultMap">
-        SELECT user_id, username, password, role, created_at, updated_at, is_deleted
-        FROM user
-        WHERE is_deleted = 0
+    <select id="selectAll" resultType="com.face.sign.user.entity.UserEntity">
+        SELECT * FROM user WHERE has_delete = 0
     </select>
 
-    <!-- 插入新用户 -->
-    <insert id="insertUser" parameterType="com.face.sign.user.entity.UserEntity">
-        INSERT INTO user (username, password, role, created_at, updated_at, is_deleted)
-        VALUES (#{username}, #{password}, #{role}, NOW(), NOW(), 0)
-    </insert>
-
-    <!-- 更新用户信息 -->
-    <update id="updateUser" parameterType="com.face.sign.user.entity.UserEntity">
-        UPDATE user
-        SET username = #{username},
-            password = #{password},
-            role = #{role},
-            updated_at = NOW()
-        WHERE user_id = #{userId}
-    </update>
-
-    <!-- 删除用户 -->
-    <update id="deleteUserById" parameterType="int">
-        UPDATE user
-        SET is_deleted = 1
-        WHERE user_id = #{userId}
-    </update>
+    <!-- 根据用户名查询用户 -->
+    <select id="selectUserByUsername" parameterType="String" resultType="com.face.sign.user.entity.UserEntity">
+        SELECT * FROM user WHERE user_name = #{username} AND has_delete = 0
+    </select>
 
     <!-- 验证用户名是否已存在 -->
-    <select id="checkUsernameExists" resultType="int" parameterType="string">
-        SELECT COUNT(*)
-        FROM user
-        WHERE username = #{username}
-          AND is_deleted = 0
+    <select id="checkUsernameExists" parameterType="String" resultType="int">
+        SELECT COUNT(*) FROM user WHERE user_name = #{username} AND has_delete = 0
     </select>
 
     <!-- 更新用户最后登录时间、IP和登录次数 -->
-    <update id="updateUserLoginInfo">
+    <update id="updateUserLoginInfo" parameterType="map">
         UPDATE user
         SET last_login_time = #{lastLoginTime},
             last_login_ip = #{lastLoginIp},
             login_count = login_count + 1
-        WHERE user_id = #{userId}
+        WHERE id = #{userId}
     </update>
 
     <!-- 更新用户状态 -->
-    <update id="updateUserStatus">
+    <update id="updateUserStatus" parameterType="map">
         UPDATE user
         SET status = #{status}
-        WHERE user_id = #{userId}
+        WHERE id = #{userId}
     </update>
 
 </mapper>

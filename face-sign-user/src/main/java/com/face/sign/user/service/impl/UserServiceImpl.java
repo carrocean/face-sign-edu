@@ -1,17 +1,15 @@
 package com.face.sign.user.service.impl;
 
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.face.sign.common.base.IBaseServiceImpl;
 import com.face.sign.common.util.SecurityUtils;
 import com.face.sign.common.util.exception.BizException;
-import com.face.sign.user.mapper.UserMapper;
 import com.face.sign.user.entity.UserEntity;
+import com.face.sign.user.mapper.UserMapper;
 import com.face.sign.user.service.IUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
-import java.util.List;
 
 @Service
 public class UserServiceImpl extends IBaseServiceImpl<UserEntity, UserMapper> implements IUserService {
@@ -25,65 +23,45 @@ public class UserServiceImpl extends IBaseServiceImpl<UserEntity, UserMapper> im
     }
 
     @Override
-    public UserEntity login(String username, String password, String ip) {
+    public UserEntity login(String userName, String password, String ip) {
         // 根据用户名查询用户
-        UserEntity user = userMapper.selectUserByUsername(username);
+        UserEntity user = userMapper.selectUserByUsername(userName);
         if (user != null && SecurityUtils.matchesPassword(password, user.getPassword())) {
             // 更新用户最后登录时间、IP和登录次数
             Date now = new Date();
-            userMapper.updateUserLoginInfo(user.getUserId(), now, ip);
+            userMapper.updateUserLoginInfo(user.getId(), now, ip);
             return user;
         }
         return null;
     }
 
     @Override
-    public boolean register(UserEntity user) {
+    public int register(UserEntity user) {
         // 检查用户名是否已存在
-        if (userMapper.checkUsernameExists(user.getUsername()) > 0) {
+        if (userMapper.checkUsernameExists(user.getUserName()) > 0) {
             throw new BizException("用户名已存在");
         }
         // 对密码进行加密
         user.setPassword(SecurityUtils.encodePassword(user.getPassword()));
         // 插入新用户
-        return userMapper.insertUser(user) > 0;
+        return userMapper.insert(user);
     }
 
     @Override
-    public UserEntity getUserById(Integer userId) {
-        return userMapper.selectUserById(userId);
-    }
-
-    @Override
-    public List<UserEntity> getAllUsers() {
-        return userMapper.selectAllUsers();
-    }
-
-    @Override
-    public boolean updateUser(UserEntity user) {
-        return userMapper.updateUser(user) > 0;
-    }
-
-    @Override
-    public boolean deleteUser(Integer userId) {
-        return userMapper.deleteUserById(userId) > 0;
-    }
-
-    @Override
-    public boolean resetPassword(Integer userId, String newPassword) {
-        UserEntity user = userMapper.selectUserById(userId);
+    public int resetPassword(Long userId, String newPassword) {
+        UserEntity user = userMapper.selectById(userId);
         if (user != null) {
             if(SecurityUtils.matchesPassword(newPassword, user.getPassword())) {
                 throw new BizException("新密码与旧密码相同，请重新修改密码");
             }
             user.setPassword(SecurityUtils.encodePassword(user.getPassword()));
-            return userMapper.updateUser(user) > 0;
+            return userMapper.updateById(user);
         }
-        return false;
+        return 0;
     }
 
     @Override
-    public Boolean updateUserStatus(Integer userId, Integer status) {
-        return userMapper.updateUserStatus(userId, status) > 0;
+    public int updateUserStatus(Long userId, Integer status) {
+        return userMapper.updateUserStatus(userId, status);
     }
 }

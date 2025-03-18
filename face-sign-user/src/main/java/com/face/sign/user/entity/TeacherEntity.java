@@ -1,19 +1,15 @@
 package com.face.sign.user.entity;
 
+import com.baomidou.mybatisplus.annotation.TableName;
+import com.face.sign.common.base.BaseEntity;
 import lombok.Data;
 
-import java.time.LocalDateTime;
-import java.util.Date;
-
 @Data
-public class TeacherEntity {
-    private Integer teacherId;
-    private Integer userId;
-    private String name;
-    private String teacherNumber;
-    private String phone;
-    private String email;
-    private Date createdAt;
-    private Date updatedAt;
-    private Boolean isDeleted;
+@TableName("teacher")
+public class TeacherEntity extends BaseEntity {
+    private Long userId; // 关联用户表的外键
+    private String name; // 教师姓名
+    private String teacherNumber; // 工号，唯一
+    private String phone; // 联系电话
+    private String email; // 电子邮箱
 }

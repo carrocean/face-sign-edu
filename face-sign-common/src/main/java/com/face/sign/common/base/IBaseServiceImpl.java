@@ -17,22 +17,22 @@ public class IBaseServiceImpl<Entity extends BaseEntity, M extends IBaseMapper<E
 	}
 
 	@Override
-	public void save(Entity entity) {
-		mapper.insert(entity);
+	public int save(Entity entity) {
+		return mapper.insert(entity);
 	}
 
 	@Override
-	public void deleteById(Integer id) {
-		mapper.deleteById(id);
+	public int deleteById(Long id) {
+		return mapper.deleteById(id);
 	}
 
 	@Override
-	public void update(Entity entity) {
-		mapper.updateById(entity);
+	public int update(Entity entity) {
+		return mapper.updateById(entity);
 	}
 
 	@Override
-	public Entity getById(Integer id) {
+	public Entity getById(Long id) {
 		return mapper.selectById(id);
 	}
 
