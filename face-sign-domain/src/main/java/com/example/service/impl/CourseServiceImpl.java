@@ -1,8 +1,8 @@
-package com.example.service.impl;
+package com.face.sign.service.impl;
 
-import com.example.entity.Course;
-import com.example.mapper.CourseMapper;
-import com.example.service.ICourseService;
+import com.face.sign.entity.CourseEntity;
+import com.face.sign.mapper.CourseMapper;
+import com.face.sign.service.ICourseService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -14,20 +14,20 @@ public class CourseServiceImpl implements ICourseService {
     private CourseMapper courseMapper;
 
     @Override
-    public Course addCourse(Course course) {
-        courseMapper.addCourse(course);
-        return course;
+    public CourseEntity addCourse(CourseEntity courseEntity) {
+        courseMapper.addCourse(courseEntity);
+        return courseEntity;
     }
 
     @Override
-    public Course getCourseById(Long courseId) {
+    public CourseEntity getCourseById(Long courseId) {
         return courseMapper.getCourseById(courseId);
     }
 
     @Override
-    public Course updateCourse(Course course) {
-        courseMapper.updateCourse(course);
-        return course;
+    public CourseEntity updateCourse(CourseEntity courseEntity) {
+        courseMapper.updateCourse(courseEntity);
+        return courseEntity;
     }
 
     @Override
@@ -36,7 +36,7 @@ public class CourseServiceImpl implements ICourseService {
     }
 
     @Override
-    public List<Course> getAllCourses() {
+    public List<CourseEntity> getAllCourses() {
         return courseMapper.getAllCourses();
     }
 }

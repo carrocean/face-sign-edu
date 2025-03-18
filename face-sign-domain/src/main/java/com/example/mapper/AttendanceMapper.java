@@ -1,6 +1,6 @@
-package com.example.mapper;
+package com.face.sign.mapper;
 
-import com.example.entity.Attendance;
+import com.face.sign.entity.Attendance;
 import org.apache.ibatis.annotations.*;
 
 import java.util.List;

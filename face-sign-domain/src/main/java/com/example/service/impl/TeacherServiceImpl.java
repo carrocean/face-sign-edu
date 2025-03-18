@@ -1,8 +1,8 @@
-package com.example.service.impl;
+package com.face.sign.service.impl;
 
-import com.example.entity.Teacher;
-import com.example.mapper.TeacherMapper;
-import com.example.service.ITeacherService;
+import com.face.sign.entity.Teacher;
+import com.face.sign.mapper.TeacherMapper;
+import com.face.sign.service.ITeacherService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
