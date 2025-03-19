@@ -10,18 +10,14 @@
     <description>face-sign</description>
 
     <modules>
-<!--        <module>face-sign-facade</module>-->
-<!--        <module>face-sign-domain</module>-->
-        <module>face-sign-common</module>
-<!--        <module>face-sign-gateway</module>-->
         <module>face-sign-boot</module>
-<!--        <module>face-sign-minio</module>-->
+        <module>face-sign-common</module>
         <module>face-sign-user</module>
         <module>face-sign-course</module>
         <module>face-sign-attendance</module>
         <module>face-sign-notification</module>
-        <module>face-sign-system</module>
         <module>face-sign-recognition</module>
+        <module>face-sign-system</module>
         <!--        <module>cloud-disks-ui</module>-->
     </modules>
 
@@ -54,6 +50,8 @@
         <mybatis.version>3.0.3</mybatis.version>
         <!-- MyBatis-Plus版本 -->
         <mybatis-plus.version>3.5.5</mybatis-plus.version>
+        <!-- minio版本 -->
+        <minio.version>8.5.7</minio.version>
     </properties>
 
     <dependencyManagement>

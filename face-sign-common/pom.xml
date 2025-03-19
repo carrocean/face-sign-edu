@@ -39,6 +39,13 @@
             <scope>runtime</scope>
         </dependency>
 
+        <!-- minio -->
+        <dependency>
+            <groupId>io.minio</groupId>
+            <artifactId>minio</artifactId>
+            <version>${minio.version}</version>
+        </dependency>
+
     </dependencies>
 
 

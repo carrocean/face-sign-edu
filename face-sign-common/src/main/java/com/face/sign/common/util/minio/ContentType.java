@@ -1,4 +1,4 @@
-package com.face.sign.minio;
+package com.face.sign.common.util.minio;
 
 import org.springframework.util.StringUtils;
 

@@ -10,12 +10,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Date;
 
 /**
- * @author 后端技术框架
- * @version 2.0.x
  * @title: jwt鉴权实现模块
- * @projectName szyy-staging-moduleservices
- * @description: 通用工具类
- * @date 2024/03/12 11:00
  */
 @Component
 public class JwtUtils {

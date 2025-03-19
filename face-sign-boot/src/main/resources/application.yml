@@ -1,7 +1,6 @@
 server:
   port: 30001
 
-# spring
 spring:
   application:
     name: face-sign-boot
@@ -16,19 +15,19 @@ spring:
 #      port: 6379
 #      auth: admin@123
 #      timeout: 5000
+  minio:                                      # MinIO 配置
+    endpoint: http://localhost:9000           # MinIO服务地址
+    bucketName: face-images                   # 存储桶bucket名称
+    accessKey: minioadmin                     # 用户名
+    secretKey: minioadmin                     # 密码
+  servlet:
+    multipart:
+      max-file-size: 50MB                     # 单个文件的最大大小
+      max-request-size: 100MB                 # 单次请求的最大大小，适用于多文件上传
 
 mybatis:
   mapper-locations: classpath:mapper/*.xml
   configuration:
-      map-underscore-to-camel-case: true  # 开启驼峰命名
+      map-underscore-to-camel-case: true       # 开启驼峰命名
       log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
 
-# MinIO 配置
-#minio:
-#  endpoint: http://localhost:9000      # MinIO服务地址
-#  fileHost: http://localhost:9000      # 文件地址host
-#  bucketName: face-images                     # 存储桶bucket名称
-#  accessKey: minioadmin                         # 用户名
-#  secretKey: minioadmin                     # 密码
-#  imgSize: 1024                           # 图片大小限制，单位：m
-#  fileSize: 1024                          # 文件大小限制，单位：m
