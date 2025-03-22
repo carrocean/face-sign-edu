@@ -1,5 +1,5 @@
 server:
-  port: 30001
+  port: 8080
 
 spring:
   application:
@@ -13,7 +13,6 @@ spring:
     redis:
       host: 127.0.0.1
       port: 6379
-      auth: admin@123
       timeout: 5000
   minio:                                      # MinIO 配置
     endpoint: http://localhost:9000           # MinIO服务地址
@@ -35,8 +34,8 @@ mybatis:
 
 baidu:
   face:
+    appId: ${baidu.face.appId}
     apiKey: ${baidu.face.apiKey}
     secretKey: ${baidu.face.secretKey}
-    tokenUrl: ${baidu.face.tokenUrl}
-    searchUrl: ${baidu.face.searchUrl}
+
 

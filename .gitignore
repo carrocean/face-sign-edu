@@ -35,3 +35,5 @@ build/
 ### nodejs ###
 dist
 node
+
+face-sign-boot/src/main/resources/baidu.properties

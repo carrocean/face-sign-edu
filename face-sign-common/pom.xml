@@ -14,12 +14,6 @@
 
     <dependencies>
 
-        <!-- Spring Security -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-security</artifactId>
-        </dependency>
-
         <!-- jwt组件 -->
         <dependency>
             <groupId>io.jsonwebtoken</groupId>
@@ -45,6 +39,14 @@
             <artifactId>minio</artifactId>
             <version>${minio.version}</version>
         </dependency>
+
+        <!-- MD5加密依赖 -->
+        <dependency>
+            <groupId>commons-codec</groupId>
+            <artifactId>commons-codec</artifactId>
+            <version>${commons-codec.version}</version>
+        </dependency>
+
 
     </dependencies>
 

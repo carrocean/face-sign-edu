@@ -52,6 +52,10 @@
         <mybatis-plus.version>3.5.5</mybatis-plus.version>
         <!-- minio版本 -->
         <minio.version>8.5.7</minio.version>
+        <!-- java-sdk版本 -->
+        <java-sdk.version>4.16.10</java-sdk.version>
+        <!-- 加密组件版本 -->
+        <commons-codec.version>1.11</commons-codec.version>
     </properties>
 
     <dependencyManagement>
@@ -137,6 +141,19 @@
             <artifactId>spring-boot-starter-data-redis</artifactId>
         </dependency>
 
+        <!-- Spring Boot Starter Test -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <scope>test</scope>
+        </dependency>
+
     </dependencies>
 
 
@@ -149,9 +166,17 @@
                     <artifactId>spring-boot-maven-plugin</artifactId>
                     <version>${spring-boot-dependencies.version}</version>
                 </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <configuration>
+                        <parameters>true</parameters>
+                    </configuration>
+                </plugin>
             </plugins>
         </pluginManagement>
     </build>
+
 
 
 </project>

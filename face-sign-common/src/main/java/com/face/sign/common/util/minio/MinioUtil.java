@@ -9,7 +9,8 @@ import io.minio.messages.Item;
 import jakarta.annotation.Resource;
 import jakarta.servlet.ServletOutputStream;
 import jakarta.servlet.http.HttpServletResponse;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.util.FastByteArrayOutputStream;
 import org.springframework.web.multipart.MultipartFile;
@@ -21,9 +22,10 @@ import java.util.stream.Collectors;
 /**
  * @description: minio文件服务工具类
  */
-@Slf4j
 @Component
 public class MinioUtil {
+
+    Logger log = LoggerFactory.getLogger(MinioUtil.class);
 
     @Resource
     private MinioClient minioClient;

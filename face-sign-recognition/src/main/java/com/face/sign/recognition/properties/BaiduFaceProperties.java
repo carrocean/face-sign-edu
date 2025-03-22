@@ -10,9 +10,7 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 @ConfigurationProperties(prefix = "baidu.face")
 public class BaiduFaceProperties {
+    private String appId;
     private String apiKey;
     private String secretKey;
-    private String tokenUrl;
-    private String searchUrl;
-
 }

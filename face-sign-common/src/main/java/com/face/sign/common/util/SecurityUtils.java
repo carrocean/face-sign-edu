@@ -1,12 +1,15 @@
 package com.face.sign.common.util;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+
 import org.springframework.stereotype.Component;
+import org.springframework.util.DigestUtils;
 
 /**
  * 安全服务工具类
  */
+
 @Component
 public class SecurityUtils {
+
     /**
      * 生成BCryptPasswordEncoder密码
      * @param password 密码
@@ -14,8 +17,7 @@ public class SecurityUtils {
      */
     public static String encodePassword(String password)
     {
-        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-        return passwordEncoder.encode(password);
+        return DigestUtils.md5DigestAsHex(password.getBytes());
     }
 
     /**
@@ -26,7 +28,6 @@ public class SecurityUtils {
      */
     public static boolean matchesPassword(String rawPassword, String encodedPassword)
     {
-        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-        return passwordEncoder.matches(rawPassword, encodedPassword);
+        return encodedPassword.equals(DigestUtils.md5DigestAsHex(rawPassword.getBytes()));
     }
 }
