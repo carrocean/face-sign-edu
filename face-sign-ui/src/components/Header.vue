@@ -2,8 +2,8 @@
   <el-header class="the-header">
       <div class="logo">
         <!-- 应用图标和名字 -->
-        <img src="@/assets/云.svg" alt="App Logo" />
-        <span class="app-name">QST网盘</span>
+        <img src="@/assets/学生考勤.svg" alt="App Logo" style="width: 50px; height: 50px;" />
+        <span class="app-name">智能考勤通</span>
       </div>
 
       <!-- 用户名和退出登录按钮 -->

@@ -54,13 +54,13 @@
     </select>
 
     <!-- 根据用户名查询用户 -->
-    <select id="selectUserByUsername" parameterType="String" resultType="com.face.sign.user.entity.UserEntity">
-        SELECT * FROM user WHERE user_name = #{username} AND has_delete = 0
+    <select id="selectUserByAccount" resultType="com.face.sign.user.entity.UserEntity">
+        SELECT * FROM user WHERE account = #{account} AND has_delete = 0
     </select>
 
     <!-- 验证用户名是否已存在 -->
-    <select id="checkUsernameExists" parameterType="String" resultType="int">
-        SELECT COUNT(*) FROM user WHERE user_name = #{username} AND has_delete = 0
+    <select id="checkAccountExists" resultType="java.lang.Integer">
+        SELECT COUNT(*) FROM user WHERE account = #{account} AND has_delete = 0
     </select>
 
     <!-- 更新用户最后登录时间、IP和登录次数 -->

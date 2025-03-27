@@ -3,10 +3,10 @@
     <div class="bg"></div>
     <div class="login-panel">
       <el-form class="login-register" :model="formData" :rules="rules" ref="formDataRef" @submit.prevent>
-        <div class="login-title">考勤系统</div>
+        <div class="login-title">智能考勤通</div>
         <!-- 账号 -->
-        <el-form-item prop="userName">
-          <el-input size="large" clearable placeholder="请输入员工账号" v-model.trim="formData.userName"
+        <el-form-item prop="account">
+          <el-input size="large" clearable placeholder="请输入账号" v-model.trim="formData.account"
                     maxLength="150">
             <template #prefix>
               <span class="iconfont icon-account"></span>
@@ -24,18 +24,7 @@
           </el-input>
         </el-form-item>
 
-        <!-- 角色选择框 -->
-        <el-form-item prop="role">
-          <el-select v-model="formData.role" placeholder="请选择角色">
-            <el-option label="学生" value="STUDENT"></el-option>
-            <el-option label="教师" value="TEACHER"></el-option>
-          </el-select>
-        </el-form-item>
-
         <el-form-item>
-          <div class="rememberme-panel">
-            <el-checkbox>记住我</el-checkbox>
-          </div>
           <div class="no-account">
             <a href="#" class="a-link" @click="toRegister">注册</a>
           </div>
@@ -60,13 +49,14 @@ import {ElMessage} from "element-plus";
 const {proxy} = getCurrentInstance()
 
 const formData = ref({
-  role: 'STUDENT' // 默认选择学生角色
+  account: '',
+  password: ''
 }); // 表单数据
 
 // 表单验证规则
 const rules = {
-  userName: [{required: true, message: "请输入正确的账号"},],
-  password: [{required: true, message: "请输入正确的密码"},],
+  account: [{required: true, message: "请输入正确的账号"},],
+  password: [{required: true, message: "请输入正确的密码"},]
 };
 
 // 获取表单引用
@@ -89,24 +79,36 @@ function doSubmit() {
     if (valid) {
       login(formData.value).then(res => {
         if (res.code === 200) {
+          // 存储登录状态和用户信息
           proxy.$common.setCookies(proxy.$config.tokenKeyName, res.data.token) //  存储登录状态
-          proxy.$common.setCookies('name', res.data.userName)
+          proxy.$common.setCookies('account', res.data.account)
+          proxy.$common.setCookies(proxy.$config.userRole, res.data.role)
+          
           ElMessage.success("登录成功");
-          // 根据角色跳转到不同页面
-          if (formData.value.role === 'TEACHER') {
-            router.push('/teacher'); // 教师端主页
-          } else if (formData.value.role === 'STUDENT') {
-            router.push('/student'); // 学生端主页
+          
+          // 根据后端返回的角色跳转到不同页面
+          switch(res.data.role) {
+            case 'admin':
+              router.push('/admin');
+              break;
+            case 'teacher':
+              router.push('/teacher');
+              break;
+            case 'student':
+              router.push('/student');
+              break;
+            default:
+              ElMessage.error("未知的用户角色");
+              break;
           }
         } else {
-          ElMessage.error("账号或密码错误");
+          ElMessage.error(res.msg || "账号或密码错误");
         }
       }).catch(err => {
-        //请求失败，做相应处理
-        console.log(err)
+        console.error(err);
+        ElMessage.error("登录失败，请稍后重试");
       })
     } else {
-      // 如果校验不通过，提示用户补全信息
       ElMessage.error("请补全信息");
     }
   });

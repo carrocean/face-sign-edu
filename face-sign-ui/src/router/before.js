@@ -6,22 +6,26 @@ import config from "@/config/index.js";
 router.beforeEach((to, from, next) => {
     // 检查cookie中的token
     const token = common.getCookies(config.tokenKeyName); // 确保你有一个函数来获取cookie中的token
+    const userRole = common.getCookies(config.userRole)
 
-    if (token) {
-        // 如果访问的是登录页，重定向到主页
-        if (to.path === '/login') {
-            alert('登录成功，自动跳转到首页！');
-            next('/');
-        } else {
-            // 如果是访问主页或其他需要登录后才能访问的页面，执行正常逻辑
-            next(); // 允许路由跳转
-        }
+    if (to.path === '/login' || to.path === '/register') {
+        next()
+        return
+    }
+
+    if (!token) {
+        next('/login')
+        return
+    }
+
+    // 根据用户角色限制访问路径
+    if (userRole === 'admin' && !to.path.startsWith('/admin')) {
+        next('/admin/dashboard')
+    } else if (userRole === 'teacher' && !to.path.startsWith('/teacher')) {
+        next('/teacher/dashboard')
+    } else if (userRole === 'student' && !to.path.startsWith('/student')) {
+        next('/student/dashboard')
     } else {
-        // 如果没有token，且尝试访问需要登录的页面，则重定向到登录页
-        if (to.path === '/teacher' || to.path === '/' || to.path === '/student') {
-            next('/login');
-        } else {
-            next(); // 允许其他不需要登录的页面访问
-        }
+        next()
     }
 });

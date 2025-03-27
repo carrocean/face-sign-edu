@@ -5,8 +5,8 @@
       <el-form class="login-register" :model="formData" :rules="rules" ref="formDataRef" @submit.prevent>
         <div class="login-title">考勤系统注册</div>
         <!-- 账号 -->
-        <el-form-item prop="userName">
-          <el-input size="large" clearable placeholder="请输入账号" v-model.trim="formData.userName" maxLength="150">
+        <el-form-item prop="account">
+          <el-input size="large" clearable placeholder="请输入账号" v-model.trim="formData.account" maxLength="150">
             <template #prefix>
               <span class="iconfont icon-account"></span>
             </template>
@@ -60,17 +60,15 @@ import router from "@/router/index.js";
 import {ElMessage} from "element-plus";
 
 const formData = ref({
-  role: 'STUDENT' // 默认选择学生角色
+  role: 'STUDENT', // 默认选择学生角色
+  account: '',
+  password: ''
 }); // 表单数据
 
 // 表单验证规则
 const rules = {
-  userName: [{ required: true, message: "请输入账号", trigger: "blur" }],
-  password: [
-    { required: true, message: "密码不能为空", trigger: "blur" },
-    { min: 6, message: "密码长度至少为6位", trigger: "blur" },
-    { max: 20, message: "密码长度最多为20位", trigger: "blur" },
-  ],
+  account: [{ required: true, message: "请输入账号", trigger: "blur" }],
+  password: [{ required: true, message: "请输入密码", trigger: "blur" }],
   nickName: [{ required: true, message: "请输入昵称", trigger: "blur" }],
   role: [{ required: true, message: "请选择角色", trigger: "blur" }],
 };

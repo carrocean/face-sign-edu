@@ -203,7 +203,7 @@ CREATE TABLE `teacher`  (
 DROP TABLE IF EXISTS `user`;
 CREATE TABLE `user`  (
   `id` bigint NOT NULL COMMENT '唯一ID号',
-  `user_name` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '用户名，唯一',
+  `account` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '账号，唯一',
   `password` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '密码，加密存储',
   `role` varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '用户角色（学生、教师、管理员）',
   `add_time` datetime NULL DEFAULT CURRENT_TIMESTAMP COMMENT '添加时间',
@@ -215,7 +215,7 @@ CREATE TABLE `user`  (
   `login_count` int NULL DEFAULT 0 COMMENT '登录次数',
   `status` int NULL DEFAULT 1 COMMENT '账号状态（1启用/0禁用）',
   PRIMARY KEY (`id`) USING BTREE,
-  UNIQUE INDEX `user_name`(`user_name`) USING BTREE
+  UNIQUE INDEX `account`(`account`) USING BTREE
 ) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '用户表，存储系统所有用户的基本信息，包括学生、教师和管理员' ROW_FORMAT = Dynamic;
 
 SET FOREIGN_KEY_CHECKS = 1;

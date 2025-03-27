@@ -10,7 +10,7 @@ import java.util.Date;
 @Data
 @TableName("user")
 public class UserEntity extends BaseEntity {
-    private String userName; // 用户名，唯一
+    private String account; // 账号，唯一
     private String password; // 密码，加密存储
     private String role; // 用户角色（学生、教师、管理员）
     private Date lastLoginTime; // 最后登录时间

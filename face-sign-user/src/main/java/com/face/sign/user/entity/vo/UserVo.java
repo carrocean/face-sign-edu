@@ -11,7 +11,7 @@ public class UserVo {
     private Date deleteTime; // 删除时间
     private Date updateTime; // 更新时间
     private int hasDelete; // 是否删除(1删除|0正常|null正常)
-    private String userName;
+    private String account;
     private String password;
     private String role;
     private Date lastLoginTime;    // 最后登录时间

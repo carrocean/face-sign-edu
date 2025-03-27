@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 检查周期为5分钟 -->
+<configuration debug="true" scan="true" scanPeriod="300 seconds">
+    <contextName>${SER_NAME}</contextName>
+    <springProperty name="SER_NAME" scope="context" source="spring.application.name" defaultValue="logback"/>
+    <springProperty name="APP_NAME" scope="context" source="spring.application.appname" defaultValue="staging"/>
+    <springProperty name="LOGY_NAME" scope="context" source="spring.application.logyname" defaultValue="sunyard"/>
+    <springProperty name="ServerIP" scope="context" source="app.hostname" defaultValue="127.0.0.1"/>
+    <springProperty name="ServerPort" scope="context" source="server.port" defaultValue="8080"/>
+    <!-- 自定义值 -->
+    <springProperty name="LOG_FILE" scope="context" source="logback.file" defaultValue="./logs"/>
+    <springProperty name="LOG_MAXFILESIZE" scope="context" source="logback.filesize" defaultValue="100MB"/>
+    <springProperty name="LOG_FILEMAXDAY" scope="context" source="logback.filemaxday" defaultValue="7"/>
+    <springProperty name="LOG_LEVEL" scope="context" source="logback.level" defaultValue="INFO"/>
+    <springProperty name="LOG_CHARSET" scope="context" source="logback.charset" defaultValue="utf8"/>
+    <!-- 彩色日志 -->
+    <!-- 彩色日志依赖的渲染类 -->
+    <conversionRule conversionWord="clr" converterClass="org.springframework.boot.logging.logback.ColorConverter"/>
+    <conversionRule conversionWord="wex"
+                    converterClass="org.springframework.boot.logging.logback.WhitespaceThrowableProxyConverter"/>
+    <conversionRule conversionWord="wEx"
+                    converterClass="org.springframework.boot.logging.logback.ExtendedWhitespaceThrowableProxyConverter"/>
+    <!-- 彩色日志格式 -->
+    <property name="CONSOLE_LOG_PATTERN"
+              value="[${SER_NAME}:${ServerIP}:${ServerPort}] %clr(%d{yyyy-MM-dd HH:mm:ss.SSS}){faint}   %clr(%level){blue} %clr(${PID}){magenta} %clr([%X{traceId}]){yellow} %clr([%thread]){orange} %clr(%logger){cyan} %clr([%X{Transcode}]){blue}  %replace(%msg){'^(.{50000}).*$', '$1'} %n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx}"/>
+    <property name="CONSOLE_LOG_PATTERN_NO_COLOR"
+              value="[${SER_NAME}:${ServerIP}:${ServerPort}] %d{yyyy-MM-dd HH:mm:ss.SSS} %level ${PID} [%X{traceId}]  [%thread]  [%X{IPport}] [%X{Transcode}]  %logger %replace(%msg){'^(.{50000}).*$', '$1'} %n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx}"/>
+
+    <!-- 控制台输出日志 -->
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>INFO</level>
+        </filter>
+        <encoder>
+            <pattern>${CONSOLE_LOG_PATTERN}</pattern>
+            <charset>${LOG_CHARSET}</charset>
+        </encoder>
+    </appender>
+
+    <!-- INFO文件日志，时间滚动输出 -->
+    <appender name="FILE-INFO" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <!-- 过滤掉非info的日志 -->
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>INFO</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+        <!-- 日志记录器的滚动策略，按日期，按大小记录 -->
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_FILE}/%d{yyyy-MM-dd}/${SER_NAME}-log-%d{yyyyMMdd}-%i-info.log</fileNamePattern>
+            <maxHistory>${LOG_FILEMAXDAY}</maxHistory>
+            <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <maxFileSize>${LOG_MAXFILESIZE}</maxFileSize>
+            </timeBasedFileNamingAndTriggeringPolicy>
+        </rollingPolicy>
+        <!--日志文档输出格式-->
+        <encoder>
+            <!--skywalking日志文档输出格式
+            <layout class="org.apache.skywalking.apm.toolkit.log.logback.v1.x.mdc.TraceIdMDCPatternLogbackLayout">
+                <Pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%X{tid}] [%thread] %-5level %logger{36} -%msg%n</Pattern>
+            </layout>-->
+            <pattern>${CONSOLE_LOG_PATTERN_NO_COLOR}</pattern>
+            <charset>${LOG_CHARSET}</charset>
+        </encoder>
+    </appender>
+
+    <!-- ERROR文件日志 (文件小时大小策略进行文件输出，超过指定大小对文件备份) -->
+    <appender name="FILE-ERROR" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>ERROR</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+        <append>true</append>
+        <!-- 日志记录器的滚动策略，按日期，按大小记录 -->
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_FILE}/%d{yyyy-MM-dd}/${SER_NAME}-log-%d{yyyyMMdd}-%i-error.log</fileNamePattern>
+            <maxHistory>${LOG_FILEMAXDAY}</maxHistory>
+            <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <maxFileSize>${LOG_MAXFILESIZE}</maxFileSize>
+            </timeBasedFileNamingAndTriggeringPolicy>
+        </rollingPolicy>
+        <encoder>
+            <pattern>${CONSOLE_LOG_PATTERN_NO_COLOR}</pattern>
+            <charset>${LOG_CHARSET}</charset>
+        </encoder>
+    </appender>
+
+    <!-- DEBUG文件日志 (文件小时大小策略进行文件输出，超过指定大小对文件备份) -->
+    <appender name="FILE-DEBUG" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>DEBUG</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+        <append>true</append>
+        <!--日志归档策略 -->
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_FILE}/%d{yyyy-MM-dd}/${SER_NAME}-log-%d{yyyyMMdd}-%i-debug.log</fileNamePattern>
+            <maxHistory>${LOG_FILEMAXDAY}</maxHistory>
+            <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <maxFileSize>${LOG_MAXFILESIZE}</maxFileSize>
+            </timeBasedFileNamingAndTriggeringPolicy>
+        </rollingPolicy>
+        <encoder>
+            <pattern>${CONSOLE_LOG_PATTERN_NO_COLOR}</pattern>
+            <charset>${LOG_CHARSET}</charset>
+        </encoder>
+    </appender>
+
+    <!-- WARN文件日志 (文件小时大小策略进行文件输出，超过指定大小对文件备份) -->
+    <appender name="FILE-WARN" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>WARN</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+        <append>true</append>
+        <!-- 日志记录器的滚动策略，按日期，按大小记录 -->
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_FILE}/%d{yyyy-MM-dd}/${SER_NAME}-log-%d{yyyyMMdd}-%i-warn.log</fileNamePattern>
+            <maxHistory>${LOG_FILEMAXDAY}</maxHistory>
+            <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <maxFileSize>${LOG_MAXFILESIZE}</maxFileSize>
+            </timeBasedFileNamingAndTriggeringPolicy>
+        </rollingPolicy>
+        <encoder>
+            <pattern>${CONSOLE_LOG_PATTERN_NO_COLOR}</pattern>
+            <charset>${LOG_CHARSET}</charset>
+        </encoder>
+    </appender>
+
+    <logger name="${LOGY_NAME}-logger" level="INFO" additivity="false">
+        <appender name="ES_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+            <encoder>
+                <pattern>[${SER_NAME}:${ServerIP}:${ServerPort}] %d{yyyy-MM-dd HH:mm:ss.SSS} %level ${PID} [%X{traceId}]
+                    [%thread] [%X{IPport}] [%X{Transcode}] %logger %replace(%msg){'^(.{5000}).*$', '$1'}
+                    %n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx}
+                </pattern>
+            </encoder>
+        </appender>
+    </logger>
+
+    <!-- 异步输出，异步的log片段必须在同步段后面，否则不起作用 -->
+    <appender name="FILE-INFO-ASYNC" class="ch.qos.logback.classic.AsyncAppender">
+        <discardingThreshold>0</discardingThreshold>
+        <queueSize>512</queueSize>
+        <appender-ref ref="FILE-INFO"/>
+    </appender>
+    <appender name="FILE-ERROR-ASYNC" class="ch.qos.logback.classic.AsyncAppender">
+        <discardingThreshold>0</discardingThreshold>
+        <queueSize>512</queueSize>
+        <appender-ref ref="FILE-ERROR"/>
+    </appender>
+    <appender name="FILE-DEBUG-ASYNC" class="ch.qos.logback.classic.AsyncAppender">
+        <discardingThreshold>0</discardingThreshold>
+        <queueSize>512</queueSize>
+        <appender-ref ref="FILE-DEBUG"/>
+    </appender>
+    <appender name="FILE-WARN-ASYNC" class="ch.qos.logback.classic.AsyncAppender">
+        <discardingThreshold>0</discardingThreshold>
+        <queueSize>512</queueSize>
+        <appender-ref ref="FILE-WARN"/>
+    </appender>
+
+    <logger name="FILE-DEBUG_LOG" level="DEBUG">
+        <appender-ref ref="FILE-DEBUG-ASYNC"/>
+        <appender-ref ref="FILE-ERROR-ASYNC"/>
+        <appender-ref ref="FILE-INFO-ASYNC"/>
+    </logger>
+
+    <logger name="FILE-ERROR_LOG" level="ERROR">
+        <appender-ref ref="FILE-ERROR-ASYNC"/>
+    </logger>
+
+    <logger name="FILE-WARN_LOG" level="WARN">
+        <appender-ref ref="FILE-WARN-ASYNC"/>
+    </logger>
+
+    <!--指定最基础的日志输出级别-->
+    <root level="${LOG_LEVEL}">
+        <appender-ref ref="STDOUT"/>
+        <appender-ref ref="FILE-DEBUG-ASYNC"/>
+        <appender-ref ref="FILE-ERROR-ASYNC"/>
+        <appender-ref ref="FILE-INFO-ASYNC"/>
+        <appender-ref ref="FILE-WARN-ASYNC"/>
+    </root>
+
+</configuration>

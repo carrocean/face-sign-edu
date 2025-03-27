@@ -3,15 +3,60 @@ package com.face.sign.attendance.entity;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.face.sign.common.base.BaseEntity;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
+/**
+ * 考勤记录实体类
+ */
 @Data
+@EqualsAndHashCode(callSuper = true)
 @TableName("attendance_record")
 public class AttendanceRecordEntity extends BaseEntity {
-    private Long studentId; // 关联学生表的外键
-    private Long courseId; // 关联课程表的外键
-    private Long scheduleId; // 关联课程安排表的外键
-    private Date attendanceDate; // 考勤日期和时间
-    private String status; // 考勤状态（出勤、迟到、缺勤、请假）
+    
+    /**
+     * 课程ID
+     */
+    private Long courseId;
+    
+    /**
+     * 课程名称
+     */
+    private String courseName;
+    
+    /**
+     * 学生ID
+     */
+    private Long studentId;
+    
+    /**
+     * 学生姓名
+     */
+    private String studentName;
+    
+    /**
+     * 考勤日期
+     */
+    private String date;
+    
+    /**
+     * 考勤时间
+     */
+    private String time;
+    
+    /**
+     * 考勤状态
+     */
+    private String status;
+    
+    /**
+     * 签到时间
+     */
+    private LocalDateTime checkInTime;
+    
+    /**
+     * 签到图片
+     */
+    private String imageUrl;
 }

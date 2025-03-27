@@ -12,7 +12,7 @@ export default new Vuex.Store({
 		// 登录状态
 		isLogin: (state) => state.user.isLogin,
 		// 用户姓名
-		userName: (state) => state.user.userInfoObj.userName,
+		account: (state) => state.user.userInfoObj.account,
 		// 用户ID
 		userId: (state) => state.user.userInfoObj.userId,
 		// 表格显示列

@@ -8,11 +8,11 @@ public interface IUserService extends IBaseService<UserEntity> {
     /**
      * 用户登录
      *
-     * @param userName 用户名
+     * @param account 账号
      * @param password 密码
      * @return 登录成功的用户对象，若登录失败返回 null
      */
-    UserEntity login(String userName, String password, String ip);
+    UserEntity login(String account, String password, String ip);
 
     /**
      * 注册新用户

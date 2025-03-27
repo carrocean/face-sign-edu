@@ -9,6 +9,7 @@
         <version>1.0.0-SNAPSHOT</version>
     </parent>
 
+    <groupId>com.face.sign</groupId>
     <artifactId>face-sign-common</artifactId>
     <version>1.0.0-SNAPSHOT</version>
 

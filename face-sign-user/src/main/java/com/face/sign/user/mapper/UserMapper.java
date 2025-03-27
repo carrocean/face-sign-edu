@@ -10,20 +10,20 @@ import java.util.Date;
 public interface UserMapper extends IBaseMapper<UserEntity> {
 
     /**
-     * 根据用户名查询用户
+     * 根据账号查询用户
      *
-     * @param userName 用户名
+     * @param account 账号
      * @return 用户对象
      */
-    UserEntity selectUserByUsername(String userName);
+    UserEntity selectUserByAccount(String account);
 
     /**
-     * 验证用户名是否已存在
+     * 验证账号是否已存在
      *
-     * @param userName 用户名
+     * @param account 账号
      * @return 存在返回1，不存在返回0
      */
-    int checkUsernameExists(String userName);
+    int checkAccountExists(String account);
 
     /**
      * 更新用户最后登录时间、IP和登录次数

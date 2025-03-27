@@ -12,10 +12,10 @@ const responseTypeJson= "json"
 let baseUrl = '';
 switch (process.env.NODE_ENV) {
     case 'development':
-        baseUrl = "http://localhost:30001"  //开发环境url
+        baseUrl = "http://localhost:8080"  //开发环境url
         break
     case 'production':
-        baseUrl = "http://carrocean.top:30001"   //生产环境url
+        baseUrl = "http://carrocean.top:8080"   //生产环境url
         break
 }
 
@@ -26,7 +26,10 @@ const instance =axios.create({
 //请求拦截
 instance.interceptors.request.use(
     (config)=> {
-        config.headers['token'] = common.getCookies(globalConfig.tokenKeyName)
+        // 登录请求不需要token
+        if (!config.url.includes('/login')) {
+            config.headers['token'] = common.getCookies(globalConfig.tokenKeyName)
+        }
         return config;
     },
     (error)=> {
@@ -37,13 +40,8 @@ instance.interceptors.request.use(
 //请求后拦截器
 instance.interceptors.response.use(
     (res) => {
-        // 检查 Content-Type 是否为 application/octet-stream
-        if (res.headers['content-type'] === 'application/json') {
-            // 如果是，则直接返回数据
-            return res.data;
-        }
-        // 否则返回正常的 res
-        return res;
+
+        return res.data;
     },
     (error) => {
         return Promise.reject({showError:true,msg:"网络异常"});

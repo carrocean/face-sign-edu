@@ -34,14 +34,14 @@ public class UserController extends BaseController<UserEntity, IUserService> {
      */
     @PostMapping("/login")
     public JsonMsgDataBean login(@RequestBody UserEntity user) {
-        UserEntity loginUser = userService.login(user.getUserName(), user.getPassword(), user.getLastLoginIp());
+        UserEntity loginUser = userService.login(user.getAccount(), user.getPassword(), user.getLastLoginIp());
         if (loginUser != null) {
-            String token = jwtUtils.getJwtToken(loginUser.getUserName(), loginUser.getId().toString(), loginUser.getUserName());
+            String token = jwtUtils.getJwtToken(loginUser.getAccount(), loginUser.getId().toString(), loginUser.getAccount());
             UserVo userVo = ConvertUtil.entityToVo(loginUser, UserVo.class);
             userVo.setToken(token);
             return JsonMsgDataBean.buildSuccess(userVo);
         }
-        return JsonMsgDataBean.buildFail("用户名或密码错误");
+        return JsonMsgDataBean.buildFail("账号或密码错误");
     }
 
     /**

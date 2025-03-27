@@ -38,4 +38,10 @@ baidu:
     apiKey: ${baidu.face.apiKey}
     secretKey: ${baidu.face.secretKey}
 
+logging:
+  level:
+    root: INFO
+    com.face.sign: DEBUG
+    org.springframework.web: DEBUG
+
 

@@ -23,9 +23,9 @@ public class UserServiceImpl extends IBaseServiceImpl<UserEntity, UserMapper> im
     }
 
     @Override
-    public UserEntity login(String userName, String password, String ip) {
-        // 根据用户名查询用户
-        UserEntity user = userMapper.selectUserByUsername(userName);
+    public UserEntity login(String account, String password, String ip) {
+        // 根据账号查询用户
+        UserEntity user = userMapper.selectUserByAccount(account);
         if (user != null && SecurityUtils.matchesPassword(password, user.getPassword())) {
             // 更新用户最后登录时间、IP和登录次数
             Date now = new Date();
@@ -37,9 +37,9 @@ public class UserServiceImpl extends IBaseServiceImpl<UserEntity, UserMapper> im
 
     @Override
     public int register(UserEntity user) {
-        // 检查用户名是否已存在
-        if (userMapper.checkUsernameExists(user.getUserName()) > 0) {
-            throw new BizException("用户名已存在");
+        // 检查账号是否已存在
+        if (userMapper.checkAccountExists(user.getAccount()) > 0) {
+            throw new BizException("账号已存在");
         }
         // 对密码进行加密
         user.setPassword(SecurityUtils.encodePassword(user.getPassword()));

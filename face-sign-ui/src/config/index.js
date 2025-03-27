@@ -3,9 +3,9 @@
  */
 const config = {
     /**
-     * 网盘名称
+     * 系统名称
      */
-    siteName: 'QST网盘',
+    siteName: '智能考勤通',
     /**
      * 请求后台接口 URL 代理时的上下文
      * @description 仅适用于本地开发环境代理时使用，
@@ -17,7 +17,9 @@ const config = {
     /**
      * 存放 token 时的命名方式
      */
-    tokenKeyName: 'token'
+    tokenKeyName: 'token',
+
+    userRole: 'userRole'
 }
 
 export default config

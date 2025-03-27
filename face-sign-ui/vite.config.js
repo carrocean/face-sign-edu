@@ -14,11 +14,11 @@ export default defineConfig({
     }
   },
   server:{
-    port:1024,
+    port:80,
     hmr:true,
     proxy:{
       "/api":{
-        target:"http://carrocean.top:30001",
+        target:"http://localhost:8080",
         changeOrigin:true,
         pathRewrite:{
           "^api":"/api"

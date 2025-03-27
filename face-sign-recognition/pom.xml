@@ -8,6 +8,7 @@
         <version>1.0.0-SNAPSHOT</version>
     </parent>
 
+    <groupId>com.face.sign</groupId>
     <artifactId>face-sign-recognition</artifactId>
     <version>1.0.0-SNAPSHOT</version>
 
@@ -20,15 +21,32 @@
             <version>1.0.0-SNAPSHOT</version>
         </dependency>
 
+        <!-- MyBatis Plus -->
+        <dependency>
+            <groupId>com.baomidou</groupId>
+            <artifactId>mybatis-plus-boot-starter</artifactId>
+            <version>${mybatis-plus.version}</version>
+        </dependency>
+
+        <!-- MySQL驱动 -->
+        <dependency>
+            <groupId>com.mysql</groupId>
+            <artifactId>mysql-connector-j</artifactId>
+            <version>${mysql.version}</version>
+        </dependency>
 
         <dependency>
             <groupId>com.baidu.aip</groupId>
             <artifactId>java-sdk</artifactId>
             <version>${java-sdk.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-simple</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
-
     </dependencies>
-
 
 </project>
