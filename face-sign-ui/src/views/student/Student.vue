@@ -6,50 +6,70 @@
         class="el-menu-vertical"
         :router="true"
         background-color="#304156"
-        text-color="#fff"
-        active-text-color="#409EFF">
-        <el-menu-item index="/student/dashboard">
-          <el-icon><DataLine /></el-icon>
-          <span>仪表盘</span>
+        text-color="#bfcbd9"
+        active-text-color="#409EFF"
+      >
+        <el-menu-item index="/student/home">
+          <el-icon><HomeFilled /></el-icon>
+          <span>首页</span>
         </el-menu-item>
+        
+        <el-menu-item index="/student/attendance">
+          <el-icon><Calendar /></el-icon>
+          <span>考勤打卡</span>
+        </el-menu-item>
+
         <el-menu-item index="/student/courses">
           <el-icon><Reading /></el-icon>
           <span>我的课程</span>
         </el-menu-item>
-        <el-menu-item index="/student/attendance">
-          <el-icon><Calendar /></el-icon>
-          <span>考勤记录</span>
+
+        <el-menu-item index="/student/leave">
+          <el-icon><Document /></el-icon>
+          <span>请假管理</span>
         </el-menu-item>
-        <el-menu-item index="/student/face-test">
-          <el-icon><VideoCamera /></el-icon>
-          <span>人脸考勤测试</span>
+
+        <el-menu-item index="/student/messages">
+          <el-icon><Bell /></el-icon>
+          <span>消息通知</span>
         </el-menu-item>
+
         <el-menu-item index="/student/profile">
-          <el-icon><UserFilled /></el-icon>
+          <el-icon><User /></el-icon>
           <span>个人信息</span>
+        </el-menu-item>
+
+        <el-menu-item index="/student/help">
+          <el-icon><QuestionFilled /></el-icon>
+          <span>帮助中心</span>
         </el-menu-item>
       </el-menu>
     </el-aside>
+
     <el-container>
       <el-main>
-        <router-view></router-view>
+        <router-view />
       </el-main>
     </el-container>
   </el-container>
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { ref, computed } from 'vue'
 import { useRoute } from 'vue-router'
-import { DataLine, Reading, Calendar, UserFilled, VideoCamera } from '@element-plus/icons-vue'
+import Header from '@/components/Header.vue'
+import {
+  HomeFilled,
+  Calendar,
+  Reading,
+  Document,
+  Bell,
+  User,
+  QuestionFilled
+} from '@element-plus/icons-vue'
 
 const route = useRoute()
-
-
-const activeMenu = computed(() => {
-  return route.path
-})
-
+const activeMenu = computed(() => route.path)
 </script>
 
 <style scoped>
@@ -65,19 +85,18 @@ const activeMenu = computed(() => {
   border-right: none;
 }
 
-.header-right {
-  display: flex;
-  align-items: center;
+.el-menu-vertical {
+  height: 100%;
 }
 
-.el-dropdown-link {
-  cursor: pointer;
-  display: flex;
-  align-items: center;
+.el-header {
+  padding: 0;
+  background-color: #fff;
+  border-bottom: 1px solid #e6e6e6;
 }
 
 .el-main {
   background-color: #f0f2f5;
   padding: 20px;
 }
-</style>
+</style> 

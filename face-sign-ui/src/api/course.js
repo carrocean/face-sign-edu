@@ -52,3 +52,6 @@ export function deleteCourse(courseId) {
         method: 'delete'
     });
 }
+
+export class getStudentCourses {
+}

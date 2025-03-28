@@ -6,6 +6,10 @@
           <template #header>
             <div class="card-header">
               <span>考勤记录</span>
+              <el-button type="primary" @click="showExportDialog = true">
+                <el-icon><Download /></el-icon>
+                导出考勤记录
+              </el-button>
             </div>
           </template>
 
@@ -143,15 +147,24 @@
         </span>
       </template>
     </el-dialog>
+
+    <!-- 导出对话框 -->
+    <ExportDialog
+      v-model:visible="showExportDialog"
+      type="attendance"
+      :export-function="exportAttendance"
+    />
   </div>
 </template>
 
 <script setup>
 import { ref, reactive, onMounted, onUnmounted, watch } from 'vue'
 import { ElMessage } from 'element-plus'
-import { getAttendanceList, signIn } from '@/api/attendanceRecord'
+import { getAllAttendanceRecords, signIn } from '@/api/attendanceRecord'
 import { getStudentCourses } from '@/api/course'
-import { detectFace, searchFace } from '@/api/faceRecognition'
+import { Download } from '@element-plus/icons-vue'
+import { exportAttendance } from '@/api/export'
+import ExportDialog from '@/components/common/ExportDialog.vue'
 
 // 搜索表单
 const searchForm = reactive({
@@ -217,6 +230,7 @@ const canvasRef = ref(null)
 const faceDetected = ref(false)
 let stream = null
 let detectInterval = null
+const showExportDialog = ref(false)
 
 // 获取状态标签类型
 const getStatusType = (status) => {

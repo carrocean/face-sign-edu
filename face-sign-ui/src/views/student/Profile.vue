@@ -157,10 +157,10 @@
 import { ref, reactive, onMounted, onUnmounted } from 'vue'
 import { ElMessage } from 'element-plus'
 import { getFaceData, registerFace, updateFace, verifyFace } from '@/api/face'
-import { useUserStore } from '@/stores/user'
+
 
 // 用户信息
-const userStore = useUserStore()
+const userStore = {}
 const userInfo = reactive({
   name: '',
   studentId: '',

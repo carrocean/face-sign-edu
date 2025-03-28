@@ -77,31 +77,38 @@ const router = createRouter({
       path: '/student',
       name: 'student',
       component: () => import('../views/student/Student.vue'),
-      redirect: '/student/dashboard',
       children: [
         {
-          path: 'dashboard',
-          name: 'student-dashboard',
-          component: () => import('../views/student/Dashboard.vue')
+          path: '',
+          redirect: '/student/home'
         },
         {
-          path: 'courses',
-          name: 'student-courses',
-          component: () => import('../views/student/Courses.vue')
+          path: 'home',
+          component: () => import('@/views/student/Home.vue')
         },
         {
           path: 'attendance',
-          name: 'student-attendance',
-          component: () => import('../views/student/Attendance.vue')
+          component: () => import('@/views/student/Attendance.vue')
+        },
+        {
+          path: 'courses',
+          component: () => import('@/views/student/Courses.vue')
+        },
+        {
+          path: 'leave',
+          component: () => import('@/views/student/Leave.vue')
+        },
+        {
+          path: 'messages',
+          component: () => import('@/views/student/Messages.vue')
         },
         {
           path: 'profile',
-          name: 'student-profile',
-          component: () => import('../views/student/Profile.vue')
+          component: () => import('@/views/student/Profile.vue')
         },
         {
-          path: 'face-test',
-          component: () => import('../views/student/FaceTest.vue')
+          path: 'help',
+          component: () => import('@/views/student/Help.vue')
         }
       ]
     }
