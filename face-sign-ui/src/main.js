@@ -17,10 +17,6 @@ import Verify from './utils/Verify'
 import Message from './utils/Message'
 import Confirm from './utils/Confirm'
 import Utils from './utils/Utils'
-//自定义组件
-import Table from '@/components/Table.vue'
-import NoData from '@/components/NoData.vue'
-import FolderSelect from '@/components/FolderSelect.vue'
 // 引入全局函数
 import common from '@/libs/globalFunction/common.js'
 // 引入自定义的全局配置
@@ -32,9 +28,6 @@ const app = createApp(App)
 app.use(ElementPlus)
 app.use(router)
 app.use(store)
-app.component("Table", Table);
-app.component("NoData", NoData);
-app.component("FolderSelect", FolderSelect);
 for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
     app.component(key, component)
 }

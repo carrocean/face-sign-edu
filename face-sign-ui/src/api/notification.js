@@ -2,13 +2,13 @@
 import { request } from '@/utils/Request.js';
 
 // 接口配置项
-var prefix = '/api/face/sign/notification';
+var prefix = '/api/face/sign/notification/';
 var notificationUrl = {
-    getAllNotifications: prefix + '/list', // 获取所有通知
-    getNotificationById: prefix + '/getById', // 根据ID获取通知详情
-    saveNotification: prefix + '/save', // 添加新通知
-    updateNotification: prefix + '/update', // 更新通知
-    deleteNotification: prefix + '/delete' // 删除通知
+    getAllNotifications: prefix + 'list', // 获取所有通知
+    getNotificationById: prefix + 'getById', // 根据ID获取通知详情
+    saveNotification: prefix + 'save', // 添加新通知
+    updateNotification: prefix + 'update', // 更新通知
+    deleteNotification: prefix + 'delete' // 删除通知
 };
 
 // 获取所有通知

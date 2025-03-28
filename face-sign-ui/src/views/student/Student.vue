@@ -31,24 +31,6 @@
       </el-menu>
     </el-aside>
     <el-container>
-      <el-header>
-        <div class="header-left">
-          <h2>智能考勤系统 - 学生端</h2>
-        </div>
-        <div class="header-right">
-          <el-dropdown @command="handleCommand">
-            <span class="el-dropdown-link">
-              {{ account }}<el-icon class="el-icon--right"><arrow-down /></el-icon>
-            </span>
-            <template #dropdown>
-              <el-dropdown-menu>
-                <el-dropdown-item command="profile">个人信息</el-dropdown-item>
-                <el-dropdown-item command="logout">退出登录</el-dropdown-item>
-              </el-dropdown-menu>
-            </template>
-          </el-dropdown>
-        </div>
-      </el-header>
       <el-main>
         <router-view></router-view>
       </el-main>
@@ -57,32 +39,17 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
-import { useRouter, useRoute } from 'vue-router'
+import { computed } from 'vue'
+import { useRoute } from 'vue-router'
 import { DataLine, Reading, Calendar, UserFilled, VideoCamera } from '@element-plus/icons-vue'
-import { ElMessage } from 'element-plus'
 
-const router = useRouter()
 const route = useRoute()
 
-const account = ref(localStorage.getItem('account') || '学生')
 
 const activeMenu = computed(() => {
   return route.path
 })
 
-const handleCommand = (command) => {
-  if (command === 'profile') {
-    router.push('/student/profile')
-  } else if (command === 'logout') {
-    // 清除登录信息
-    localStorage.removeItem('token')
-    localStorage.removeItem('userRole')
-    localStorage.removeItem('account')
-    ElMessage.success('退出成功')
-    router.push('/login')
-  }
-}
 </script>
 
 <style scoped>
@@ -96,15 +63,6 @@ const handleCommand = (command) => {
 
 .el-menu {
   border-right: none;
-}
-
-.el-header {
-  background-color: #fff;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  border-bottom: 1px solid #e6e6e6;
-  padding: 0 20px;
 }
 
 .header-right {

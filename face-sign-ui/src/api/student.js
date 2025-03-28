@@ -2,13 +2,13 @@
 import { request } from '@/utils/Request.js';
 
 // 接口配置项
-var prefix = '/api/face/sign/student';
+var prefix = '/api/face/sign/student/';
 var studentUrl = {
-    getAllStudents: prefix + '/list', // 获取所有学生
-    getStudentById: prefix + '/getById', // 根据ID获取学生详情
-    saveStudent: prefix + '/save', // 添加新学生
-    updateStudent: prefix + '/update', // 更新学生
-    deleteStudent: prefix + '/delete' // 删除学生
+    getAllStudents: prefix + 'list', // 获取所有学生
+    getStudentById: prefix + 'getById', // 根据ID获取学生详情
+    saveStudent: prefix + 'save', // 添加新学生
+    updateStudent: prefix + 'update', // 更新学生
+    deleteStudent: prefix + 'delete' // 删除学生
 };
 
 // 获取所有学生

@@ -2,13 +2,13 @@
 import { request } from '@/utils/Request.js';
 
 // 接口配置项
-var prefix = '/api/face/sign/administrator';
+var prefix = '/api/face/sign/administrator/';
 var administratorUrl = {
-    getAllAdministrators: prefix + '/list', // 获取所有管理员
-    getAdministratorById: prefix + '/getById', // 根据ID获取管理员详情
-    saveAdministrator: prefix + '/save', // 添加新管理员
-    updateAdministrator: prefix + '/update', // 更新管理员
-    deleteAdministrator: prefix + '/delete' // 删除管理员
+    getAllAdministrators: prefix + 'list', // 获取所有管理员
+    getAdministratorById: prefix + 'getById', // 根据ID获取管理员详情
+    saveAdministrator: prefix + 'save', // 添加新管理员
+    updateAdministrator: prefix + 'update', // 更新管理员
+    deleteAdministrator: prefix + 'delete' // 删除管理员
 };
 
 // 获取所有管理员

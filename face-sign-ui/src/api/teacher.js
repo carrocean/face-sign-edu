@@ -2,13 +2,13 @@
 import { request } from '@/utils/Request.js';
 
 // 接口配置项
-var prefix = '/api/face/sign/teacher';
+var prefix = '/api/face/sign/teacher/';
 var teacherUrl = {
-    getAllTeachers: prefix + '/list', // 获取所有教师
-    getTeacherById: prefix + '/getById', // 根据ID获取教师详情
-    saveTeacher: prefix + '/save', // 添加新教师
-    updateTeacher: prefix + '/update', // 更新教师
-    deleteTeacher: prefix + '/delete' // 删除教师
+    getAllTeachers: prefix + 'list', // 获取所有教师
+    getTeacherById: prefix + 'getById', // 根据ID获取教师详情
+    saveTeacher: prefix + 'save', // 添加新教师
+    updateTeacher: prefix + 'update', // 更新教师
+    deleteTeacher: prefix + 'delete' // 删除教师
 };
 
 // 获取所有教师

@@ -2,13 +2,13 @@
 import { request } from '@/utils/Request.js';
 
 // 接口配置项
-var prefix = '/api/face/sign/system-log';
+var prefix = '/api/face/sign/system-log/';
 var systemLogUrl = {
-    getAllSystemLogs: prefix + '/list', // 获取所有系统日志
-    getSystemLogById: prefix + '/getById', // 根据ID获取系统日志详情
-    saveSystemLog: prefix + '/save', // 添加新系统日志
-    updateSystemLog: prefix + '/update', // 更新系统日志
-    deleteSystemLog: prefix + '/delete' // 删除系统日志
+    getAllSystemLogs: prefix + 'list', // 获取所有系统日志
+    getSystemLogById: prefix + 'getById', // 根据ID获取系统日志详情
+    saveSystemLog: prefix + 'save', // 添加新系统日志
+    updateSystemLog: prefix + 'update', // 更新系统日志
+    deleteSystemLog: prefix + 'delete' // 删除系统日志
 };
 
 // 获取所有系统日志

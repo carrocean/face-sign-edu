@@ -81,7 +81,7 @@ function doSubmit() {
         if (res.code === 200) {
           // 存储登录状态和用户信息
           proxy.$common.setCookies(proxy.$config.tokenKeyName, res.data.token) //  存储登录状态
-          proxy.$common.setCookies('account', res.data.account)
+          proxy.$common.setCookies(proxy.$config.account, res.data.account)
           proxy.$common.setCookies(proxy.$config.userRole, res.data.role)
           
           ElMessage.success("登录成功");

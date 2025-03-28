@@ -2,13 +2,13 @@
 import { request } from '@/utils/Request.js';
 
 // 接口配置项
-var prefix = '/api/face/sign/leave-request';
+var prefix = '/api/face/sign/leave-request/';
 var leaveRequestUrl = {
-    getAllLeaveRequests: prefix + '/list', // 获取所有请假记录
-    getLeaveRequestById: prefix + '/getById', // 根据ID获取请假记录详情
-    saveLeaveRequest: prefix + '/save', // 添加新请假记录
-    updateLeaveRequest: prefix + '/update', // 更新请假记录
-    deleteLeaveRequest: prefix + '/delete' // 删除请假记录
+    getAllLeaveRequests: prefix + 'list', // 获取所有请假记录
+    getLeaveRequestById: prefix + 'getById', // 根据ID获取请假记录详情
+    saveLeaveRequest: prefix + 'save', // 添加新请假记录
+    updateLeaveRequest: prefix + 'update', // 更新请假记录
+    deleteLeaveRequest: prefix + 'delete' // 删除请假记录
 };
 
 // 获取所有请假记录

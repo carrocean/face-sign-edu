@@ -19,7 +19,9 @@ const config = {
      */
     tokenKeyName: 'token',
 
-    userRole: 'userRole'
+    userRole: 'userRole',
+
+    account: 'account'
 }
 
 export default config

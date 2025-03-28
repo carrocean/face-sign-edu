@@ -2,13 +2,13 @@
 import { request } from '@/utils/Request.js';
 
 // 接口配置项
-var prefix = '/api/face/sign/class';
+var prefix = '/api/face/sign/class/';
 var classUrl = {
-    getAllClasses: prefix + '/list', // 获取所有班级
-    getClassById: prefix + '/getById', // 根据ID获取班级详情
-    saveClass: prefix + '/save', // 添加新班级
-    updateClass: prefix + '/update', // 更新班级
-    deleteClass: prefix + '/delete' // 删除班级
+    getAllClasses: prefix + 'list', // 获取所有班级
+    getClassById: prefix + 'getById', // 根据ID获取班级详情
+    saveClass: prefix + 'save', // 添加新班级
+    updateClass: prefix + 'update', // 更新班级
+    deleteClass: prefix + 'delete' // 删除班级
 };
 
 // 获取所有班级

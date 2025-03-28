@@ -3,20 +3,20 @@ import { request } from '@/utils/Request.js';
 
 // 接口配置项
 var prefix = '/api/face/sign/user/';
-var managerUrl = {
+var userUrl = {
     login: prefix + 'login',
     register: prefix + 'register',
     checkUserLoginInfo: prefix + 'checkUserLoginInfo',
-    getAllUsers: prefix + '/list', // 获取所有用户
-    getUserById: prefix + '/getById', // 根据ID获取用户详情
-    saveUser: prefix + '/save', // 添加新用户
-    updateUser: prefix + '/update', // 更新用户
-    deleteUser: prefix + '/delete' // 删除用户
+    getAllUsers: prefix + 'list', // 获取所有用户
+    getUserById: prefix + 'getById', // 根据ID获取用户详情
+    saveUser: prefix + 'save', // 添加新用户
+    updateUser: prefix + 'update', // 更新用户
+    deleteUser: prefix + 'delete' // 删除用户
 }
 
 export function login(data) {
     return request({
-        url: managerUrl.login,
+        url: userUrl.login,
         method: 'post',
         data:data,
     })
@@ -24,7 +24,7 @@ export function login(data) {
 
 export function register(data) {
     return request({
-        url: managerUrl.register,
+        url: userUrl.register,
         method: 'post',
         data:data,
     })
@@ -32,7 +32,7 @@ export function register(data) {
 
 export function checkUserLoginInfo() {
     return request({
-        url: managerUrl.checkUserLoginInfo,
+        url: userUrl.checkUserLoginInfo,
         method: 'get',
     })
 }

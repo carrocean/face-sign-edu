@@ -2,13 +2,13 @@
 import { request } from '@/utils/Request.js';
 
 // 接口配置项
-var prefix = '/api/face/sign/course';
+var prefix = '/api/face/sign/course/';
 var courseUrl = {
-    getAllCourses: prefix + '/list', // 获取所有课程
-    getCourseById: prefix + '/getById', // 根据ID获取课程详情
-    saveCourse: prefix + '/save', // 添加新课程
-    updateCourse: prefix + '/update', // 更新课程
-    deleteCourse: prefix + '/delete' // 删除课程
+    getAllCourses: prefix + 'list', // 获取所有课程
+    getCourseById: prefix + 'getById', // 根据ID获取课程详情
+    saveCourse: prefix + 'save', // 添加新课程
+    updateCourse: prefix + 'update', // 更新课程
+    deleteCourse: prefix + 'delete' // 删除课程
 };
 
 // 获取所有课程
@@ -50,21 +50,5 @@ export function deleteCourse(courseId) {
     return request({
         url: courseUrl.deleteCourse + '/' + courseId,
         method: 'delete'
-    });
-}
-
-// 获取教师课程列表
-export function getTeacherCourses() {
-    return request({
-        url: '/course/teacher/list',
-        method: 'get'
-    });
-}
-
-// 获取学生课程列表
-export function getStudentCourses() {
-    return request({
-        url: '/course/student/list',
-        method: 'get'
     });
 }
