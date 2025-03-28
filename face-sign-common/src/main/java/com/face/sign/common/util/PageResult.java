@@ -1,4 +1,4 @@
-package com.face.sign.common.base;
+package com.face.sign.common.util;
 
 import lombok.Data;
 

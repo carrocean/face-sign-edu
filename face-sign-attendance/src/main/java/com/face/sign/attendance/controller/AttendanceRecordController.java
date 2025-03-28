@@ -15,13 +15,9 @@ import java.util.List;
 @RequestMapping("/api/face/sign/attendance-record")
 public class AttendanceRecordController extends BaseController<AttendanceRecordEntity, IAttendanceRecordService> {
 
+    @Autowired
     IAttendanceRecordService attendanceRecordService;
 
-    @Autowired
-    public void setAttendanceRecordService(IAttendanceRecordService attendanceRecordService) {
-        this.attendanceRecordService = attendanceRecordService;
-        init(attendanceRecordService);
-    }
 
 
     /**

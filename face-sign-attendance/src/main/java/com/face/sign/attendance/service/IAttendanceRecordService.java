@@ -2,7 +2,7 @@ package com.face.sign.attendance.service;
 
 import com.face.sign.attendance.entity.AttendanceRecordEntity;
 import com.face.sign.common.base.IBaseService;
-import com.face.sign.common.base.PageResult;
+import com.face.sign.common.util.PageResult;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.web.multipart.MultipartFile;
 

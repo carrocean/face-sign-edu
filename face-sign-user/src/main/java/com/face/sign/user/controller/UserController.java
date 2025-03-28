@@ -14,16 +14,11 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/face/sign/user")
 public class UserController extends BaseController<UserEntity, IUserService> {
 
-    IUserService userService;
+    @Autowired
+    private IUserService userService;
 
     @Autowired
-    public void setUserService(IUserService userService) {
-        this.userService = userService;
-        init(userService);
-    }
-
-    @Autowired
-    JwtUtils jwtUtils;
+    private JwtUtils jwtUtils;
 
 
     /**
@@ -52,8 +47,11 @@ public class UserController extends BaseController<UserEntity, IUserService> {
      */
     @PostMapping("/register")
     public JsonMsgDataBean register(@RequestBody UserEntity user) {
-        userService.register(user);
-        return JsonMsgDataBean.buildSuccess();
+        int result = userService.register(user);
+        if (result > 0) {
+            return JsonMsgDataBean.buildSuccess();
+        }
+        return JsonMsgDataBean.buildFail("注册失败");
     }
 
     /**
@@ -65,8 +63,11 @@ public class UserController extends BaseController<UserEntity, IUserService> {
      */
     @PutMapping("/resetPassword")
     public JsonMsgDataBean resetPassword(@RequestParam Long userId, @RequestParam String newPassword) {
-        userService.resetPassword(userId, newPassword);
-        return JsonMsgDataBean.buildSuccess();
+        int result = userService.resetPassword(userId, newPassword);
+        if (result > 0) {
+            return JsonMsgDataBean.buildSuccess();
+        }
+        return JsonMsgDataBean.buildFail("重置密码失败");
     }
 
     /**
@@ -78,11 +79,12 @@ public class UserController extends BaseController<UserEntity, IUserService> {
      */
     @PutMapping("/status/{userId}")
     public JsonMsgDataBean updateUserStatus(@PathVariable Long userId, @RequestParam Integer status) {
-        userService.updateUserStatus(userId, status);
-        return JsonMsgDataBean.buildSuccess();
+        int result = userService.updateUserStatus(userId, status);
+        if (result > 0) {
+            return JsonMsgDataBean.buildSuccess();
+        }
+        return JsonMsgDataBean.buildFail("更新用户状态失败");
     }
-
-
 }
 
 

@@ -1,22 +1,12 @@
 package com.face.sign.common.base;
 
 
-import org.apache.ibatis.annotations.*;
-
-import java.util.List;
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 
 /**
  * 工作基础类
  *
  */
-public interface IBaseMapper<Entity> {
-    int insert(Entity entity);
+public interface IBaseMapper<Entity> extends BaseMapper<Entity> {
 
-    int deleteById(Long id);
-
-    int updateById(Entity entity);
-
-    Entity selectById(Long id);
-
-    List<Entity> selectAll();
 }

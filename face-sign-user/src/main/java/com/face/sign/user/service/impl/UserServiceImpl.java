@@ -1,6 +1,6 @@
 package com.face.sign.user.service.impl;
 
-import com.face.sign.common.base.IBaseServiceImpl;
+import com.face.sign.common.base.BaseServiceImpl;
 import com.face.sign.common.util.SecurityUtils;
 import com.face.sign.common.util.exception.BizException;
 import com.face.sign.user.entity.UserEntity;
@@ -12,15 +12,10 @@ import org.springframework.stereotype.Service;
 import java.util.Date;
 
 @Service
-public class UserServiceImpl extends IBaseServiceImpl<UserEntity, UserMapper> implements IUserService {
-
-    private UserMapper userMapper;
+public class UserServiceImpl extends BaseServiceImpl<UserEntity, UserMapper> implements IUserService {
 
     @Autowired
-    public void setUserMapper(UserMapper userMapper) {
-        this.userMapper = userMapper;
-        init(userMapper);
-    }
+    private UserMapper userMapper;
 
     @Override
     public UserEntity login(String account, String password, String ip) {
@@ -49,19 +44,17 @@ public class UserServiceImpl extends IBaseServiceImpl<UserEntity, UserMapper> im
 
     @Override
     public int resetPassword(Long userId, String newPassword) {
-        UserEntity user = userMapper.selectById(userId);
-        if (user != null) {
-            if(SecurityUtils.matchesPassword(newPassword, user.getPassword())) {
-                throw new BizException("新密码与旧密码相同，请重新修改密码");
-            }
-            user.setPassword(SecurityUtils.encodePassword(user.getPassword()));
-            return userMapper.updateById(user);
-        }
-        return 0;
+        UserEntity user = new UserEntity();
+        user.setId(userId);
+        user.setPassword(SecurityUtils.encodePassword(newPassword));
+        return userMapper.updateById(user);
     }
 
     @Override
     public int updateUserStatus(Long userId, Integer status) {
-        return userMapper.updateUserStatus(userId, status);
+        UserEntity user = new UserEntity();
+        user.setId(userId);
+        user.setStatus(status);
+        return userMapper.updateById(user);
     }
 }

@@ -56,6 +56,8 @@
         <java-sdk.version>4.16.10</java-sdk.version>
         <!-- 加密组件版本 -->
         <commons-codec.version>1.11</commons-codec.version>
+        <!-- java工具类库 -->
+        <hutool.version>5.8.16</hutool.version>
     </properties>
 
     <dependencyManagement>

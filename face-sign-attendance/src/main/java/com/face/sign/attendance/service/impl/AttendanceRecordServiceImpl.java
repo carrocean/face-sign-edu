@@ -5,8 +5,8 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.face.sign.attendance.entity.AttendanceRecordEntity;
 import com.face.sign.attendance.mapper.AttendanceRecordMapper;
 import com.face.sign.attendance.service.IAttendanceRecordService;
-import com.face.sign.common.base.IBaseServiceImpl;
-import com.face.sign.common.base.PageResult;
+import com.face.sign.common.base.BaseServiceImpl;
+import com.face.sign.common.util.PageResult;
 import com.face.sign.common.util.exception.BizException;
 import com.face.sign.recognition.util.BaiduFaceUtil;
 import jakarta.servlet.http.HttpServletResponse;
@@ -32,10 +32,14 @@ import java.util.List;
  * 考勤记录服务实现类
  */
 @Service
-public class AttendanceRecordServiceImpl extends IBaseServiceImpl<AttendanceRecordEntity, AttendanceRecordMapper> implements IAttendanceRecordService {
+public class AttendanceRecordServiceImpl extends BaseServiceImpl<AttendanceRecordEntity, AttendanceRecordMapper> implements IAttendanceRecordService {
 
     @Autowired
     private BaiduFaceUtil baiduFaceUtil;
+
+    @Autowired
+    private AttendanceRecordMapper attendanceRecordMapper;
+
 
 
     @Override
@@ -55,7 +59,7 @@ public class AttendanceRecordServiceImpl extends IBaseServiceImpl<AttendanceReco
 
         // 分页查询
         Page<AttendanceRecordEntity> page = new Page<>(pageNum, pageSize);
-//        Page<AttendanceRecordEntity> result = attendanceRecordMapper.selectPage(page, wrapper); // 调用 MyBatis-Plus 的分页查询方法
+        Page<AttendanceRecordEntity> result = attendanceRecordMapper.selectPage(page, wrapper); // 调用 MyBatis-Plus 的分页查询方法
 
         // 转换为PageResult
 //        return new PageResult(result.getRecords(), result.getTotal());
