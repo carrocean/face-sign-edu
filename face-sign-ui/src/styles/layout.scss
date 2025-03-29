@@ -333,4 +333,217 @@
   color: #909399;
   font-size: 14px;
   margin-top: 8px;
+}
+
+// 响应式布局样式
+@media screen and (max-width: 768px) {
+  .el-aside {
+    width: 64px !important;
+    transition: width 0.3s;
+    
+    .el-menu-item {
+      span {
+        display: none;
+      }
+      
+      .el-icon {
+        margin-right: 0;
+      }
+    }
+  }
+  
+  .el-main {
+    padding: 10px;
+  }
+  
+  .el-card {
+    margin-bottom: 10px;
+  }
+  
+  .el-table {
+    .el-table__header-wrapper {
+      display: none;
+    }
+    
+    .el-table__body-wrapper {
+      .el-table__row {
+        display: block;
+        margin-bottom: 10px;
+        border: 1px solid #ebeef5;
+        border-radius: 4px;
+        
+        td {
+          display: block;
+          text-align: right;
+          padding: 8px;
+          
+          &::before {
+            content: attr(data-label);
+            float: left;
+            font-weight: bold;
+            color: #606266;
+          }
+        }
+      }
+    }
+  }
+  
+  .el-form {
+    .el-form-item {
+      margin-bottom: 15px;
+    }
+  }
+  
+  .el-dialog {
+    width: 90% !important;
+    margin: 10px auto !important;
+  }
+  
+  .el-message-box {
+    width: 90% !important;
+  }
+}
+
+// 平板设备
+@media screen and (min-width: 769px) and (max-width: 1024px) {
+  .el-aside {
+    width: 180px !important;
+    
+    .el-menu-item {
+      span {
+        display: inline-block;
+      }
+      
+      .el-icon {
+        margin-right: 8px;
+      }
+    }
+  }
+  
+  .el-main {
+    padding: 15px;
+  }
+  
+  .el-card {
+    margin-bottom: 15px;
+  }
+  
+  .el-table {
+    .el-table__header-wrapper {
+      .el-table__header {
+        th {
+          padding: 8px;
+        }
+      }
+    }
+    
+    .el-table__body-wrapper {
+      .el-table__body {
+        td {
+          padding: 8px;
+        }
+      }
+    }
+  }
+}
+
+// 桌面设备
+@media screen and (min-width: 1025px) {
+  .el-aside {
+    width: 200px !important;
+    
+    .el-menu-item {
+      span {
+        display: inline-block;
+      }
+      
+      .el-icon {
+        margin-right: 12px;
+      }
+    }
+  }
+  
+  .el-main {
+    padding: 30px;
+  }
+  
+  .el-card {
+    margin-bottom: 30px;
+  }
+  
+  .el-table {
+    .el-table__header-wrapper {
+      .el-table__header {
+        th {
+          padding: 15px;
+        }
+      }
+    }
+    
+    .el-table__body-wrapper {
+      .el-table__body {
+        td {
+          padding: 15px;
+        }
+      }
+    }
+  }
+}
+
+// 响应式栅格系统
+.el-row {
+  margin-bottom: 20px;
+  
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+// 响应式布局工具类
+.hidden-xs-only {
+  @media screen and (max-width: 768px) {
+    display: none !important;
+  }
+}
+
+.hidden-sm-only {
+  @media screen and (min-width: 769px) and (max-width: 1024px) {
+    display: none !important;
+  }
+}
+
+.hidden-md-only {
+  @media screen and (min-width: 1025px) and (max-width: 1919px) {
+    display: none !important;
+  }
+}
+
+.hidden-lg-only {
+  @media screen and (min-width: 1920px) {
+    display: none !important;
+  }
+}
+
+.hidden-sm-and-down {
+  @media screen and (max-width: 1024px) {
+    display: none !important;
+  }
+}
+
+.hidden-md-and-down {
+  @media screen and (max-width: 1919px) {
+    display: none !important;
+  }
+}
+
+.hidden-sm-and-up {
+  @media screen and (min-width: 769px) {
+    display: none !important;
+  }
+}
+
+.hidden-md-and-up {
+  @media screen and (min-width: 1025px) {
+    display: none !important;
+  }
 } 
