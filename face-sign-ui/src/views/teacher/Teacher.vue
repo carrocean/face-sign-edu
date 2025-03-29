@@ -91,7 +91,7 @@ import {
   Expand,
   SwitchButton
 } from '@element-plus/icons-vue'
-import Breadcrumb from '@/components/Breadcrumb.vue'
+// Remove Breadcrumb import
 
 const router = useRouter()
 const route = useRoute()
@@ -215,6 +215,5 @@ const handleLogout = () => {
 }
 
 .account {
-  // ... existing styles
 }
 </style>

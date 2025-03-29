@@ -24,6 +24,10 @@ const router = createRouter({
       redirect: '/admin/dashboard',
       children: [
         {
+          path: '',
+          redirect: '/admin/dashboard'
+        },
+        {
           path: 'dashboard',
           name: 'admin-dashboard',
           component: () => import('../views/admin/Dashboard.vue')
@@ -34,9 +38,37 @@ const router = createRouter({
           component: () => import('../views/admin/Users.vue')
         },
         {
+          path: 'students',
+          component: () => import('../views/admin/Students.vue')
+        },
+        {
+          path: 'teachers',
+          component: () => import('../views/admin/Teachers.vue')
+        },
+        {
+          path: 'classes',
+          component: () => import('../views/admin/Classes.vue')
+        },
+        {
           path: 'courses',
           name: 'admin-courses',
           component: () => import('../views/admin/Courses.vue')
+        },
+        {
+          path: 'attendance',
+          component: () => import('../views/admin/Attendance.vue')
+        },
+        {
+          path: 'settings',
+          component: () => import('../views/admin/Settings.vue')
+        },
+        {
+          path: 'logs',
+          component: () => import('../views/admin/Logs.vue')
+        },
+        {
+          path: 'admins',
+          component: () => import('../views/admin/Admins.vue')
         },
         {
           path: 'profile',
