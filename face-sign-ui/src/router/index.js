@@ -84,6 +84,10 @@ const router = createRouter({
       redirect: '/teacher/dashboard',
       children: [
         {
+          path: '',
+          redirect: '/teacher/dashboard'
+        },
+        {
           path: 'dashboard',
           name: 'teacher-dashboard',
           component: () => import('../views/teacher/Dashboard.vue')
@@ -97,6 +101,14 @@ const router = createRouter({
           path: 'attendance',
           name: 'teacher-attendance',
           component: () => import('../views/teacher/Attendance.vue')
+        },
+        {
+          path: 'notifications',
+          component: () => import('../views/teacher/Notifications.vue')
+        },
+        {
+          path: 'leave-approval',
+          component: () => import('../views/teacher/LeaveApproval.vue')
         },
         {
           path: 'profile',

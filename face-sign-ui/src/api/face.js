@@ -9,3 +9,6 @@ export class updateFace {
 
 export class verifyFace {
 }
+
+export class searchFace {
+}

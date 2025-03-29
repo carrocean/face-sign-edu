@@ -68,7 +68,11 @@
 
     <el-container>
       <el-main>
-        <router-view />
+        <router-view v-slot="{ Component }">
+          <transition name="fade-transform" mode="out-in">
+            <component :is="Component" />
+          </transition>
+        </router-view>
       </el-main>
     </el-container>
   </el-container>
@@ -99,6 +103,11 @@ const activeMenu = computed(() => {
 
 </script>
 
+
+<style lang="scss">
+@import '@/styles/layout.scss';
+</style>
+
 <style scoped>
 .layout-container {
   height: 100vh;
@@ -125,5 +134,21 @@ const activeMenu = computed(() => {
 .el-main {
   background-color: #f0f2f5;
   padding: 20px;
+}
+
+/* 路由切换动画 */
+.fade-transform-enter-active,
+.fade-transform-leave-active {
+  transition: all 0.3s;
+}
+
+.fade-transform-enter-from {
+  opacity: 0;
+  transform: translateX(-30px);
+}
+
+.fade-transform-leave-to {
+  opacity: 0;
+  transform: translateX(30px);
 }
 </style> 

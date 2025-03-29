@@ -14,7 +14,7 @@
       </template>
 
       <!-- 搜索表单 -->
-      <el-form :inline="true" :model="searchForm" class="search-form" label-width="80px">
+      <el-form :inline="true" :model="searchForm" class="search-form">
         <el-form-item label="学号">
           <el-input v-model="searchForm.studentId" placeholder="请输入学号" clearable />
         </el-form-item>
@@ -129,7 +129,7 @@
       </el-row>
 
       <!-- 考勤记录列表 -->
-      <el-table :data="attendanceList" style="width: 100%" v-loading="loading" stripe>
+      <el-table :data="attendanceList" style="width: 100%" v-loading="loading">
         <el-table-column prop="studentId" label="学号" width="120" />
         <el-table-column prop="name" label="姓名" width="120" />
         <el-table-column prop="className" label="班级" width="150" />
@@ -149,7 +149,7 @@
 
       <!-- 分页 -->
       <div class="pagination-container">
-        <el-pagination background
+        <el-pagination
           v-model:current-page="currentPage"
           v-model:page-size="pageSize"
           :page-sizes="[10, 20, 50, 100]"
@@ -535,4 +535,4 @@ onMounted(() => {
   height: 100%;
   width: 100%;
 }
-</style>
+</style> 

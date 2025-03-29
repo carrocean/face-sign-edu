@@ -49,7 +49,7 @@ function handleCommand (command) {
 
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 .the-header {
   background-color: #304156;
   display: flex;
@@ -57,25 +57,73 @@ function handleCommand (command) {
   align-items: center;
   padding: 0 20px;
   height: 60px;
-  border-bottom: 1px solid #e6e6e6;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .logo {
   display: flex;
   align-items: center;
-}
-
-.logo img {
-  margin-right: 20px;
+  gap: 12px;
+  
+  img {
+    width: 40px;
+    height: 40px;
+    border-radius: 4px;
+    transition: transform 0.3s;
+    
+    &:hover {
+      transform: scale(1.05);
+    }
+  }
 }
 
 .app-name {
-  font-size: 25px;
-  font-weight: bold;
+  font-size: 20px;
+  font-weight: 600;
   color: #ffffff;
+  letter-spacing: 0.5px;
 }
 
-.account {
-  color: #ffffff;
+.header-right {
+  .el-dropdown-link {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    color: #ffffff;
+    cursor: pointer;
+    padding: 8px 12px;
+    border-radius: 4px;
+    transition: all 0.3s;
+    
+    &:hover {
+      background-color: rgba(255, 255, 255, 0.1);
+    }
+    
+    .el-icon {
+      font-size: 16px;
+      transition: transform 0.3s;
+    }
+    
+    &:hover .el-icon {
+      transform: translateY(1px);
+    }
+  }
+}
+
+:deep(.el-dropdown-menu) {
+  border-radius: 8px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+  
+  .el-dropdown-menu__item {
+    padding: 8px 16px;
+    font-size: 14px;
+    color: #606266;
+    transition: all 0.3s;
+    
+    &:hover {
+      background-color: #f5f7fa;
+      color: #409EFF;
+    }
+  }
 }
 </style>

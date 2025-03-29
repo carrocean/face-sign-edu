@@ -2,10 +2,6 @@
   <el-container class="layout-container">
     <!-- 侧边栏 -->
     <el-aside width="200px">
-      <div class="logo">
-        <img src="@/assets/logo.png" alt="Logo" />
-        <span>人脸签到系统</span>
-      </div>
       <el-menu
         :default-active="activeMenu"
         class="el-menu-vertical"
@@ -26,6 +22,14 @@
           <el-icon><Calendar /></el-icon>
           <span>考勤管理</span>
         </el-menu-item>
+        <el-menu-item index="/teacher/notifications">
+          <el-icon><Message /></el-icon>
+          <span>通知管理</span>
+        </el-menu-item>
+        <el-menu-item index="/teacher/leave-approval">
+          <el-icon><Document /></el-icon>
+          <span>请假审批</span>
+        </el-menu-item>
         <el-menu-item index="/teacher/profile">
           <el-icon><User /></el-icon>
           <span>个人信息</span>
@@ -33,40 +37,8 @@
       </el-menu>
     </el-aside>
 
-    <!-- 主要内容区 -->
-    <el-container>
-      <!-- 顶部栏 -->
-      <el-header>
-        <div class="header-left">
-          <el-icon class="toggle-sidebar" @click="toggleSidebar">
-            <Fold v-if="!isCollapse" />
-            <Expand v-else />
-          </el-icon>
-          <breadcrumb />
-        </div>
-        <div class="header-right">
-          <el-dropdown trigger="click">
-            <span class="user-info">
-              <el-avatar :size="32" :src="userInfo.avatar">
-                {{ userInfo.name?.charAt(0) }}
-              </el-avatar>
-              <span class="account">{{ userInfo.name }}</span>
-            </span>
-            <template #dropdown>
-              <el-dropdown-menu>
-                <el-dropdown-item @click="$router.push('/teacher/profile')">
-                  <el-icon><User /></el-icon>个人信息
-                </el-dropdown-item>
-                <el-dropdown-item divided @click="handleLogout">
-                  <el-icon><SwitchButton /></el-icon>退出登录
-                </el-dropdown-item>
-              </el-dropdown-menu>
-            </template>
-          </el-dropdown>
-        </div>
-      </el-header>
 
-      <!-- 内容区 -->
+    <el-container>
       <el-main>
         <router-view v-slot="{ Component }">
           <transition name="fade-transform" mode="out-in">
@@ -89,7 +61,9 @@ import {
   User,
   Fold,
   Expand,
-  SwitchButton
+  SwitchButton,
+  Message,
+  Document
 } from '@element-plus/icons-vue'
 // Remove Breadcrumb import
 
@@ -124,96 +98,53 @@ const handleLogout = () => {
 }
 </script>
 
+<style lang="scss">
+@import '@/styles/layout.scss';
+</style>
+
 <style scoped>
-.layout-container {
-  height: 100vh;
-}
-
-.el-aside {
-  background-color: #304156;
-  transition: width 0.3s;
-  overflow: hidden;
-
-  .logo {
-    height: 60px;
-    display: flex;
-    align-items: center;
-    padding: 0 20px;
-    color: #fff;
-    font-size: 16px;
-    font-weight: bold;
-
-    img {
-      width: 32px;
-      height: 32px;
-      margin-right: 12px;
-    }
-  }
-
-  .el-menu {
-    border-right: none;
-  }
-}
-
-.el-header {
-  background-color: #fff;
-  border-bottom: 1px solid #e6e6e6;
+.logo {
+  height: 60px;
   display: flex;
   align-items: center;
-  justify-content: space-between;
   padding: 0 20px;
+  color: #fff;
+  font-size: 16px;
+  font-weight: bold;
 
-  .header-left {
+  img {
+    width: 32px;
+    height: 32px;
+    margin-right: 12px;
+  }
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+
+  .toggle-sidebar {
+    font-size: 20px;
+    cursor: pointer;
+    color: #666;
+    &:hover {
+      color: #409EFF;
+    }
+  }
+}
+
+.header-right {
+  .user-info {
     display: flex;
     align-items: center;
-    gap: 20px;
+    cursor: pointer;
+    padding: 0 8px;
 
-    .toggle-sidebar {
-      font-size: 20px;
-      cursor: pointer;
+    .account {
+      margin-left: 8px;
       color: #666;
-      &:hover {
-        color: #409EFF;
-      }
     }
   }
-
-  .header-right {
-    .user-info {
-      display: flex;
-      align-items: center;
-      cursor: pointer;
-      padding: 0 8px;
-
-      .account {
-        margin-left: 8px;
-        color: #666;
-      }
-    }
-  }
-}
-
-.el-main {
-  background-color: #f0f2f5;
-  padding: 20px;
-}
-
-/* 路由切换动画 */
-.fade-transform-enter-active,
-.fade-transform-leave-active {
-  transition: all 0.3s;
-}
-
-.fade-transform-enter-from {
-  opacity: 0;
-  transform: translateX(-30px);
-}
-
-.fade-transform-leave-to {
-  opacity: 0;
-  transform: translateX(30px);
-}
-
-.account {
 }
 </style>

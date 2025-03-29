@@ -62,3 +62,9 @@ export function signIn(data) {
         data: data
     });
 }
+
+export class startAttendance {
+}
+
+export class endAttendance {
+}
