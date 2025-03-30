@@ -30,7 +30,7 @@
       <!-- 搜索表单 -->
       <el-form :inline="true" :model="searchForm" class="search-form">
         <el-form-item label="学号">
-          <el-input v-model="searchForm.studentId" placeholder="请输入学号" clearable/>
+          <el-input v-model="searchForm.studentNumber" placeholder="请输入学号" clearable/>
         </el-form-item>
         <el-form-item label="姓名">
           <el-input v-model="searchForm.name" placeholder="请输入姓名" clearable/>
@@ -282,7 +282,8 @@ const {proxy} = getCurrentInstance()
 
 // 搜索表单
 const searchForm = reactive({
-  studentId: '',
+  id: '',
+  studentNumber: '',
   name: '',
   classId: ''
 })
@@ -365,10 +366,16 @@ function fetchClassList() {
 async function fetchStudentList() {
   loading.value = true
   try {
-    const res = await getAllStudents()
+    // 构建查询参数
+    const params = {
+      page: currentPage.value,
+      size: pageSize.value
+    }
+    
+    const res = await getAllStudents(params, searchForm)
     if (res.code === 200) {
-      studentList.value = res.data
-      total.value = res.data.length
+      studentList.value = res.data.records
+      total.value = res.data.total
     } else {
       ElMessage.error(res.message || '获取学生列表失败')
     }

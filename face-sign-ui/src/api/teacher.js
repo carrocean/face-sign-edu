@@ -12,10 +12,12 @@ var teacherUrl = {
 };
 
 // 获取所有教师
-export function getAllTeachers() {
+export function getAllTeachers(params, data) {
     return request({
         url: teacherUrl.getAllTeachers,
-        method: 'get'
+        method: 'post',
+        params: params,
+        data: data
     });
 }
 

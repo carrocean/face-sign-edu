@@ -280,25 +280,24 @@ const fetchStatistics = async () => {
 }
 
 // 获取考勤记录列表
-const fetchAttendanceList = async () => {
+async function fetchAttendanceList() {
   loading.value = true
   try {
-    // TODO: 调用获取考勤记录列表API
-    attendanceList.value = [
-      {
-        studentId: '20240001',
-        name: '张三',
-        className: '计算机科学1班',
-        courseName: '计算机导论',
-        date: '2024-03-28',
-        time: '08:30:00',
-        status: '1',
-        location: '教学楼A101',
-        remark: ''
-      }
-    ]
-    total.value = 1
+    // 构建查询参数
+    const params = {
+      page: currentPage.value,
+      size: pageSize.value
+    }
+    
+    const res = await getAllAttendanceRecords(params, searchForm)
+    if (res.code === 200) {
+      attendanceList.value = res.data.records
+      total.value = res.data.total
+    } else {
+      ElMessage.error(res.message || '获取考勤记录失败')
+    }
   } catch (error) {
+    console.error('获取考勤记录失败:', error)
     ElMessage.error('获取考勤记录失败')
   } finally {
     loading.value = false

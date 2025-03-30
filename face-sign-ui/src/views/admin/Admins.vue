@@ -234,22 +234,24 @@ const adminRules = {
 }
 
 // 获取管理员列表
-const fetchAdmins = async () => {
+async function fetchAdmins() {
   loading.value = true
   try {
-    // TODO: 调用获取管理员列表API
-    adminList.value = [
-      {
-        adminId: 'admin001',
-        name: '管理员',
-        phone: '13800138000',
-        email: 'admin@example.com',
-        lastLoginTime: '2024-03-28 10:00:00',
-        status: 'ENABLED'
-      }
-    ]
-    total.value = 1
+    // 构建查询参数
+    const params = {
+      page: currentPage.value,
+      size: pageSize.value
+    }
+    
+    const res = await getAllAdministrators(params, searchForm)
+    if (res.code === 200) {
+      adminList.value = res.data.records
+      total.value = res.data.total
+    } else {
+      ElMessage.error(res.message || '获取管理员列表失败')
+    }
   } catch (error) {
+    console.error('获取管理员列表失败:', error)
     ElMessage.error('获取管理员列表失败')
   } finally {
     loading.value = false

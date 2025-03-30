@@ -357,24 +357,24 @@ const fetchCourseList = async () => {
 }
 
 // 获取教师列表
-const fetchTeacherList = async () => {
+async function fetchTeacherList() {
   loading.value = true
   try {
-    // TODO: 调用获取教师列表API
-    teacherList.value = [
-      {
-        teacherId: '2024001',
-        name: '李四',
-        gender: 1,
-        departmentName: '计算机科学与技术学院',
-        title: '教授',
-        phone: '13800138000',
-        email: 'lisi@example.com',
-        status: 1
-      }
-    ]
-    total.value = 1
+    // 构建查询参数
+    const params = {
+      page: currentPage.value,
+      size: pageSize.value
+    }
+    
+    const res = await getAllTeachers(params, searchForm)
+    if (res.code === 200) {
+      teacherList.value = res.data.records
+      total.value = res.data.total
+    } else {
+      ElMessage.error(res.message || '获取教师列表失败')
+    }
   } catch (error) {
+    console.error('获取教师列表失败:', error)
     ElMessage.error('获取教师列表失败')
   } finally {
     loading.value = false

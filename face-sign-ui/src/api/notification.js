@@ -12,10 +12,12 @@ var notificationUrl = {
 };
 
 // 获取所有通知
-export function getAllNotifications() {
+export function getAllNotifications(params, data) {
     return request({
         url: notificationUrl.getAllNotifications,
-        method: 'get'
+        method: 'post',
+        params: params,
+        data: data
     });
 }
 

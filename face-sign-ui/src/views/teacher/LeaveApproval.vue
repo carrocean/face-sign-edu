@@ -271,29 +271,24 @@ const getStatusText = (status) => {
 }
 
 // 获取请假列表
-const fetchLeaveList = async () => {
+async function fetchLeaveList() {
   loading.value = true
   try {
-    // TODO: 调用获取请假列表API
-    leaveList.value = [
-      {
-        id: 1,
-        studentName: '张三',
-        studentId: '2024001',
-        className: '计算机1班',
-        type: 'SICK',
-        startTime: '2024-03-28 00:00:00',
-        endTime: '2024-03-29 23:59:59',
-        duration: 2,
-        reason: '感冒发烧，需要休息',
-        status: 'PENDING',
-        approvalComment: '',
-        approvalTime: '',
-        approver: ''
-      }
-    ]
-    total.value = 1
+    // 构建查询参数
+    const params = {
+      page: currentPage.value,
+      size: pageSize.value
+    }
+    
+    const res = await getAllLeaveRequests(params, searchForm)
+    if (res.code === 200) {
+      leaveList.value = res.data.records
+      total.value = res.data.total
+    } else {
+      ElMessage.error(res.message || '获取请假列表失败')
+    }
   } catch (error) {
+    console.error('获取请假列表失败:', error)
     ElMessage.error('获取请假列表失败')
   } finally {
     loading.value = false

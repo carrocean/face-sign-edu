@@ -12,10 +12,12 @@ var courseUrl = {
 };
 
 // 获取所有课程
-export function getAllCourses() {
+export function getAllCourses(params, data) {
     return request({
         url: courseUrl.getAllCourses,
-        method: 'get'
+        method: 'post',
+        params: params,
+        data: data
     });
 }
 

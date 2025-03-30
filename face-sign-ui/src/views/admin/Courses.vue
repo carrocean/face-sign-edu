@@ -190,34 +190,28 @@ const resetSearch = () => {
 }
 
 // 获取课程列表
-const fetchCourseList = () => {
+async function fetchCourseList() {
   loading.value = true
-  // TODO: 调用后端API获取课程列表
-  // 模拟数据
-  setTimeout(() => {
-    courseList.value = [
-      {
-        id: 1,
-        name: '高等数学',
-        teacherName: '张老师',
-        studentCount: 50,
-        schedule: '周一 1-2节',
-        location: '教学楼A101',
-        status: 'active'
-      },
-      {
-        id: 2,
-        name: '大学物理',
-        teacherName: '李老师',
-        studentCount: 45,
-        schedule: '周二 3-4节',
-        location: '教学楼B202',
-        status: 'active'
-      }
-    ]
-    total.value = 2
+  try {
+    // 构建查询参数
+    const params = {
+      page: currentPage.value,
+      size: pageSize.value
+    }
+    
+    const res = await getAllCourses(params, searchForm)
+    if (res.code === 200) {
+      courseList.value = res.data.records
+      total.value = res.data.total
+    } else {
+      ElMessage.error(res.message || '获取课程列表失败')
+    }
+  } catch (error) {
+    console.error('获取课程列表失败:', error)
+    ElMessage.error('获取课程列表失败')
+  } finally {
     loading.value = false
-  }, 500)
+  }
 }
 
 // 添加课程

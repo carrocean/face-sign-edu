@@ -12,10 +12,12 @@ var classUrl = {
 };
 
 // 获取所有班级
-export function getAllClasses() {
+export function getAllClasses(params, data) {
     return request({
         url: classUrl.getAllClasses,
-        method: 'get'
+        method: 'post',
+        params: params,
+        data: data
     });
 }
 

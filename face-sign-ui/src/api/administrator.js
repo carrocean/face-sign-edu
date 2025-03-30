@@ -12,10 +12,12 @@ var administratorUrl = {
 };
 
 // 获取所有管理员
-export function getAllAdministrators() {
+export function getAllAdministrators(params, data) {
     return request({
         url: administratorUrl.getAllAdministrators,
-        method: 'get'
+        method: 'post',
+        params: params,
+        data: data
     });
 }
 

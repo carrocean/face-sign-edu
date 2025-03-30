@@ -12,10 +12,12 @@ var leaveRequestUrl = {
 };
 
 // 获取所有请假记录
-export function getAllLeaveRequests() {
+export function getAllLeaveRequests(params, data) {
     return request({
         url: leaveRequestUrl.getAllLeaveRequests,
-        method: 'get'
+        method: 'post',
+        params: params,
+        data: data
     });
 }
 

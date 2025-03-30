@@ -12,10 +12,12 @@ var courseScheduleUrl = {
 };
 
 // 获取所有课程安排
-export function getAllCourseSchedules() {
+export function getAllCourseSchedules(params, data) {
     return request({
         url: courseScheduleUrl.getAllCourseSchedules,
-        method: 'get'
+        method: 'post',
+        params: params,
+        data: data
     });
 }
 

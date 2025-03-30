@@ -30,7 +30,14 @@ mybatis:
   mapper-locations: classpath:mapper/*.xml
   configuration:
       map-underscore-to-camel-case: true       # 开启驼峰命名
-      log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+      log-impl: org.apache.ibatis.logging.slf4j.Slf4jImpl
+
+mybatis-plus:
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
+logging:
+  config: classpath:logback-spring.xml
 
 baidu:
   face:
@@ -38,10 +45,5 @@ baidu:
     apiKey: ${baidu.face.apiKey}
     secretKey: ${baidu.face.secretKey}
 
-logging:
-  level:
-    root: INFO
-    com.face.sign: DEBUG
-    org.springframework.web: DEBUG
 
 

@@ -340,23 +340,24 @@ const fetchStatistics = async () => {
 }
 
 // 获取课程列表
-const fetchCourseList = async () => {
+async function fetchCourseList() {
   loading.value = true
   try {
-    // TODO: 调用获取课程列表API
-    courseList.value = [
-      {
-        id: 1,
-        name: '高等数学',
-        code: 'MATH101',
-        semester: '2023-2024-1',
-        studentCount: 30,
-        attendanceRate: 95,
-        status: 'ONGOING'
-      }
-    ]
-    total.value = 1
+    // 构建查询参数
+    const params = {
+      page: currentPage.value,
+      size: pageSize.value
+    }
+    
+    const res = await getAllCourses(params, searchForm)
+    if (res.code === 200) {
+      courseList.value = res.data.records
+      total.value = res.data.total
+    } else {
+      ElMessage.error(res.message || '获取课程列表失败')
+    }
   } catch (error) {
+    console.error('获取课程列表失败:', error)
     ElMessage.error('获取课程列表失败')
   } finally {
     loading.value = false

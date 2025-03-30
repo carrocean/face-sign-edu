@@ -355,28 +355,24 @@ const getStatusText = (status) => {
 }
 
 // 获取通知列表
-const fetchNotifications = async () => {
+async function fetchNotifications() {
   loading.value = true
   try {
-    // TODO: 调用获取通知列表API
-    notificationList.value = [
-      {
-        id: 1,
-        title: '考勤提醒',
-        type: 'ATTENDANCE',
-        target: 'ALL',
-        sendTime: '2024-03-28 10:00:00',
-        status: 'SENT',
-        sender: '张老师',
-        content: '请同学们按时参加课程考勤',
-        results: [
-          { name: '张三', status: 'SUCCESS', message: '' },
-          { name: '李四', status: 'FAILED', message: '网络超时' }
-        ]
-      }
-    ]
-    total.value = 1
+    // 构建查询参数
+    const params = {
+      page: currentPage.value,
+      size: pageSize.value
+    }
+    
+    const res = await getAllNotifications(params, searchForm)
+    if (res.code === 200) {
+      notificationList.value = res.data.records
+      total.value = res.data.total
+    } else {
+      ElMessage.error(res.message || '获取通知列表失败')
+    }
   } catch (error) {
+    console.error('获取通知列表失败:', error)
     ElMessage.error('获取通知列表失败')
   } finally {
     loading.value = false

@@ -38,10 +38,12 @@ export function checkUserLoginInfo() {
 }
 
 // 获取所有用户
-export function getAllUsers() {
+export function getAllUsers(params, data) {
     return request({
         url: userUrl.getAllUsers,
-        method: 'get'
+        method: 'post',
+        params: params,
+        data: data
     });
 }
 

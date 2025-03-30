@@ -12,10 +12,12 @@ var studentUrl = {
 };
 
 // 获取所有学生
-export function getAllStudents() {
+export function getAllStudents(params, data) {
     return request({
         url: studentUrl.getAllStudents,
-        method: 'get'
+        method: 'post',
+        params: params,
+        data: data
     });
 }
 

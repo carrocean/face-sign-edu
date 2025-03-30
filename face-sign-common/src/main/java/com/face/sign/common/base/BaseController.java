@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 public abstract class BaseController<E extends BaseEntity, S extends IBaseService<E>> {
 
@@ -37,18 +38,18 @@ public abstract class BaseController<E extends BaseEntity, S extends IBaseServic
         return JsonMsgDataBean.buildSuccess(entity);
     }
 
-    @GetMapping("/list")
-    public JsonMsgDataBean getAll() {
-        List<E> entities = baseService.list();
-        return JsonMsgDataBean.buildSuccess(entities);
-    }
-
-    @GetMapping("/page")
-    public JsonMsgDataBean page(
+    @PostMapping("/list")
+    public JsonMsgDataBean getAll(
             @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "10") int size) {
-        IPage<E> pageResult = baseService.page(page, size);
-        return JsonMsgDataBean.buildSuccess(pageResult);
+            @RequestParam(defaultValue = "10") int size,
+            @RequestBody(required = false) Map<String, Object> searchForm) {
+        if (searchForm == null || searchForm.isEmpty()) {
+            IPage<E> pageResult = baseService.page(page, size);
+            return JsonMsgDataBean.buildSuccess(pageResult);
+        } else {
+            IPage<E> pageResult = baseService.pageByCondition(page, size, searchForm);
+            return JsonMsgDataBean.buildSuccess(pageResult);
+        }
     }
 
     @DeleteMapping("/delete/batch")

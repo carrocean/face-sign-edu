@@ -252,10 +252,16 @@ const resetSearch = () => {
 const fetchUserList = async () => {
   try {
     loading.value = true
-    const res = await getAllUsers()
+    // 构建查询参数
+    const params = {
+      page: currentPage.value,
+      size: pageSize.value
+    }
+
+    const res = await getAllUsers(params, searchForm)
     if (res.code === 200) {
-      userList.value = res.data
-      total.value = res.data.length
+      userList.value = res.data.records
+      total.value = res.data.total
     } else {
       ElMessage.error(res.message || '获取用户列表失败')
     }

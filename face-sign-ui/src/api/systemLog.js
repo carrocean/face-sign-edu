@@ -12,10 +12,12 @@ var systemLogUrl = {
 };
 
 // 获取所有系统日志
-export function getAllSystemLogs() {
+export function getAllSystemLogs(params, data) {
     return request({
         url: systemLogUrl.getAllSystemLogs,
-        method: 'get'
+        method: 'post',
+        params: params,
+        data: data
     });
 }
 
