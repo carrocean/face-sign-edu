@@ -78,3 +78,12 @@ export function deleteUser(userId) {
         method: 'delete'
     });
 }
+
+export class importUsers {
+}
+
+export class exportUsers {
+}
+
+export class downloadUserTemplate {
+}
