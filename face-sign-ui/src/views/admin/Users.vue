@@ -13,7 +13,7 @@
               <el-icon><Download /></el-icon>
               导出数据
             </el-button>
-            <el-button type="primary" @click="showAddDialog = true">
+            <el-button type="primary" @click="dialogVisible = true">
               <el-icon><Plus /></el-icon>
               添加用户
             </el-button>
@@ -38,16 +38,6 @@
             <el-option label="启用" :value="1" />
             <el-option label="禁用" :value="0" />
           </el-select>
-        </el-form-item>
-        <el-form-item label="创建时间">
-          <el-date-picker
-            v-model="searchForm.addTime"
-            type="daterange"
-            range-separator="至"
-            start-placeholder="开始日期"
-            end-placeholder="结束日期"
-            value-format="YYYY-MM-DD"
-          />
         </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="handleSearch">搜索</el-button>
@@ -85,8 +75,9 @@
             {{ parseTime(scope.row.addTime) }}
           </template>
         </el-table-column>
-        <el-table-column label="操作" width="200">
+        <el-table-column label="操作" width="300">
           <template #default="scope">
+            <el-button type="info" link @click="handleViewDetail(scope.row)">详情</el-button>
             <el-button type="primary" link @click="handleEdit(scope.row)">编辑</el-button>
             <el-button 
               :type="scope.row.status === 1 ? 'danger' : 'success'" 
@@ -124,32 +115,26 @@
         ref="userFormRef"
         :model="userForm"
         :rules="rules"
-        label-width="80px"
+        label-width="100px"
       >
         <el-form-item label="账号" prop="account">
           <el-input v-model="userForm.account" placeholder="请输入账号" />
         </el-form-item>
-        <el-form-item label="姓名" prop="name">
-          <el-input v-model="userForm.name" placeholder="请输入姓名" />
-        </el-form-item>
         <el-form-item label="角色" prop="role">
           <el-select v-model="userForm.role" placeholder="请选择角色">
-            <el-option label="管理员" value="ADMIN" />
-            <el-option label="教师" value="TEACHER" />
-            <el-option label="学生" value="STUDENT" />
+            <el-option label="管理员" value="admin" />
+            <el-option label="教师" value="teacher" />
+            <el-option label="学生" value="student" />
           </el-select>
         </el-form-item>
-        <el-form-item label="邮箱" prop="email">
-          <el-input v-model="userForm.email" placeholder="请输入邮箱" />
-        </el-form-item>
         <el-form-item label="密码" prop="password" v-if="dialogType === 'add'">
-          <el-input v-model="userForm.password" type="password" placeholder="请输入密码" />
+          <el-input v-model="userForm.password" type="password" placeholder="请输入密码" show-password />
         </el-form-item>
       </el-form>
       <template #footer>
         <span class="dialog-footer">
-          <el-button @click="dialogVisible = false">取消</el-button>
-          <el-button type="primary" @click="handleSubmit">确定</el-button>
+          <el-button @click="handleCancel">取消</el-button>
+          <el-button type="primary" @click="handleSubmit" :loading="submitting">确定</el-button>
         </span>
       </template>
     </el-dialog>
@@ -157,18 +142,18 @@
 </template>
 
 <script setup>
-import { ref, reactive } from 'vue'
+import { ref, reactive, onMounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { getAllUsers, saveUser, updateUser, deleteUser, importUsers, exportUsers, downloadUserTemplate } from '@/api/user'
 import { parseTime } from '@/utils/Utils'
 import {Download, Plus, Upload} from "@element-plus/icons-vue";
+import router from "@/router/index.js";
 
 // 搜索表单
 const searchForm = reactive({
   account: '',
   role: '',
-  status: '',
-  addTime: []
+  status: ''
 })
 
 // 表格数据
@@ -182,11 +167,10 @@ const total = ref(0)
 const dialogVisible = ref(false)
 const dialogType = ref('add')
 const userFormRef = ref(null)
+const submitting = ref(false)
 const userForm = reactive({
   account: '',
-  name: '',
   role: '',
-  email: '',
   password: ''
 })
 
@@ -196,17 +180,8 @@ const rules = {
     { required: true, message: '请输入账号', trigger: 'blur' },
     { min: 3, max: 50, message: '账号长度在3-50个字符之间', trigger: 'blur' }
   ],
-  name: [
-    { required: true, message: '请输入姓名', trigger: 'blur' },
-    { max: 50, message: '姓名长度不能超过50个字符', trigger: 'blur' }
-  ],
   role: [
     { required: true, message: '请选择角色', trigger: 'change' }
-  ],
-  email: [
-    { required: true, message: '请输入邮箱', trigger: 'blur' },
-    { type: 'email', message: '请输入正确的邮箱地址', trigger: 'blur' },
-    { max: 50, message: '邮箱长度不能超过50个字符', trigger: 'blur' }
   ],
   password: [
     { required: true, message: '请输入密码', trigger: 'blur' },
@@ -217,9 +192,9 @@ const rules = {
 // 获取角色标签类型
 const getRoleType = (role) => {
   const types = {
-    'ADMIN': 'danger',
-    'TEACHER': 'warning',
-    'STUDENT': 'success'
+    'admin': 'danger',
+    'teacher': 'warning',
+    'student': 'success'
   }
   return types[role] || 'info'
 }
@@ -227,29 +202,28 @@ const getRoleType = (role) => {
 // 获取角色显示文本
 const getRoleLabel = (role) => {
   const labels = {
-    'ADMIN': '管理员',
-    'TEACHER': '教师',
-    'STUDENT': '学生'
+    'admin': '管理员',
+    'teacher': '教师',
+    'student': '学生'
   }
   return labels[role] || role
 }
 
 // 搜索
-const handleSearch = () => {
+function handleSearch() {
   fetchUserList()
 }
 
 // 重置搜索
-const resetSearch = () => {
+function resetSearch() {
   searchForm.account = ''
   searchForm.role = ''
   searchForm.status = ''
-  searchForm.addTime = []
   handleSearch()
 }
 
 // 获取用户列表
-const fetchUserList = async () => {
+async function fetchUserList() {
   try {
     loading.value = true
     // 构建查询参数
@@ -273,19 +247,6 @@ const fetchUserList = async () => {
   }
 }
 
-// 添加用户
-const handleAdd = () => {
-  dialogType.value = 'add'
-  dialogVisible.value = true
-  Object.assign(userForm, {
-    account: '',
-    name: '',
-    role: '',
-    email: '',
-    password: ''
-  })
-}
-
 // 编辑用户
 const handleEdit = (row) => {
   dialogType.value = 'edit'
@@ -294,7 +255,7 @@ const handleEdit = (row) => {
 }
 
 // 删除用户
-const handleDelete = (row) => {
+function handleDelete (row) {
   ElMessageBox.confirm('确认删除该用户吗？', '提示', {
     confirmButtonText: '确定',
     cancelButtonText: '取消',
@@ -341,10 +302,19 @@ const handleToggleStatus = async (row) => {
   })
 }
 
+// 取消表单
+function handleCancel() {
+  userForm.account = ''
+  userForm.role = ''
+  userForm.password = ''
+  dialogVisible.value = false
+}
+
 // 提交表单
-const handleSubmit = () => {
+function handleSubmit() {
   userFormRef.value.validate(async (valid) => {
     if (valid) {
+      submitting.value = true
       try {
         const api = dialogType.value === 'add' ? saveUser : updateUser
         const res = await api(userForm)
@@ -358,6 +328,8 @@ const handleSubmit = () => {
       } catch (error) {
         console.error('保存用户失败:', error)
         ElMessage.error(dialogType.value === 'add' ? '添加失败' : '更新失败')
+      } finally {
+        submitting.value = false
       }
     }
   })
@@ -465,6 +437,11 @@ const downloadTemplate = async () => {
   }
 }
 
+// 查看详情
+const handleViewDetail = (row) => {
+  router.push(`/admin/users/${row.id}`)
+}
+
 // 初始化
 fetchUserList()
 </script>
@@ -508,5 +485,12 @@ fetchUserList()
   margin-top: 20px;
   display: flex;
   justify-content: flex-end;
+}
+
+.section-title {
+  margin: 20px 0 10px;
+  font-size: 16px;
+  font-weight: bold;
+  color: #303133;
 }
 </style> 

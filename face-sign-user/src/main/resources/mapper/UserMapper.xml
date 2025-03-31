@@ -19,10 +19,10 @@
     </resultMap>
 
     <!-- 插入用户 -->
-    <insert id="insert" parameterType="com.face.sign.user.entity.UserEntity">
-        INSERT INTO user (id, user_name, password, role, last_login_time, last_login_ip, login_count, status, add_time, update_time, has_delete)
-        VALUES (#{id}, #{username}, #{password}, #{role}, #{lastLoginTime}, #{lastLoginIp}, #{loginCount}, #{status}, #{addTime}, #{updateTime}, #{hasDelete})
-    </insert>
+<!--    <insert id="insert" parameterType="com.face.sign.user.entity.UserEntity">-->
+<!--        INSERT INTO user (id, account, password, role, last_login_time, last_login_ip, login_count, status, add_time, update_time, has_delete)-->
+<!--        VALUES (#{id}, #{username}, #{password}, #{role}, #{lastLoginTime}, #{lastLoginIp}, #{loginCount}, #{status}, #{addTime}, #{updateTime}, #{hasDelete})-->
+<!--    </insert>-->
 
     <!-- 根据ID删除用户 -->
     <delete id="deleteById" parameterType="Long">
@@ -32,7 +32,7 @@
     <!-- 根据ID更新用户 -->
     <update id="updateById" parameterType="com.face.sign.user.entity.UserEntity">
         UPDATE user
-        SET user_name = #{username},
+        SET account = #{username},
             password = #{password},
             role = #{role},
             last_login_time = #{lastLoginTime},
