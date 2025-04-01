@@ -22,6 +22,7 @@ public class BaseServiceImpl<Entity extends BaseEntity, M extends IBaseMapper<En
 	public IPage<Entity> page(int page, int size, Map<String, Object> conditions) {
 		QueryWrapper<Entity> queryWrapper = new QueryWrapper<>();
 		QueryWrapperUtils.buildQueryWrapper(queryWrapper, conditions);
+		queryWrapper.orderByAsc("id");
 		return mapper.selectPage(new Page<>(page, size), queryWrapper);
 	}
 

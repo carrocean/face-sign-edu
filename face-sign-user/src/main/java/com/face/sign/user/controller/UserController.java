@@ -1,7 +1,7 @@
 package com.face.sign.user.controller;
 
 import com.face.sign.common.base.BaseController;
-import com.face.sign.common.util.ConvertUtil;
+import com.face.sign.common.util.BaseUtil;
 import com.face.sign.common.util.JsonMsgDataBean;
 import com.face.sign.common.util.jwt.JwtUtils;
 import com.face.sign.user.entity.UserEntity;
@@ -29,7 +29,7 @@ public class UserController extends BaseController<UserEntity, IUserService> {
         UserEntity loginUser = userService.login(user);
         if (loginUser != null) {
             String token = JwtUtils.getJwtToken(loginUser.getAccount(), loginUser.getId().toString(), loginUser.getAccount());
-            UserVo userVo = ConvertUtil.entityToVo(loginUser, UserVo.class);
+            UserVo userVo = BaseUtil.entityToVo(loginUser, UserVo.class);
             userVo.setToken(token);
             return JsonMsgDataBean.buildSuccess(userVo);
         }

@@ -2,6 +2,7 @@ package com.face.sign.common.util.mybatisplus;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.face.sign.common.util.BaseUtil;
 
 import java.util.Map;
 
@@ -19,7 +20,7 @@ public class QueryWrapperUtils {
     public static <T> void buildQueryWrapper(QueryWrapper<T> queryWrapper, Map<String, Object> conditions) {
         if (conditions != null) {
             for (Map.Entry<String, Object> entry : conditions.entrySet()) {
-                String column = entry.getKey();
+                String column = BaseUtil.camelToUnderline(entry.getKey());
                 Object value = entry.getValue();
                 if (isValueValid(value)) {
                     queryWrapper.eq(column, value);
@@ -38,7 +39,7 @@ public class QueryWrapperUtils {
     public static <T> void buildUpdateWrapper(UpdateWrapper<T> updateWrapper, Map<String, Object> conditions) {
         if (conditions != null) {
             for (Map.Entry<String, Object> entry : conditions.entrySet()) {
-                String column = entry.getKey();
+                String column = BaseUtil.camelToUnderline(entry.getKey());
                 Object value = entry.getValue();
                 if (isValueValid(value)) {
                     updateWrapper.set(column, value);

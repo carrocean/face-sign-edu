@@ -25,7 +25,6 @@ public class MybatisPlusConfig {
         paginationInnerInterceptor.setMaxLimit(100L);
         //把分页拦截器添加到MybatisPlus拦截器中
         mybatisPlusInterceptor.addInnerInterceptor(paginationInnerInterceptor);
-        //添加组件，大功告成！
         return mybatisPlusInterceptor;
     }
 }
