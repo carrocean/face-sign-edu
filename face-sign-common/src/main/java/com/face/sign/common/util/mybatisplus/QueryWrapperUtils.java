@@ -30,6 +30,25 @@ public class QueryWrapperUtils {
     }
 
     /**
+     * 根据 Map 构造模糊查询条件
+     *
+     * @param queryWrapper 查询包装器
+     * @param conditions   查询条件（Map 类型，key 为列名，value 为查询值）
+     * @param <T>          泛型
+     */
+    public static <T> void buildLikeQueryWrapper(QueryWrapper<T> queryWrapper, Map<String, Object> conditions) {
+        if (conditions != null) {
+            for (Map.Entry<String, Object> entry : conditions.entrySet()) {
+                String column = BaseUtil.camelToUnderline(entry.getKey());
+                Object value = entry.getValue();
+                if (isValueValid(value)) {
+                    queryWrapper.like(column, value);
+                }
+            }
+        }
+    }
+
+    /**
      * 根据 Map 构造更新条件
      *
      * @param updateWrapper 更新包装器
