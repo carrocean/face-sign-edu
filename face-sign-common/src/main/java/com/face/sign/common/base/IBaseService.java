@@ -10,14 +10,6 @@ import java.util.Map;
  *
  */
 public interface IBaseService<E extends BaseEntity> extends IService<E> {
-
-	/**
-	 * 分页查询
-	 * @param page 页码
-	 * @param size 每页大小
-	 * @return 分页结果
-	 */
-	IPage<E> page(int page, int size);
 	
 	/**
 	 * 条件分页查询
@@ -26,5 +18,5 @@ public interface IBaseService<E extends BaseEntity> extends IService<E> {
 	 * @param conditions 查询条件
 	 * @return 分页结果
 	 */
-	IPage<E> pageByCondition(int page, int size, Map<String, Object> conditions);
+	IPage<E> page(int page, int size, Map<String, Object> conditions);
 }

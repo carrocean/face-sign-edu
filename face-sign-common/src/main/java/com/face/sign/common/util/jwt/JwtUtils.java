@@ -16,9 +16,9 @@ import java.util.Date;
 public class JwtUtils {
 
     // token时效：30分钟
-    private Integer jwtDefaultExpire = 1000 * 60 * 30;
+    private static final Integer jwtDefaultExpire = 1000 * 60 * 30;
 
-    private String jwtDefaultSecret = "face-sign-eud-theauthenticationtokenlistfunctioncomponentof" +
+    private static final String jwtDefaultSecret = "face-sign-eud-theauthenticationtokenlistfunctioncomponentof" +
             "thecomponentlistinformationoftheback-endtechnologyframeworkinthetechnologyassetlistofsinyattatechnologyco.," +
             "ltd.wasdevelopedbyzhfofthesinyattamicroserviceplatformoftherhu&dceuinteengrofsinyattatechnologyco.,ltd";
 
@@ -41,7 +41,7 @@ public class JwtUtils {
      * @param userName 用户名
      * @return JWT规则生成的token
      */
-    public String getJwtToken(String content, String id, String userName) {
+    public static String getJwtToken(String content, String id, String userName) {
         String JwtToken = Jwts.builder()
                 .subject(content) // 设置主题（通常是用户标识）
                 .issuedAt(new Date()) // 设置签发时间
@@ -59,7 +59,7 @@ public class JwtUtils {
      * @param jwtToken token字符串
      * @return 如果token有效返回true，否则返回false
      */
-    public Jws<Claims> veifyJwtToken(String jwtToken) {
+    public static Jws<Claims> veifyJwtToken(String jwtToken) {
         // 传入Key对象
         Jws<Claims> claimsJws = Jwts.parser()
                 .verifyWith(Keys.hmacShaKeyFor(jwtDefaultSecret.getBytes(StandardCharsets.UTF_8)))

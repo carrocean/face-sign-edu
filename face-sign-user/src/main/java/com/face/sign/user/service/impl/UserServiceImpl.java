@@ -1,5 +1,7 @@
 package com.face.sign.user.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.face.sign.common.base.BaseServiceImpl;
 import com.face.sign.common.util.SecurityUtils;
 import com.face.sign.common.util.exception.BizException;
@@ -18,13 +20,18 @@ public class UserServiceImpl extends BaseServiceImpl<UserEntity, UserMapper> imp
     private UserMapper userMapper;
 
     @Override
-    public UserEntity login(String account, String password, String ip) {
-        // 根据账号查询用户
-        UserEntity user = userMapper.selectUserByAccount(account);
-        if (user != null && SecurityUtils.matchesPassword(password, user.getPassword())) {
+    public UserEntity login(UserEntity theUser) {
+        QueryWrapper<UserEntity> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("account", theUser.getAccount());
+        UserEntity user = userMapper.selectOne(queryWrapper);
+        if (user != null && SecurityUtils.matchesPassword(theUser.getPassword(), user.getPassword())) {
             // 更新用户最后登录时间、IP和登录次数
-            Date now = new Date();
-            userMapper.updateUserLoginInfo(user.getId(), now, ip);
+            UpdateWrapper<UserEntity> updateWrapper = new UpdateWrapper<>();
+            updateWrapper.eq("id", user.getId())
+                    .set("last_login_time", new Date())
+                    .set("last_login_ip", theUser.getLastLoginIp())
+                    .setSql("login_count = login_count + 1");
+            userMapper.update(null, updateWrapper);
             return user;
         }
         return null;
@@ -32,29 +39,13 @@ public class UserServiceImpl extends BaseServiceImpl<UserEntity, UserMapper> imp
 
     @Override
     public int register(UserEntity user) {
-        // 检查账号是否已存在
-        if (userMapper.checkAccountExists(user.getAccount()) > 0) {
+        QueryWrapper<UserEntity> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("account", user.getAccount());
+        if (userMapper.selectCount(queryWrapper) > 0) {
             throw new BizException("账号已存在");
         }
-        // 对密码进行加密
         user.setPassword(SecurityUtils.encodePassword(user.getPassword()));
-        // 插入新用户
         return userMapper.insert(user);
     }
 
-    @Override
-    public int resetPassword(Long userId, String newPassword) {
-        UserEntity user = new UserEntity();
-        user.setId(userId);
-        user.setPassword(SecurityUtils.encodePassword(newPassword));
-        return userMapper.updateById(user);
-    }
-
-    @Override
-    public int updateUserStatus(Long userId, Integer status) {
-        UserEntity user = new UserEntity();
-        user.setId(userId);
-        user.setStatus(status);
-        return userMapper.updateById(user);
-    }
 }

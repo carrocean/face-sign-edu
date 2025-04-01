@@ -43,13 +43,8 @@ public abstract class BaseController<E extends BaseEntity, S extends IBaseServic
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestBody(required = false) Map<String, Object> searchForm) {
-        if (searchForm == null || searchForm.isEmpty()) {
-            IPage<E> pageResult = baseService.page(page, size);
-            return JsonMsgDataBean.buildSuccess(pageResult);
-        } else {
-            IPage<E> pageResult = baseService.pageByCondition(page, size, searchForm);
-            return JsonMsgDataBean.buildSuccess(pageResult);
-        }
+        IPage<E> pageResult = baseService.page(page, size, searchForm);
+        return JsonMsgDataBean.buildSuccess(pageResult);
     }
 
     @DeleteMapping("/delete/batch")

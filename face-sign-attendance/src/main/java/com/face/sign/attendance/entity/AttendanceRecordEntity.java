@@ -3,7 +3,6 @@ package com.face.sign.attendance.entity;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.face.sign.common.base.BaseEntity;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 
 import java.time.LocalDateTime;
 
@@ -11,7 +10,6 @@ import java.time.LocalDateTime;
  * 考勤记录实体类
  */
 @Data
-@EqualsAndHashCode(callSuper = true)
 @TableName("attendance_record")
 public class AttendanceRecordEntity extends BaseEntity {
     

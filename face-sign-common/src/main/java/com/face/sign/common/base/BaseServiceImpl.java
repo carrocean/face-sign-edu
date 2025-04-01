@@ -19,17 +19,9 @@ public class BaseServiceImpl<Entity extends BaseEntity, M extends IBaseMapper<En
 	protected M mapper;
 
 	@Override
-	public IPage<Entity> page(int page, int size) {
-		QueryWrapper<Entity> queryWrapper = new QueryWrapper<>();
-		queryWrapper.eq("has_delete", 0);
-		return mapper.selectPage(new Page<>(page, size), queryWrapper);
-	}
-
-	@Override
-	public IPage<Entity> pageByCondition(int page, int size, Map<String, Object> conditions) {
+	public IPage<Entity> page(int page, int size, Map<String, Object> conditions) {
 		QueryWrapper<Entity> queryWrapper = new QueryWrapper<>();
 		QueryWrapperUtils.buildQueryWrapper(queryWrapper, conditions);
-		queryWrapper.eq("has_delete", 0);
 		return mapper.selectPage(new Page<>(page, size), queryWrapper);
 	}
 
