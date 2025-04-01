@@ -26,14 +26,9 @@ spring:
   config:
     import: "classpath:baidu.properties"
 
-mybatis:
-  mapper-locations: classpath:mapper/*.xml
-  configuration:
-      map-underscore-to-camel-case: true       # 开启驼峰命名
-      log-impl: org.apache.ibatis.logging.slf4j.Slf4jImpl
-
 mybatis-plus:
   configuration:
+    map-underscore-to-camel-case: true
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
 
 logging:

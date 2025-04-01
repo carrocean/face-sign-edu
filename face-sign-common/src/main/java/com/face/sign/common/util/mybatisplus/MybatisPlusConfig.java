@@ -1,4 +1,4 @@
-package com.face.sign.common.util;
+package com.face.sign.common.util.mybatisplus;
  
 import com.baomidou.mybatisplus.extension.plugins.MybatisPlusInterceptor;
 import com.baomidou.mybatisplus.extension.plugins.inner.PaginationInnerInterceptor;
@@ -6,7 +6,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
  
 @Configuration
-public class MybatisConfig {
+public class MybatisPlusConfig {
  
  
      /**

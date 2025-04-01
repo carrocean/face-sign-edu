@@ -29,8 +29,6 @@ CREATE TABLE `administrator`  (
   `email` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '电子邮箱',
   `add_time` datetime NULL DEFAULT CURRENT_TIMESTAMP COMMENT '添加时间',
   `update_time` datetime NULL DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间',
-  `has_delete` int NULL DEFAULT 0 COMMENT '是否删除（1删除|0正常|null正常）',
-  `delete_time` datetime NULL DEFAULT NULL COMMENT '删除时间',
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '管理员表，存储管理员详细信息' ROW_FORMAT = Dynamic;
 
@@ -47,8 +45,6 @@ CREATE TABLE `attendance_record`  (
   `status` varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '考勤状态（出勤、迟到、缺勤、请假）',
   `add_time` datetime NULL DEFAULT CURRENT_TIMESTAMP COMMENT '添加时间',
   `update_time` datetime NULL DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间',
-  `has_delete` int NULL DEFAULT 0 COMMENT '是否删除（1删除|0正常|null正常）',
-  `delete_time` datetime NULL DEFAULT NULL COMMENT '删除时间',
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '考勤记录表，存储学生的考勤记录' ROW_FORMAT = Dynamic;
 
@@ -61,8 +57,6 @@ CREATE TABLE `class`  (
   `class_name` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '班级名称',
   `add_time` datetime NULL DEFAULT CURRENT_TIMESTAMP COMMENT '添加时间',
   `update_time` datetime NULL DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间',
-  `has_delete` int NULL DEFAULT 0 COMMENT '是否删除（1删除|0正常|null正常）',
-  `delete_time` datetime NULL DEFAULT NULL COMMENT '删除时间',
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '班级表，存储班级信息' ROW_FORMAT = Dynamic;
 
@@ -80,8 +74,6 @@ CREATE TABLE `course`  (
   `end_week` int NOT NULL COMMENT '结束周数',
   `add_time` datetime NULL DEFAULT CURRENT_TIMESTAMP COMMENT '添加时间',
   `update_time` datetime NULL DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间',
-  `has_delete` int NULL DEFAULT 0 COMMENT '是否删除（1删除|0正常|null正常）',
-  `delete_time` datetime NULL DEFAULT NULL COMMENT '删除时间',
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '课程表，存储课程基本信息' ROW_FORMAT = Dynamic;
 
@@ -98,8 +90,6 @@ CREATE TABLE `course_schedule`  (
   `classroom` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '上课地点',
   `add_time` datetime NULL DEFAULT CURRENT_TIMESTAMP COMMENT '添加时间',
   `update_time` datetime NULL DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间',
-  `has_delete` int NULL DEFAULT 0 COMMENT '是否删除（1删除|0正常|null正常）',
-  `delete_time` datetime NULL DEFAULT NULL COMMENT '删除时间',
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '课程安排表，存储每节课的详细上课时间等信息' ROW_FORMAT = Dynamic;
 
@@ -116,8 +106,6 @@ CREATE TABLE `leave_request`  (
   `status` varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '请假状态（已申请、已批准、已拒绝）',
   `add_time` datetime NULL DEFAULT CURRENT_TIMESTAMP COMMENT '添加时间',
   `update_time` datetime NULL DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间',
-  `has_delete` int NULL DEFAULT 0 COMMENT '是否删除（1删除|0正常|null正常）',
-  `delete_time` datetime NULL DEFAULT NULL COMMENT '删除时间',
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '请假表，存储学生的请假信息' ROW_FORMAT = Dynamic;
 
@@ -135,8 +123,6 @@ CREATE TABLE `notification`  (
   `is_read` tinyint(1) NULL DEFAULT 0 COMMENT '是否已读',
   `add_time` datetime NULL DEFAULT CURRENT_TIMESTAMP COMMENT '添加时间',
   `update_time` datetime NULL DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间',
-  `has_delete` int NULL DEFAULT 0 COMMENT '是否删除（1删除|0正常|null正常）',
-  `delete_time` datetime NULL DEFAULT NULL COMMENT '删除时间',
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '通知表，用于存储系统通知信息' ROW_FORMAT = Dynamic;
 
@@ -155,8 +141,6 @@ CREATE TABLE `student`  (
   `email` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '电子邮箱',
   `add_time` datetime NULL DEFAULT CURRENT_TIMESTAMP COMMENT '添加时间',
   `update_time` datetime NULL DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间',
-  `has_delete` int NULL DEFAULT 0 COMMENT '是否删除（1删除|0正常|null正常）',
-  `delete_time` datetime NULL DEFAULT NULL COMMENT '删除时间',
   PRIMARY KEY (`id`) USING BTREE,
   UNIQUE INDEX `student_number`(`student_number`) USING BTREE
 ) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '学生表，存储学生详细信息' ROW_FORMAT = Dynamic;
@@ -173,8 +157,6 @@ CREATE TABLE `system_log`  (
   `ip_address` varchar(45) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '操作IP地址',
   `add_time` datetime NULL DEFAULT CURRENT_TIMESTAMP COMMENT '添加时间',
   `update_time` datetime NULL DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间',
-  `has_delete` int NULL DEFAULT 0 COMMENT '是否删除（1删除|0正常|null正常）',
-  `delete_time` datetime NULL DEFAULT NULL COMMENT '删除时间',
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '系统日志表，用于存储系统的操作日志' ROW_FORMAT = Dynamic;
 
@@ -191,8 +173,6 @@ CREATE TABLE `teacher`  (
   `email` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '电子邮箱',
   `add_time` datetime NULL DEFAULT CURRENT_TIMESTAMP COMMENT '添加时间',
   `update_time` datetime NULL DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间',
-  `has_delete` int NULL DEFAULT 0 COMMENT '是否删除（1删除|0正常|null正常）',
-  `delete_time` datetime NULL DEFAULT NULL COMMENT '删除时间',
   PRIMARY KEY (`id`) USING BTREE,
   UNIQUE INDEX `teacher_number`(`teacher_number`) USING BTREE
 ) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '教师表，存储教师详细信息' ROW_FORMAT = Dynamic;
@@ -208,8 +188,6 @@ CREATE TABLE `user`  (
   `role` varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '用户角色（学生、教师、管理员）',
   `add_time` datetime NULL DEFAULT CURRENT_TIMESTAMP COMMENT '添加时间',
   `update_time` datetime NULL DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间',
-  `has_delete` int NULL DEFAULT 0 COMMENT '是否删除（1删除|0正常|null正常）',
-  `delete_time` datetime NULL DEFAULT NULL COMMENT '删除时间',
   `last_login_time` datetime NULL DEFAULT NULL COMMENT '最后登录时间',
   `last_login_ip` varchar(45) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '最后登录IP',
   `login_count` int NULL DEFAULT 0 COMMENT '登录次数',
