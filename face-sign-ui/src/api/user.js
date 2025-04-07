@@ -11,7 +11,8 @@ var userUrl = {
     getUserById: prefix + 'getById', // 根据ID获取用户详情
     saveUser: prefix + 'save', // 添加新用户
     updateUser: prefix + 'update', // 更新用户
-    deleteUser: prefix + 'delete' // 删除用户
+    deleteUser: prefix + 'delete', // 删除用户
+    batchDelete: prefix + 'delete/batch' // 批量删除用户
 }
 
 export function login(data) {
@@ -81,11 +82,15 @@ export function deleteUser(userId) {
     });
 }
 
-export class importUsers {
-}
 
 export class exportUsers {
 }
 
-export class downloadUserTemplate {
+
+export function batchDeleteUsers(userIds) {
+    return request({
+        url: userUrl.batchDelete,
+        method: 'delete',
+        data: userIds
+    });
 }
