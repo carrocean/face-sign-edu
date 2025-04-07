@@ -19,9 +19,13 @@ public class BaseServiceImpl<Entity extends BaseEntity, M extends IBaseMapper<En
 	protected M mapper;
 
 	@Override
-	public IPage<Entity> page(int page, int size, Map<String, Object> conditions) {
+	public IPage<Entity> page(int page, int size, boolean fuzzySearch, Map<String, Object> conditions) {
 		QueryWrapper<Entity> queryWrapper = new QueryWrapper<>();
-		QueryWrapperUtils.buildLikeQueryWrapper(queryWrapper, conditions);
+		if(fuzzySearch){
+			QueryWrapperUtils.buildLikeQueryWrapper(queryWrapper, conditions);
+		} else {
+			QueryWrapperUtils.buildQueryWrapper(queryWrapper, conditions);
+		}
 		queryWrapper.orderByDesc("id");
 		return mapper.selectPage(new Page<>(page, size), queryWrapper);
 	}
