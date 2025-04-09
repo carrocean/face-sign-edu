@@ -8,7 +8,8 @@ var studentUrl = {
     getStudentById: prefix + 'getById', // 根据ID获取学生详情
     saveStudent: prefix + 'save', // 添加新学生
     updateStudent: prefix + 'update', // 更新学生
-    deleteStudent: prefix + 'delete' // 删除学生
+    deleteStudent: prefix + 'delete', // 删除学生
+    getStudentByUserId: prefix + 'getByUserId' // 根据用户ID获取学生详情
 };
 
 // 获取所有学生
@@ -25,6 +26,14 @@ export function getAllStudents(params, data) {
 export function getStudentById(studentId) {
     return request({
         url: studentUrl.getStudentById + '/' + studentId,
+        method: 'get'
+    });
+}
+
+// 根据用户ID获取学生详情
+export function getStudentByUserId(userId) {
+    return request({
+        url: studentUrl.getStudentByUserId + '/' + userId,
         method: 'get'
     });
 }

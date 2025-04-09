@@ -8,7 +8,8 @@ var administratorUrl = {
     getAdministratorById: prefix + 'getById', // 根据ID获取管理员详情
     saveAdministrator: prefix + 'save', // 添加新管理员
     updateAdministrator: prefix + 'update', // 更新管理员
-    deleteAdministrator: prefix + 'delete' // 删除管理员
+    deleteAdministrator: prefix + 'delete', // 删除管理员
+    getAdministratorByUserId: prefix + 'getByUserId' // 根据用户Id获取管理员详情
 };
 
 // 获取所有管理员
@@ -25,6 +26,14 @@ export function getAllAdministrators(params, data) {
 export function getAdministratorById(administratorId) {
     return request({
         url: administratorUrl.getAdministratorById + '/' + administratorId,
+        method: 'get'
+    });
+}
+
+// 根据用户ID获取管理员详情
+export function getAdministratorByUserId(userId) {
+    return request({
+        url: administratorUrl.getAdministratorByUserId + '/' + userId,
         method: 'get'
     });
 }

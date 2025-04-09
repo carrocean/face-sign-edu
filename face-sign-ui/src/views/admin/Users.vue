@@ -325,7 +325,7 @@ const handleExport = async () => {
 }
 
 // 查看详情
-const handleViewDetail = (row) => {
+function handleViewDetail(row) {
   router.push(`/admin/users/${row.id}`)
 }
 
