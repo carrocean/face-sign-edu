@@ -27,7 +27,7 @@
               </el-icon>
               导出数据
             </el-button>
-            <el-button type="primary" @click="showAddDialog = true">
+            <el-button type="primary" @click="handleAdd">
               <el-icon>
                 <Plus/>
               </el-icon>
@@ -130,23 +130,27 @@
           :rules="rules"
           label-width="100px"
       >
-        <el-form-item label="学号" prop="studentId">
-          <el-input v-model="studentForm.studentId" :disabled="isEdit"/>
-        </el-form-item>
         <el-form-item label="姓名" prop="name">
-          <el-input v-model="studentForm.name"/>
+          <el-input v-model="studentForm.name" />
         </el-form-item>
-        <el-form-item label="性别" prop="gender">
-          <el-radio-group v-model="studentForm.gender">
-            <el-radio :label="1">男</el-radio>
-            <el-radio :label="2">女</el-radio>
-          </el-radio-group>
+        <el-form-item label="学号" prop="studentNumber">
+          <el-input v-model="studentForm.studentNumber" />
         </el-form-item>
-        <el-form-item label="联系电话" prop="phone">
-          <el-input v-model="studentForm.phone"/>
+        <el-form-item label="班级" prop="classId">
+          <el-select v-model="studentForm.classId" placeholder="请选择班级">
+            <el-option
+                v-for="item in classOptions"
+                :key="item.id"
+                :label="item.className"
+                :value="item.id"
+            />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="手机号" prop="phone">
+          <el-input v-model="studentForm.phone" />
         </el-form-item>
         <el-form-item label="邮箱" prop="email">
-          <el-input v-model="studentForm.email"/>
+          <el-input v-model="studentForm.email" />
         </el-form-item>
       </el-form>
       <template #footer>
@@ -240,25 +244,24 @@ const isEdit = ref(false)
 const submitting = ref(false)
 const studentFormRef = ref(null)
 const studentForm = reactive({
-  studentId: '',
+  studentNumber: '',
   name: '',
-  gender: 1,
+  classId: '',
   phone: '',
-  email: '',
-  status: 1
+  email: ''
 })
 
 // 表单验证规则
 const rules = {
-  studentId: [
+  studentNumber: [
     {required: true, message: '请输入学号', trigger: 'blur'},
-    {pattern: /^\d{8}$/, message: '学号必须为8位数字', trigger: 'blur'}
+    {pattern: /^\d+$/, message: '学号必须为数字', trigger: 'blur'}
   ],
   name: [
     {required: true, message: '请输入姓名', trigger: 'blur'}
   ],
-  gender: [
-    {required: true, message: '请选择性别', trigger: 'change'}
+  classId: [
+    {required: true, message: '请选择班级', trigger: 'blur'}
   ],
   phone: [
     {pattern: /^1[3-9]\d{9}$/, message: '请输入正确的手机号码', trigger: 'blur'}
@@ -316,28 +319,27 @@ function resetSearch() {
   handleSearch()
 }
 
-// 添加学生 TODO
+// 添加学生
 function handleAdd() {
   isEdit.value = false
   Object.assign(studentForm, {
-    studentId: '',
+    studentNumber: '',
     name: '',
-    gender: 1,
+    classId: '',
     phone: '',
-    email: '',
-    status: 1
+    email: ''
   })
   showAddDialog.value = true
 }
 
-// 编辑学生 TODO
+// 编辑学生
 function handleEdit(row) {
   isEdit.value = true
   Object.assign(studentForm, row)
   showAddDialog.value = true
 }
 
-// 提交表单 TODO
+// 提交表单
 function handleSubmit() {
   // 调用 validate 方法校验表单
   studentFormRef.value.validate((valid) => {

@@ -17,20 +17,4 @@ public class GlobalExceptionHandler {
     public JsonMsgDataBean handleRegistrationException(BizException ex, WebRequest request) {
         return JsonMsgDataBean.buildFail(HttpStatus.BAD_REQUEST.value(), ex.getMessage());
     }
-
-    /**
-     * 处理其他运行时异常
-     */
-    @ExceptionHandler(RuntimeException.class)
-    public JsonMsgDataBean handleRuntimeException(RuntimeException ex, WebRequest request) {
-        return JsonMsgDataBean.buildFail(HttpStatus.INTERNAL_SERVER_ERROR.value(), ex.getMessage());
-    }
-
-    /**
-     * 处理其他未捕获的异常
-     */
-    @ExceptionHandler(Exception.class)
-    public JsonMsgDataBean handleGeneralException(Exception ex, WebRequest request) {
-        return JsonMsgDataBean.buildFail(HttpStatus.INTERNAL_SERVER_ERROR.value(), "发生了一个未知错误，请联系管理员");
-    }
 }
