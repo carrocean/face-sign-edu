@@ -5,19 +5,29 @@ import { request } from '@/utils/Request.js';
 var prefix = '/api/face/sign/course/';
 var courseUrl = {
     getAllCourses: prefix + 'list', // 获取所有课程
+    getAllPageCourses: prefix + 'page-list', // 条件分页查询
     getCourseById: prefix + 'getById', // 根据ID获取课程详情
     saveCourse: prefix + 'save', // 添加新课程
     updateCourse: prefix + 'update', // 更新课程
-    deleteCourse: prefix + 'delete' // 删除课程
+    deleteCourse: prefix + 'delete', // 删除课程
+    batchDeleteCourses: prefix + 'delete/batch' // 批量删除课程
 };
 
-// 获取所有课程
-export function getAllCourses(params, data) {
+// 条件分页查询
+export function getAllPageCourses(params, data) {
     return request({
-        url: courseUrl.getAllCourses,
+        url: courseUrl.getAllPageCourses,
         method: 'post',
         params: params,
         data: data
+    });
+}
+
+// 获取所有课程
+export function getAllCourses() {
+    return request({
+        url: courseUrl.getAllCourses,
+        method: 'get'
     });
 }
 
@@ -39,9 +49,9 @@ export function saveCourse(data) {
 }
 
 // 更新课程
-export function updateCourse(courseId, data) {
+export function updateCourse(data) {
     return request({
-        url: courseUrl.updateCourse + '/' + courseId,
+        url: courseUrl.updateCourse,
         method: 'put',
         data: data
     });
@@ -55,5 +65,11 @@ export function deleteCourse(courseId) {
     });
 }
 
-export class getStudentCourses {
+// 批量删除课程
+export function batchDeleteCourses(ids) {
+    return request({
+        url: courseUrl.batchDeleteCourses,
+        method: 'delete',
+        data: ids
+    });
 }

@@ -5,19 +5,29 @@ import { request } from '@/utils/Request.js';
 var prefix = '/api/face/sign/class/';
 var classUrl = {
     getAllClasses: prefix + 'list', // 获取所有班级
+    getAllPageClasses: prefix + 'page-list', // 条件分页查询
     getClassById: prefix + 'getById', // 根据ID获取班级详情
     saveClass: prefix + 'save', // 添加新班级
     updateClass: prefix + 'update', // 更新班级
-    deleteClass: prefix + 'delete' // 删除班级
+    deleteClass: prefix + 'delete', // 删除班级
+    batchDeleteClasses: prefix + 'delete/batch' // 批量删除班级
 };
 
-// 获取所有班级
-export function getAllClasses(params, data) {
+// 条件分页查询
+export function getAllPageClasses(params, data) {
     return request({
-        url: classUrl.getAllClasses,
+        url: classUrl.getAllPageClasses,
         method: 'post',
         params: params,
         data: data
+    });
+}
+
+// 获取所有班级
+export function getAllClasses() {
+    return request({
+        url: classUrl.getAllClasses,
+        method: 'get'
     });
 }
 
@@ -52,5 +62,14 @@ export function deleteClass(classId) {
     return request({
         url: classUrl.deleteClass + '/' + classId,
         method: 'delete'
+    });
+}
+
+// 批量删除班级
+export function batchDeleteClasses(ids) {
+    return request({
+        url: classUrl.batchDeleteClasses,
+        method: 'delete',
+        data: ids
     });
 }

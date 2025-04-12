@@ -1,5 +1,6 @@
 package com.face.sign.common.base;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.face.sign.common.util.JsonMsgDataBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,14 +39,26 @@ public abstract class BaseController<E extends BaseEntity, S extends IBaseServic
         return JsonMsgDataBean.buildSuccess(entity);
     }
 
-    @PostMapping("/list")
-    public JsonMsgDataBean getAll(
+    @PostMapping("/page-list")
+    public JsonMsgDataBean getPageAll(
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "true") boolean fuzzySearch,
             @RequestBody(required = false) Map<String, Object> searchForm) {
         IPage<E> pageResult = baseService.page(page, size, fuzzySearch, searchForm);
         return JsonMsgDataBean.buildSuccess(pageResult);
+    }
+
+    @GetMapping("/list")
+    public JsonMsgDataBean getAll() {
+        try {
+            QueryWrapper<E> queryWrapper = new QueryWrapper<>();
+            queryWrapper.orderByDesc("id");
+            List<E> list = baseService.list(queryWrapper);
+            return JsonMsgDataBean.buildSuccess(list);
+        } catch (Exception e) {
+            return JsonMsgDataBean.buildFail("查询列表失败");
+        }
     }
 
     @DeleteMapping("/delete/batch")

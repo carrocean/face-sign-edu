@@ -236,7 +236,7 @@ import { getUserById, updateUser } from '@/api/user'
 import { getTeacherById, updateTeacher } from '@/api/teacher.js'
 import { getStudentById, updateStudent } from "@/api/student.js"
 import { getAdministratorById, updateAdministrator } from "@/api/administrator.js"
-import { getAllClasses } from "@/api/class.js"
+import {getAllClasses} from "@/api/class.js"
 
 import { parseTime } from '@/utils/Utils'
 import { ArrowLeft, Edit } from '@element-plus/icons-vue'
@@ -365,9 +365,11 @@ async function fetchClassList() {
     const res = await getAllClasses()
     if (res.code === 200) {
       classOptions.value = res.data
+    } else {
+      ElMessage.error(res.message || '获取班级列表失败')
     }
   } catch (error) {
-    console.error('获取班级列表失败:', error)
+    ElMessage.error('获取班级列表失败')
   }
 }
 

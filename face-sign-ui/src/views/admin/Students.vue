@@ -5,6 +5,16 @@
         <div class="card-header">
           <span>学生管理</span>
           <div class="header-buttons">
+            <el-button
+                v-if="selectedStudents.length > 0"
+                type="danger"
+                @click="handleBatchDelete"
+            >
+              <el-icon>
+                <Delete/>
+              </el-icon>
+              批量删除
+            </el-button>
             <el-button type="primary" @click="handleImport">
               <el-icon>
                 <Upload/>
@@ -30,57 +40,64 @@
       <!-- 搜索表单 -->
       <el-form :inline="true" :model="searchForm" class="search-form">
         <el-form-item label="学号">
-          <el-input v-model="searchForm.studentNumber" placeholder="请输入学号" clearable/>
+          <el-input v-model="searchForm.studentNumber" placeholder="请输入学号" clearable style="width: 200px"/>
         </el-form-item>
         <el-form-item label="姓名">
-          <el-input v-model="searchForm.name" placeholder="请输入姓名" clearable/>
+          <el-input v-model="searchForm.name" placeholder="请输入姓名" clearable style="width: 200px"/>
         </el-form-item>
         <el-form-item label="班级">
-          <el-select v-model="searchForm.classId" placeholder="请选择班级" clearable>
+          <el-select v-model="searchForm.classId" placeholder="请选择班级" clearable style="width: 200px">
             <el-option
                 v-for="item in classOptions"
                 :key="item.id"
-                :label="item.name"
+                :label="item.className"
                 :value="item.id"
             />
           </el-select>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" @click="handleSearch">
-            <el-icon>
-              <Search/>
-            </el-icon>
-            搜索
-          </el-button>
-          <el-button @click="resetSearch">
-            <el-icon>
-              <Refresh/>
-            </el-icon>
-            重置
-          </el-button>
+          <el-switch
+              v-model="pageParams.fuzzySearch"
+              size="large"
+              inline-prompt
+              active-text="模糊查询"
+              inactive-text="精准查询"
+              :active-value="true"
+              :inactive-value="false"
+              style="margin-left: 10px"
+          />
+        </el-form-item>
+        <el-form-item>
+          <el-button type="primary" @click="handleSearch">搜索</el-button>
+          <el-button @click="resetSearch">重置</el-button>
         </el-form-item>
       </el-form>
 
       <!-- 学生表格 -->
-      <el-table :data="studentList" style="width: 100%" v-loading="loading">
-        <el-table-column prop="id" label="ID" width="80"/>
-        <el-table-column prop="studentNumber" label="学号"/>
-        <el-table-column prop="name" label="姓名"/>
-        <el-table-column prop="classId" label="班级">
+      <el-table
+          :data="studentList"
+          style="width: 100%"
+          v-loading="loading"
+          @selection-change="handleSelectionChange"
+      >
+        <el-table-column type="selection" width="50" align="center"/>
+        <el-table-column type="index" label="ID" width="80" align="center"/>
+        <el-table-column prop="studentNumber" label="学号" align="center"/>
+        <el-table-column prop="name" label="姓名" align="center"/>
+        <el-table-column prop="classId" label="班级" align="center">
           <template #default="scope">
             {{ getClassName(scope.row.classId) }}
           </template>
         </el-table-column>
-        <el-table-column prop="addTime" label="创建时间">
+        <el-table-column prop="addTime" label="创建时间" align="center">
           <template #default="scope">
             {{ parseTime(scope.row.addTime) }}
           </template>
         </el-table-column>
-        <el-table-column label="操作" width="300">
+        <el-table-column label="操作" width="200" align="center">
           <template #default="scope">
-            <el-button type="info" link @click="handleViewDetail(scope.row)">详情</el-button>
+            <el-button type="primary" link @click="handleViewDetail(scope.row)">详情</el-button>
             <el-button type="primary" link @click="handleEdit(scope.row)">编辑</el-button>
-            <el-button type="success" link @click="handleViewAttendance(scope.row)">考勤记录</el-button>
             <el-button type="danger" link @click="handleDelete(scope.row)">删除</el-button>
           </template>
         </el-table-column>
@@ -89,13 +106,13 @@
       <!-- 分页 -->
       <div class="pagination-container">
         <el-pagination
-          v-model:current-page="currentPage"
-          v-model:page-size="pageSize"
-          :page-sizes="[10, 20, 50, 100]"
-          :total="total"
-          layout="total, sizes, prev, pager, next, jumper"
-          @size-change="handleSizeChange"
-          @current-change="handleCurrentChange"
+            v-model:current-page="pageParams.currentPage"
+            v-model:page-size="pageParams.pageSize"
+            :page-sizes="[10, 20, 50, 100]"
+            :total="pageParams.total"
+            layout="total, sizes, prev, pager, next, jumper"
+            @size-change="handleSizeChange"
+            @current-change="handleCurrentChange"
         />
       </div>
     </el-card>
@@ -131,52 +148,11 @@
         <el-form-item label="邮箱" prop="email">
           <el-input v-model="studentForm.email"/>
         </el-form-item>
-        <el-form-item label="状态" prop="status">
-          <el-switch
-              v-model="studentForm.status"
-              :active-value="1"
-              :inactive-value="0"
-              active-text="正常"
-              inactive-text="禁用"
-          />
-        </el-form-item>
       </el-form>
       <template #footer>
         <span class="dialog-footer">
           <el-button @click="showAddDialog = false">取消</el-button>
           <el-button type="primary" @click="handleSubmit" :loading="submitting">
-            确定
-          </el-button>
-        </span>
-      </template>
-    </el-dialog>
-
-    <!-- 分配班级对话框 -->
-    <el-dialog
-        v-model="showAssignDialog"
-        title="分配班级"
-        width="400px"
-        :close-on-click-modal="false"
-    >
-      <el-form :model="assignForm" label-width="100px">
-        <el-form-item label="学生姓名">
-          <span>{{ currentStudent?.name }}</span>
-        </el-form-item>
-        <el-form-item label="班级">
-          <el-select v-model="assignForm.classId" placeholder="请选择班级">
-            <el-option
-                v-for="item in classOptions"
-                :key="item.id"
-                :label="item.name"
-                :value="item.id"
-            />
-          </el-select>
-        </el-form-item>
-      </el-form>
-      <template #footer>
-        <span class="dialog-footer">
-          <el-button @click="showAssignDialog = false">取消</el-button>
-          <el-button type="primary" @click="handleAssignSubmit" :loading="assigning">
             确定
           </el-button>
         </span>
@@ -213,53 +189,6 @@
       </el-upload>
     </el-dialog>
 
-    <!-- 学生详情对话框 -->
-    <el-dialog
-        v-model="showDetailDialog"
-        title="学生详情"
-        width="600px"
-        :close-on-click-modal="false"
-    >
-      <el-descriptions :column="2" border>
-        <el-descriptions-item label="学号">{{ currentStudent?.studentId }}</el-descriptions-item>
-        <el-descriptions-item label="姓名">{{ currentStudent?.name }}</el-descriptions-item>
-        <el-descriptions-item label="性别">{{ currentStudent?.gender === 1 ? '男' : '女' }}</el-descriptions-item>
-        <el-descriptions-item label="班级">{{ getClassName(currentStudent?.classId) }}</el-descriptions-item>
-        <el-descriptions-item label="联系电话">{{ currentStudent?.phone }}</el-descriptions-item>
-        <el-descriptions-item label="邮箱">{{ currentStudent?.email }}</el-descriptions-item>
-        <el-descriptions-item label="状态">
-          <el-tag :type="currentStudent?.status === 1 ? 'success' : 'danger'">
-            {{ currentStudent?.status === 1 ? '正常' : '禁用' }}
-          </el-tag>
-        </el-descriptions-item>
-        <el-descriptions-item label="创建时间">{{ parseTime(currentStudent?.addTime) }}</el-descriptions-item>
-        <el-descriptions-item label="人脸照片" :span="2">
-          <el-image
-              v-if="currentStudent?.faceImage"
-              :src="currentStudent.faceImage"
-              :preview-src-list="[currentStudent.faceImage]"
-              fit="cover"
-              class="detail-face-image"
-          >
-            <template #error>
-              <div class="image-slot">
-                <el-icon>
-                  <Picture/>
-                </el-icon>
-              </div>
-            </template>
-          </el-image>
-          <el-button v-else type="primary" link @click="handleUploadFace(currentStudent)">
-            上传照片
-          </el-button>
-        </el-descriptions-item>
-      </el-descriptions>
-      <template #footer>
-        <span class="dialog-footer">
-          <el-button @click="showDetailDialog = false">关闭</el-button>
-        </span>
-      </template>
-    </el-dialog>
   </div>
 </template>
 
@@ -273,16 +202,20 @@ import {
   Upload,
   Download,
   UploadFilled,
-  Picture
+  Picture, Delete
 } from '@element-plus/icons-vue'
 import {parseTime} from '@/utils/Utils'
-import {getAllStudents, deleteStudent, updateStudent, saveStudent, getStudentById} from '@/api/student.js'
+import {getAllPageStudents, deleteStudent, updateStudent, saveStudent, batchDeleteStudents} from '@/api/student.js'
+import {getAllClasses} from '@/api/class.js'
+import router from "@/router/index.js";
 
 const {proxy} = getCurrentInstance()
 
+// 选中的学生
+const selectedStudents = ref([])
+
 // 搜索表单
 const searchForm = reactive({
-  id: '',
   studentNumber: '',
   name: '',
   classId: ''
@@ -294,9 +227,12 @@ const classOptions = ref([])
 // 学生列表数据
 const studentList = ref([])
 const loading = ref(false)
-const currentPage = ref(1)
-const pageSize = ref(10)
-const total = ref(0)
+const pageParams = reactive({
+  currentPage: 1,
+  pageSize: 10,
+  total: 0,
+  fuzzySearch: true  // 默认启用模糊查询
+})
 
 // 添加/编辑对话框
 const showAddDialog = ref(false)
@@ -332,31 +268,15 @@ const rules = {
   ]
 }
 
-// 分配班级对话框
-const showAssignDialog = ref(false)
-const assigning = ref(false)
-const currentStudent = ref(null)
-const assignForm = reactive({
-  classId: ''
-})
-
-// 导入对话框
-const showImportDialog = ref(false)
-const uploadHeaders = {
-  Authorization: `Bearer ${proxy.$common.getCookies(proxy.$config.tokenKeyName)}`
-}
-
-// 详情对话框
-const showDetailDialog = ref(false)
-
 // 获取班级列表
-function fetchClassList() {
+async function fetchClassList() {
   try {
-    // TODO: 调用获取班级列表API
-    classOptions.value = [
-      {id: 1, name: '计算机科学1班'},
-      {id: 2, name: '计算机科学2班'}
-    ]
+    const res = await getAllClasses()
+    if (res.code === 200) {
+      classOptions.value = res.data
+    } else {
+      ElMessage.error(res.message || '获取班级列表失败')
+    }
   } catch (error) {
     ElMessage.error('获取班级列表失败')
   }
@@ -364,23 +284,17 @@ function fetchClassList() {
 
 // 获取学生列表
 async function fetchStudentList() {
-  loading.value = true
   try {
-    // 构建查询参数
-    const params = {
-      page: currentPage.value,
-      size: pageSize.value
-    }
-    
-    const res = await getAllStudents(params, searchForm)
+    loading.value = true
+
+    const res = await getAllPageStudents(pageParams, searchForm)
     if (res.code === 200) {
       studentList.value = res.data.records
-      total.value = res.data.total
+      pageParams.total = res.data.total
     } else {
       ElMessage.error(res.message || '获取学生列表失败')
     }
   } catch (error) {
-    console.error('获取学生列表失败:', error)
     ElMessage.error('获取学生列表失败')
   } finally {
     loading.value = false
@@ -389,7 +303,7 @@ async function fetchStudentList() {
 
 // 搜索
 function handleSearch() {
-  currentPage.value = 1
+  pageParams.currentPage = 1
   fetchStudentList()
 }
 
@@ -398,10 +312,11 @@ function resetSearch() {
   searchForm.studentId = ''
   searchForm.name = ''
   searchForm.classId = ''
+  pageParams.fuzzySearch = true  // 重置时保持模糊查询开启
   handleSearch()
 }
 
-// 添加学生
+// 添加学生 TODO
 function handleAdd() {
   isEdit.value = false
   Object.assign(studentForm, {
@@ -415,14 +330,14 @@ function handleAdd() {
   showAddDialog.value = true
 }
 
-// 编辑学生
+// 编辑学生 TODO
 function handleEdit(row) {
   isEdit.value = true
   Object.assign(studentForm, row)
   showAddDialog.value = true
 }
 
-// 提交表单
+// 提交表单 TODO
 function handleSubmit() {
   // 调用 validate 方法校验表单
   studentFormRef.value.validate((valid) => {
@@ -469,86 +384,82 @@ function handleSubmit() {
 
 // 删除学生
 function handleDelete(row) {
-  ElMessageBox.confirm(
-      '确定要删除该学生吗？',
-      '警告',
-      {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-      }
-  ).then(() => {
-    deleteStudent(row.id).then(res => {
+  ElMessageBox.confirm('确认删除该学生吗？', '提示', {
+    confirmButtonText: '确定',
+    cancelButtonText: '取消',
+    type: 'warning'
+  }).then(async () => {
+    try {
+      const res = await deleteStudent(row.id)
       if (res.code === 200) {
         ElMessage.success('删除成功')
-        fetchStudentList()
+        await fetchStudentList()
       } else {
         ElMessage.error(res.message || '删除失败')
       }
-    }).catch(err => {
-      console.error('删除学生失败:', err)
+    } catch (error) {
+      console.error('删除学生失败:', error)
       ElMessage.error('删除失败')
-    })
+    }
   })
 }
 
-// 分配班级
-function handleAssignClass(row) {
-  currentStudent.value = row
-  assignForm.classId = row.classId
-  showAssignDialog.value = true
+// 处理选择变化
+function handleSelectionChange(selection) {
+  selectedStudents.value = selection
 }
 
-// 提交分配班级
-function handleAssignSubmit() {
-  if (!assignForm.classId) {
-    ElMessage.warning('请选择班级')
+// 批量删除
+function handleBatchDelete() {
+  if (selectedStudents.value.length === 0) {
+    ElMessage.warning('请选择要删除的学生')
     return
   }
 
-  assigning.value = true
-  // TODO: 调用分配班级API
-  updateStudent({
-    id: currentStudent.value.id,
-    classId: assignForm.classId
-  }).then(res => {
-    if (res.code === 200) {
-      ElMessage.success('分配班级成功')
-      showAssignDialog.value = false
-      fetchStudentList()
-    } else {
-      ElMessage.error(res.message || '分配班级失败')
+  ElMessageBox.confirm(`确认删除选中的 ${selectedStudents.value.length} 个学生吗？`, '提示', {
+    confirmButtonText: '确定',
+    cancelButtonText: '取消',
+    type: 'warning'
+  }).then(async () => {
+    try {
+      const ids = selectedStudents.value.map(student => student.id)
+      const res = await batchDeleteStudents(ids)
+      if (res.code === 200) {
+        ElMessage.success('批量删除成功')
+        await fetchStudentList()
+      } else {
+        ElMessage.error(res.message || '批量删除失败')
+      }
+    } catch (error) {
+      console.error('批量删除学生失败:', error)
+      ElMessage.error('批量删除失败')
     }
-  }).catch(err => {
-    console.error('分配班级失败:', err)
-    ElMessage.error('分配班级失败')
-  }).finally(() => {
-    assigning.value = false
   })
 }
 
-// 导入学生
+// 分页相关方法
+function handleSizeChange(val) {
+  pageParams.pageSize = val
+  fetchStudentList()
+}
+
+function handleCurrentChange(val) {
+  pageParams.currentPage = val
+  fetchStudentList()
+}
+
+// 导入对话框 TODO
+const showImportDialog = ref(false)
+const uploadHeaders = {
+  Authorization: `Bearer ${proxy.$common.getCookies(proxy.$config.tokenKeyName)}`
+}
+
+// 导入学生 TODO
 function handleImport() {
   showImportDialog.value = true
 }
 
-// 上传前验证
-function beforeUpload(file) {
-  const isExcel = file.type === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-  const isLt10M = file.size / 1024 / 1024 < 10
-
-  if (!isExcel) {
-    ElMessage.error('只能上传 Excel 文件!')
-    return false
-  }
-  if (!isLt10M) {
-    ElMessage.error('文件大小不能超过 10MB!')
-    return false
-  }
-  return true
-}
-
-// 导入成功
+// 导入成功 TODO
 function handleImportSuccess(response) {
   if (response.code === 200) {
     ElMessage.success('导入成功')
@@ -559,101 +470,35 @@ function handleImportSuccess(response) {
   }
 }
 
-// 导入失败
+// 导入失败 TODO
 function handleImportError() {
   ElMessage.error('导入失败')
 }
 
-// 导出数据
+// 导出数据 TODO
 async function handleExport() {
   try {
-    // TODO: 调用导出学生数据API
     ElMessage.success('导出成功')
   } catch (error) {
     ElMessage.error('导出失败')
   }
 }
 
-// 分页处理
-function handleSizeChange(val) {
-  pageSize.value = val
-  fetchStudentList()
-}
-
-function handleCurrentChange(val) {
-  currentPage.value = val
-  fetchStudentList()
-}
-
 // 获取班级名称
 function getClassName(classId) {
   const classInfo = classOptions.value.find(item => item.id === classId)
-  return classInfo ? classInfo.name : '-'
-}
-
-// 上传人脸照片
-function handleUploadFace(row) {
-  // 创建一个隐藏的文件输入框
-  const input = document.createElement('input')
-  input.type = 'file'
-  input.accept = 'image/*'
-  input.onchange = (e) => {
-    const file = e.target.files[0]
-    if (!file) return
-
-    // 验证文件
-    if (!beforeUploadFace(file)) return
-
-    const formData = new FormData()
-    formData.append('file', file)
-    formData.append('studentId', row.id)
-
-    uploadFaceImage(formData).then(res => {
-      if (res.code === 200) {
-        ElMessage.success('上传成功')
-        fetchStudentList()
-      } else {
-        ElMessage.error(res.message || '上传失败')
-      }
-    }).catch(err => {
-      console.error('上传人脸照片失败:', err)
-      ElMessage.error('上传失败')
-    })
-  }
-  input.click()
-}
-
-// 上传人脸照片前校验
-function beforeUploadFace(file) {
-  const isImage = file.type.startsWith('image/')
-  if (!isImage) {
-    ElMessage.error('只能上传图片文件!')
-    return false
-  }
-  const isLt2M = file.size / 1024 / 1024 < 2
-  if (!isLt2M) {
-    ElMessage.error('图片大小不能超过 2MB!')
-    return false
-  }
-  return true
-}
-
-// 查看考勤记录
-function handleViewAttendance(row) {
-  // TODO: 实现查看考勤记录功能
-  ElMessage.info('查看考勤记录功能开发中...')
+  return classInfo ? classInfo.className : '-'
 }
 
 // 查看详情
 function handleViewDetail(row) {
-  currentStudent.value = row
-  showDetailDialog.value = true
+  let id = row.userId
+  router.push(`/admin/users/${id}`)
 }
 
-onMounted(() => {
-  fetchClassList()
-  fetchStudentList()
-})
+// 初始化
+fetchClassList()
+fetchStudentList()
 </script>
 
 <style scoped>

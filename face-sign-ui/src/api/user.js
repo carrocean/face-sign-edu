@@ -8,6 +8,7 @@ var userUrl = {
     register: prefix + 'register',
     checkUserLoginInfo: prefix + 'checkUserLoginInfo',
     getAllUsers: prefix + 'list', // 获取所有用户
+    getAllPageUsers: prefix + 'page-list', // 条件分页查询
     getUserById: prefix + 'getById', // 根据ID获取用户详情
     saveUser: prefix + 'save', // 添加新用户
     updateUser: prefix + 'update', // 更新用户
@@ -39,12 +40,20 @@ export function checkUserLoginInfo() {
 }
 
 // 获取所有用户
-export function getAllUsers(params, data) {
+export function getAllPageUsers(params, data) {
     return request({
-        url: userUrl.getAllUsers,
+        url: userUrl.getAllPageUsers,
         method: 'post',
         params: params,
         data: data
+    });
+}
+
+// 获取所有学生
+export function getAllUsers() {
+    return request({
+        url: userUrl.getAllUsers,
+        method: 'get'
     });
 }
 
@@ -86,7 +95,7 @@ export function deleteUser(userId) {
 export class exportUsers {
 }
 
-
+// 批量删除用户
 export function batchDeleteUsers(userIds) {
     return request({
         url: userUrl.batchDelete,

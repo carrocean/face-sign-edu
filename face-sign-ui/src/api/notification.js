@@ -5,19 +5,29 @@ import { request } from '@/utils/Request.js';
 var prefix = '/api/face/sign/notification/';
 var notificationUrl = {
     getAllNotifications: prefix + 'list', // 获取所有通知
+    getAllPageNotifications: prefix + 'page-list', // 条件分页查询
     getNotificationById: prefix + 'getById', // 根据ID获取通知详情
     saveNotification: prefix + 'save', // 添加新通知
     updateNotification: prefix + 'update', // 更新通知
-    deleteNotification: prefix + 'delete' // 删除通知
+    deleteNotification: prefix + 'delete', // 删除通知
+    batchDeleteNotifications: prefix + 'delete/batch' // 批量删除通知
 };
 
-// 获取所有通知
-export function getAllNotifications(params, data) {
+// 条件分页查询
+export function getAllPageNotifications(params, data) {
     return request({
-        url: notificationUrl.getAllNotifications,
+        url: notificationUrl.getAllPageNotifications,
         method: 'post',
         params: params,
         data: data
+    });
+}
+
+// 获取所有通知
+export function getAllNotifications() {
+    return request({
+        url: notificationUrl.getAllNotifications,
+        method: 'get'
     });
 }
 
@@ -52,5 +62,14 @@ export function deleteNotification(notificationId) {
     return request({
         url: notificationUrl.deleteNotification + '/' + notificationId,
         method: 'delete'
+    });
+}
+
+// 批量删除通知
+export function batchDeleteNotifications(ids) {
+    return request({
+        url: notificationUrl.batchDeleteNotifications,
+        method: 'delete',
+        data: ids
     });
 }

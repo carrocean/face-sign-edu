@@ -28,17 +28,17 @@
       <!-- 搜索栏 -->
       <el-form :inline="true" :model="searchForm" class="search-form">
         <el-form-item label="账号">
-          <el-input v-model="searchForm.account" placeholder="请输入账号" style="width: 200px"/>
+          <el-input v-model="searchForm.account" placeholder="请输入账号" clearable style="width: 200px"/>
         </el-form-item>
         <el-form-item label="角色">
-          <el-select v-model="searchForm.role" placeholder="请选择角色" style="width: 200px">
-            <el-option label="管理员" value="ADMIN"/>
-            <el-option label="教师" value="TEACHER"/>
-            <el-option label="学生" value="STUDENT"/>
+          <el-select v-model="searchForm.role" placeholder="请选择角色" clearable style="width: 200px">
+            <el-option label="管理员" value="admin"/>
+            <el-option label="教师" value="teacher"/>
+            <el-option label="学生" value="student"/>
           </el-select>
         </el-form-item>
         <el-form-item label="状态">
-          <el-select v-model="searchForm.status" placeholder="请选择状态" style="width: 200px">
+          <el-select v-model="searchForm.status" placeholder="请选择状态" clearable style="width: 200px">
             <el-option label="启用" :value="1"/>
             <el-option label="禁用" :value="0"/>
           </el-select>
@@ -178,6 +178,7 @@ const getRoleLabel = (role) => {
 
 // 搜索
 function handleSearch() {
+  pageParams.currentPage = 1
   fetchUserList()
 }
 
@@ -221,7 +222,7 @@ function handleDelete(row) {
       const res = await deleteUser(row.id)
       if (res.code === 200) {
         ElMessage.success('删除成功')
-        fetchUserList()
+        await fetchUserList()
       } else {
         ElMessage.error(res.message || '删除失败')
       }
@@ -254,7 +255,7 @@ function handleBatchDelete() {
       const res = await batchDeleteUsers(ids)
       if (res.code === 200) {
         ElMessage.success('批量删除成功')
-        fetchUserList()
+        await fetchUserList()
       } else {
         ElMessage.error(res.message || '批量删除失败')
       }
@@ -302,7 +303,7 @@ function handleCurrentChange(val) {
   fetchUserList()
 }
 
-// 导出用户
+// 导出用户 TODO
 const handleExport = async () => {
   try {
     const res = await exportUsers()

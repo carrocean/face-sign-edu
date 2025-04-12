@@ -13,8 +13,6 @@ export default new Vuex.Store({
 		isLogin: (state) => state.user.isLogin,
 		// 用户姓名
 		account: (state) => state.user.userInfoObj.account,
-		// 用户ID
-		userId: (state) => state.user.userInfoObj.userId,
 		// 表格显示列
 		selectedColumnList: (state) =>
 			state.fileList.selectedColumnList === null

@@ -5,19 +5,29 @@ import { request } from '@/utils/Request.js';
 var prefix = '/api/face/sign/system-log/';
 var systemLogUrl = {
     getAllSystemLogs: prefix + 'list', // 获取所有系统日志
+    getAllPageSystemLogs: prefix + 'page-list', // 条件分页查询
     getSystemLogById: prefix + 'getById', // 根据ID获取系统日志详情
     saveSystemLog: prefix + 'save', // 添加新系统日志
     updateSystemLog: prefix + 'update', // 更新系统日志
-    deleteSystemLog: prefix + 'delete' // 删除系统日志
+    deleteSystemLog: prefix + 'delete', // 删除系统日志
+    batchDeleteSystemLogs: prefix + 'delete/batch' // 批量删除系统日志
 };
 
-// 获取所有系统日志
-export function getAllSystemLogs(params, data) {
+// 条件分页查询
+export function getAllPageSystemLogs(params, data) {
     return request({
-        url: systemLogUrl.getAllSystemLogs,
+        url: systemLogUrl.getAllPageSystemLogs,
         method: 'post',
         params: params,
         data: data
+    });
+}
+
+// 获取所有系统日志
+export function getAllSystemLogs() {
+    return request({
+        url: systemLogUrl.getAllSystemLogs,
+        method: 'get'
     });
 }
 
@@ -52,5 +62,14 @@ export function deleteSystemLog(systemLogId) {
     return request({
         url: systemLogUrl.deleteSystemLog + '/' + systemLogId,
         method: 'delete'
+    });
+}
+
+// 批量删除系统日志
+export function batchDeleteSystemLogs(ids) {
+    return request({
+        url: systemLogUrl.batchDeleteSystemLogs,
+        method: 'delete',
+        data: ids
     });
 }
