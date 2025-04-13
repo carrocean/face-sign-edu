@@ -155,7 +155,7 @@
       </el-form>
       <template #footer>
         <span class="dialog-footer">
-          <el-button @click="showAddDialog = false">取消</el-button>
+          <el-button @click="handleCancel">取消</el-button>
           <el-button type="primary" @click="handleSubmit" :loading="submitting">
             确定
           </el-button>
@@ -322,13 +322,7 @@ function resetSearch() {
 // 添加学生
 function handleAdd() {
   isEdit.value = false
-  Object.assign(studentForm, {
-    studentNumber: '',
-    name: '',
-    classId: '',
-    phone: '',
-    email: ''
-  })
+  resetForm()
   showAddDialog.value = true
 }
 
@@ -337,6 +331,19 @@ function handleEdit(row) {
   isEdit.value = true
   Object.assign(studentForm, row)
   showAddDialog.value = true
+}
+
+// 重置表单
+function resetForm() {
+  for (let key in studentForm) {
+    delete studentForm[key]
+  }
+}
+
+// 取消操作
+function handleCancel() {
+  resetForm()
+  showAddDialog.value = false
 }
 
 // 提交表单

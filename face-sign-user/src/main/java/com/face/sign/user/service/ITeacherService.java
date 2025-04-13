@@ -11,4 +11,10 @@ public interface ITeacherService extends IBaseService<TeacherEntity> {
      * @return
      */
     TeacherEntity getByUserId(Long id);
+
+    /**
+     * 新增教师
+     * @param teacher
+     */
+    void addTeacher(TeacherEntity teacher);
 }

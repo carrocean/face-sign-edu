@@ -8,10 +8,11 @@ var teacherUrl = {
     getAllPageTeachers: prefix + 'page-list', // 条件分页查询
     getTeacherById: prefix + 'getById', // 根据ID获取教师详情
     saveTeacher: prefix + 'save', // 添加新教师
+    addTeacher: prefix + 'add', // 新增教师的同时新增用户
     updateTeacher: prefix + 'update', // 更新教师
     deleteTeacher: prefix + 'delete', // 删除教师
-    batchDeleteTeachers: prefix + 'delete/batch', // 批量删除教师
-    getTeacherByUserId: prefix + 'getByUserId' // 根据用户ID获取教师详情
+    getTeacherByUserId: prefix + 'getByUserId', // 根据用户ID获取教师详情
+    batchDeleteTeachers: prefix + 'delete/batch' // 批量删除教师
 };
 
 // 条件分页查询
@@ -52,6 +53,15 @@ export function getTeacherByUserId(userId) {
 export function saveTeacher(data) {
     return request({
         url: teacherUrl.saveTeacher,
+        method: 'post',
+        data: data
+    });
+}
+
+// 新增教师的同时新增用户
+export function addTeacher(data) {
+    return request({
+        url: teacherUrl.addTeacher,
         method: 'post',
         data: data
     });

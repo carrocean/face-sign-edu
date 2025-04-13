@@ -11,4 +11,10 @@ public interface IAdministratorService extends IBaseService<AdministratorEntity>
      * @return
      */
     AdministratorEntity getByUserId(Long id);
+
+    /**
+     * 新增管理员
+     * @param administrator
+     */
+    void addAdministrator(AdministratorEntity administrator);
 }

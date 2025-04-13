@@ -173,7 +173,7 @@
       </el-form>
       <template #footer>
         <span class="dialog-footer">
-          <el-button @click="editDialogVisible = false">取消</el-button>
+          <el-button @click="handleCancel">取消</el-button>
           <el-button type="primary" @click="submitEdit" :loading="editLoading">
             确定
           </el-button>
@@ -233,9 +233,9 @@ import { ref, reactive, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import { getUserById, updateUser } from '@/api/user'
-import { getTeacherById, updateTeacher } from '@/api/teacher.js'
-import { getStudentById, updateStudent } from "@/api/student.js"
-import { getAdministratorById, updateAdministrator } from "@/api/administrator.js"
+import { getTeacherByUserId, updateTeacher } from '@/api/teacher.js'
+import { getStudentByUserId, updateStudent} from "@/api/student.js"
+import { getAdministratorByUserId, updateAdministrator } from "@/api/administrator.js"
 import {getAllClasses} from "@/api/class.js"
 
 import { parseTime } from '@/utils/Utils'
@@ -335,17 +335,17 @@ async function fetchUserDetail() {
       
       // 根据角色获取详细信息
       if (userDetail.role === 'admin') {
-        const adminRes = await getAdministratorById(userId)
+        const adminRes = await getAdministratorByUserId(userId)
         if (adminRes.code === 200) {
           Object.assign(roleDetail, adminRes.data)
         }
       } else if (userDetail.role === 'teacher') {
-        const teacherRes = await getTeacherById(userId)
+        const teacherRes = await getTeacherByUserId(userId)
         if (teacherRes.code === 200) {
           Object.assign(roleDetail, teacherRes.data)
         }
       } else if (userDetail.role === 'student') {
-        const studentRes = await getStudentById(userId)
+        const studentRes = await getStudentByUserId(userId)
         if (studentRes.code === 200) {
           Object.assign(roleDetail, studentRes.data)
         }
@@ -374,10 +374,22 @@ async function fetchClassList() {
 }
 
 // 打开编辑对话框
-const handleEdit = () => {
-  // 重置表单
-  Object.assign(editForm, roleDetail)
+function handleEdit() {
+  resetForm()
   editDialogVisible.value = true
+}
+
+// 重置表单
+function resetForm() {
+  for (let key in editForm) {
+    delete editForm[key]
+  }
+}
+
+// 取消操作
+function handleCancel() {
+  resetForm()
+  editDialogVisible.value = false
 }
 
 // 提交编辑

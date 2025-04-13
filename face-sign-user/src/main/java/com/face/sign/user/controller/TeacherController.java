@@ -7,6 +7,8 @@ import com.face.sign.user.service.ITeacherService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -21,5 +23,11 @@ public class TeacherController extends BaseController<TeacherEntity, ITeacherSer
     public JsonMsgDataBean getByUserId(@PathVariable Long id) {
         TeacherEntity entity = teacherService.getByUserId(id);
         return JsonMsgDataBean.buildSuccess(entity);
+    }
+
+    @PostMapping("/add")
+    public JsonMsgDataBean addTeacher(@RequestBody TeacherEntity teacher) {
+        teacherService.addTeacher(teacher);
+        return JsonMsgDataBean.buildSuccess();
     }
 }

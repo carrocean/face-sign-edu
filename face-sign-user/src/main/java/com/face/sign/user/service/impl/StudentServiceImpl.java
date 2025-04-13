@@ -36,6 +36,7 @@ public class StudentServiceImpl extends BaseServiceImpl<StudentEntity, StudentMa
         user.setAccount(student.getStudentNumber());
         user.setPassword(student.getStudentNumber());
         user.setRole("student");
+        user.setStatus(1);
         userService.register(user);
 
         QueryWrapper<UserEntity> queryWrapper = new QueryWrapper<>();

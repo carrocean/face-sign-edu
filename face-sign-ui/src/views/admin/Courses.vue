@@ -106,7 +106,7 @@
       </el-form>
       <template #footer>
         <span class="dialog-footer">
-          <el-button @click="dialogVisible = false">取消</el-button>
+          <el-button @click="handleCancel">取消</el-button>
           <el-button type="primary" @click="handleSubmit">确定</el-button>
         </span>
       </template>
@@ -215,23 +215,30 @@ async function fetchCourseList() {
 }
 
 // 添加课程
-const handleAdd = () => {
+function handleAdd() {
   dialogType.value = 'add'
+  resetForm()
   dialogVisible.value = true
-  Object.assign(courseForm, {
-    name: '',
-    teacherId: '',
-    schedule: '',
-    location: '',
-    status: 'active'
-  })
 }
 
 // 编辑课程
-const handleEdit = (row) => {
+function handleEdit(row) {
   dialogType.value = 'edit'
-  dialogVisible.value = true
   Object.assign(courseForm, row)
+  dialogVisible.value = true
+}
+
+// 重置表单
+function resetForm() {
+  for (let key in courseForm) {
+    delete courseForm[key]
+  }
+}
+
+// 取消操作
+function handleCancel() {
+  resetForm()
+  dialogVisible.value = false
 }
 
 // 删除课程

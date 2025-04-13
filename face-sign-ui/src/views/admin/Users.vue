@@ -131,7 +131,7 @@
 <script setup>
 import {ref, reactive} from 'vue'
 import {ElMessage, ElMessageBox} from 'element-plus'
-import {getAllUsers, updateUser, deleteUser, exportUsers, batchDeleteUsers} from '@/api/user'
+import {getAllPageUsers, updateUser, deleteUser, exportUsers, batchDeleteUsers} from '@/api/user'
 import {parseTime} from '@/utils/Utils'
 import {Download, Delete} from "@element-plus/icons-vue";
 import router from "@/router/index.js";
@@ -196,7 +196,7 @@ async function fetchUserList() {
   try {
     loading.value = true
 
-    const res = await getAllUsers(pageParams, searchForm)
+    const res = await getAllPageUsers(pageParams, searchForm)
     if (res.code === 200) {
       userList.value = res.data.records
       pageParams.total = res.data.total

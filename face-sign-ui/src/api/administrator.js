@@ -8,10 +8,11 @@ var administratorUrl = {
     getAllPageAdministrators: prefix + 'page-list', // 条件分页查询
     getAdministratorById: prefix + 'getById', // 根据ID获取管理员详情
     saveAdministrator: prefix + 'save', // 添加新管理员
+    addAdministrator: prefix + 'add', // 新增管理员的同时新增用户
     updateAdministrator: prefix + 'update', // 更新管理员
     deleteAdministrator: prefix + 'delete', // 删除管理员
-    batchDeleteAdministrators: prefix + 'delete/batch', // 批量删除管理员
-    getAdministratorByUserId: prefix + 'getByUserId' // 根据用户ID获取管理员详情
+    getAdministratorByUserId: prefix + 'getByUserId', // 根据用户ID获取管理员详情
+    batchDeleteAdministrators: prefix + 'delete/batch' // 批量删除管理员
 };
 
 // 条件分页查询
@@ -52,6 +53,15 @@ export function getAdministratorByUserId(userId) {
 export function saveAdministrator(data) {
     return request({
         url: administratorUrl.saveAdministrator,
+        method: 'post',
+        data: data
+    });
+}
+
+// 新增管理员的同时新增用户
+export function addAdministrator(data) {
+    return request({
+        url: administratorUrl.addAdministrator,
         method: 'post',
         data: data
     });
