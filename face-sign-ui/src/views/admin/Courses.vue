@@ -251,9 +251,11 @@ import {
   batchDeleteCourses,
   exportCourses
 } from '@/api/course.js'
-import router from "@/router/index.js";
+import {useRouter} from 'vue-router'
 
 const {proxy} = getCurrentInstance()
+
+const router = useRouter()
 
 // 选中的课程
 const selectedCourses = ref([])
@@ -538,10 +540,8 @@ async function handleExport() {
 
 // 处理查看课程安排
 function handleViewSchedule(row) {
-  router.push({
-    name: 'CourseSchedule',
-    params: { id: row.id }
-  })
+  let id = row.id
+  router.push(`/admin/course/${id}`)
 }
 
 // 上传相关方法  TODO

@@ -44,8 +44,9 @@ public abstract class BaseController<E extends BaseEntity, S extends IBaseServic
             @RequestParam(defaultValue = "1") int currentPage,
             @RequestParam(defaultValue = "10") int pageSize,
             @RequestParam(defaultValue = "true") boolean fuzzySearch,
+            @RequestParam(defaultValue = "true") boolean pageSearch,
             @RequestBody(required = false) Map<String, Object> searchForm) {
-        IPage<E> pageResult = baseService.page(currentPage, pageSize, fuzzySearch, searchForm);
+        IPage<E> pageResult = baseService.page(currentPage, pageSize, pageSearch, fuzzySearch, searchForm);
         return JsonMsgDataBean.buildSuccess(pageResult);
     }
 

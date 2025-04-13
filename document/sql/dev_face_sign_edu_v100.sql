@@ -11,7 +11,7 @@
  Target Server Version : 80041
  File Encoding         : 65001
 
- Date: 13/04/2025 10:43:11
+ Date: 13/04/2025 21:40:54
 */
 
 SET NAMES utf8mb4;
@@ -84,9 +84,9 @@ DROP TABLE IF EXISTS `course_schedule`;
 CREATE TABLE `course_schedule`  (
   `id` bigint NOT NULL COMMENT '唯一ID号',
   `course_id` bigint NOT NULL COMMENT '关联课程表的外键',
-  `week_day` int NOT NULL COMMENT '周几',
-  `start_time` datetime NOT NULL COMMENT '开始时间',
-  `end_time` datetime NOT NULL COMMENT '结束时间',
+  `week_day` int NOT NULL COMMENT '星期',
+  `period` int NOT NULL COMMENT '节次',
+  `the_week` int NOT NULL COMMENT '所在周数',
   `classroom` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '上课地点',
   `add_time` datetime NULL DEFAULT CURRENT_TIMESTAMP COMMENT '添加时间',
   `update_time` datetime NULL DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间',
@@ -194,6 +194,6 @@ CREATE TABLE `user`  (
   `status` int NULL DEFAULT 1 COMMENT '账号状态（1启用/0禁用）',
   PRIMARY KEY (`id`) USING BTREE,
   UNIQUE INDEX `account`(`account`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 11 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '用户表，存储系统所有用户的基本信息，包括学生、教师和管理员' ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 1911264274772066307 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '用户表，存储系统所有用户的基本信息，包括学生、教师和管理员' ROW_FORMAT = DYNAMIC;
 
 SET FOREIGN_KEY_CHECKS = 1;

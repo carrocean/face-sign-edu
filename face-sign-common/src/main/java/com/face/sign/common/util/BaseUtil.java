@@ -98,4 +98,50 @@ public class BaseUtil {
         }
         return targetList;
     }
+
+    /**
+     * 类型转换: Vo -> Entity转换
+     * @param source Vo对象
+     * @param target Entity类
+     * @return Entity对象
+     * @param <T> 目标类型
+     */
+    public static <T> T voToEntity(Object source, Class<T> target) {
+        if (source == null) {
+            return null;
+        }
+        T targetObject = null;
+        try {
+            targetObject = target.newInstance();
+            BeanUtils.copyProperties(source, targetObject);
+        } catch (Exception e) {
+            logger.error("convert error ", e);
+        }
+        return targetObject;
+    }
+
+    /**
+     * 类型转换: List<Vo> -> List<Entity>转换
+     * @param sourceList Vo对象列表
+     * @param target Entity类
+     * @return Entity对象列表
+     * @param <T> 目标类型
+     */
+    public static <T> List<T> voToEntityList(Collection<?> sourceList, Class<T> target) {
+        if (sourceList == null) {
+            return null;
+        }
+        List<T> targetList = new ArrayList<>(sourceList.size());
+
+        try {
+            for (Object source : sourceList) {
+                T targetObject = target.newInstance();
+                BeanUtils.copyProperties(source, targetObject);
+                targetList.add(targetObject);
+            }
+        } catch (Exception e) {
+            logger.error("convert error ", e);
+        }
+        return targetList;
+    }
 }

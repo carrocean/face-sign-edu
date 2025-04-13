@@ -18,5 +18,5 @@ public interface IBaseService<E extends BaseEntity> extends IService<E> {
 	 * @param conditions 查询条件
 	 * @return 分页结果
 	 */
-	IPage<E> page(int currentPage, int pageSize, boolean fuzzySearch, Map<String, Object> conditions);
+	IPage<E> page(int currentPage, int pageSize, boolean pageSearch, boolean fuzzySearch, Map<String, Object> conditions);
 }

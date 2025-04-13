@@ -8,6 +8,7 @@ var courseScheduleUrl = {
     getAllPageCourseSchedules: prefix + 'page-list', // 条件分页查询
     getCourseScheduleById: prefix + 'getById', // 根据ID获取课程表详情
     saveCourseSchedule: prefix + 'save', // 添加新课程表
+    addCourseSchedule: prefix + 'add', // 批量添加课程安排
     updateCourseSchedule: prefix + 'update', // 更新课程表
     deleteCourseSchedule: prefix + 'delete', // 删除课程表
     batchDeleteCourseSchedules: prefix + 'delete/batch' // 批量删除课程表
@@ -43,6 +44,15 @@ export function getCourseScheduleById(courseScheduleId) {
 export function saveCourseSchedule(data) {
     return request({
         url: courseScheduleUrl.saveCourseSchedule,
+        method: 'post',
+        data: data
+    });
+}
+
+// 批量添加新课程安排
+export function addCourseSchedule(data) {
+    return request({
+        url: courseScheduleUrl.addCourseSchedule,
         method: 'post',
         data: data
     });
