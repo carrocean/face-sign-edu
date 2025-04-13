@@ -14,8 +14,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.time.LocalDateTime;
 import java.util.Base64;
+import java.util.Date;
 
 /**
  * 考勤记录服务实现类
@@ -70,7 +70,7 @@ public class AttendanceRecordServiceImpl extends BaseServiceImpl<AttendanceRecor
         record.setCourseId(scheduleId);
         record.setStudentId(getCurrentStudentNumber());
         record.setStatus("PRESENT");
-        record.setCheckInTime(LocalDateTime.now());
+        record.setAttendanceDate(new Date());
         attendanceRecordMapper.insert(record);
 
         return true;

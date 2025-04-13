@@ -6,71 +6,14 @@
           <span>考勤记录管理</span>
           <div class="header-buttons">
             <el-button type="success" @click="handleExport">
-              <el-icon><Download /></el-icon>
+              <el-icon>
+                <Download/>
+              </el-icon>
               导出数据
             </el-button>
           </div>
         </div>
       </template>
-
-      <!-- 搜索表单 -->
-      <el-form :inline="true" :model="searchForm" class="search-form">
-        <el-form-item label="学号">
-          <el-input v-model="searchForm.studentId" placeholder="请输入学号" clearable />
-        </el-form-item>
-        <el-form-item label="姓名">
-          <el-input v-model="searchForm.name" placeholder="请输入姓名" clearable />
-        </el-form-item>
-        <el-form-item label="班级">
-          <el-select v-model="searchForm.classId" placeholder="请选择班级" clearable>
-            <el-option
-              v-for="item in classOptions"
-              :key="item.classId"
-              :label="item.name"
-              :value="item.classId"
-            />
-          </el-select>
-        </el-form-item>
-        <el-form-item label="课程">
-          <el-select v-model="searchForm.courseId" placeholder="请选择课程" clearable>
-            <el-option
-              v-for="item in courseOptions"
-              :key="item.courseId"
-              :label="item.name"
-              :value="item.courseId"
-            />
-          </el-select>
-        </el-form-item>
-        <el-form-item label="考勤状态">
-          <el-select v-model="searchForm.status" placeholder="请选择状态" clearable>
-            <el-option label="出勤" value="1" />
-            <el-option label="迟到" value="2" />
-            <el-option label="早退" value="3" />
-            <el-option label="缺勤" value="4" />
-            <el-option label="请假" value="5" />
-          </el-select>
-        </el-form-item>
-        <el-form-item label="日期范围">
-          <el-date-picker
-            v-model="searchForm.dateRange"
-            type="daterange"
-            range-separator="至"
-            start-placeholder="开始日期"
-            end-placeholder="结束日期"
-            value-format="YYYY-MM-DD"
-          />
-        </el-form-item>
-        <el-form-item>
-          <el-button type="primary" @click="handleSearch">
-            <el-icon><Search /></el-icon>
-            搜索
-          </el-button>
-          <el-button @click="resetSearch">
-            <el-icon><Refresh /></el-icon>
-            重置
-          </el-button>
-        </el-form-item>
-      </el-form>
 
       <!-- 统计卡片 -->
       <el-row :gutter="20" class="statistics-cards">
@@ -79,7 +22,7 @@
             <template #header>
               <div class="card-header">
                 <span>总考勤次数</span>
-                <el-icon><Calendar /></el-icon>
+                <el-icon><Calendar/></el-icon>
               </div>
             </template>
             <div class="card-content">
@@ -92,7 +35,7 @@
             <template #header>
               <div class="card-header">
                 <span>出勤率</span>
-                <el-icon><Check /></el-icon>
+                <el-icon><Check/></el-icon>
               </div>
             </template>
             <div class="card-content">
@@ -105,7 +48,7 @@
             <template #header>
               <div class="card-header">
                 <span>迟到率</span>
-                <el-icon><Timer /></el-icon>
+                <el-icon><Timer/></el-icon>
               </div>
             </template>
             <div class="card-content">
@@ -118,7 +61,7 @@
             <template #header>
               <div class="card-header">
                 <span>缺勤率</span>
-                <el-icon><Close /></el-icon>
+                <el-icon><Close/></el-icon>
               </div>
             </template>
             <div class="card-content">
@@ -128,90 +71,170 @@
         </el-col>
       </el-row>
 
-      <!-- 考勤记录列表 -->
-      <el-table :data="attendanceList" style="width: 100%" v-loading="loading">
-        <el-table-column prop="studentId" label="学号" width="120" />
-        <el-table-column prop="name" label="姓名" width="120" />
-        <el-table-column prop="className" label="班级" width="150" />
-        <el-table-column prop="courseName" label="课程" width="200" />
-        <el-table-column prop="date" label="日期" width="120" />
-        <el-table-column prop="time" label="时间" width="120" />
-        <el-table-column prop="status" label="状态" width="100">
+      <!-- 搜索表单 -->
+      <el-form :inline="true" :model="searchForm" class="search-form">
+        <el-form-item label="学生">
+          <el-select v-model="searchForm.studentId" placeholder="请选择学生" clearable style="width: 200px">
+            <el-option
+                v-for="item in studentOptions"
+                :key="item.id"
+                :label="item.name"
+                :value="item.id"
+            />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="课程">
+          <el-select v-model="searchForm.courseId" placeholder="请选择课程" clearable style="width: 200px">
+            <el-option
+                v-for="item in courseOptions"
+                :key="item.id"
+                :label="item.courseName"
+                :value="item.id"
+            />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="考勤状态">
+          <el-select v-model="searchForm.status" placeholder="请选择状态" clearable style="width: 200px">
+            <el-option label="出勤" value="PRESENT"/>
+            <el-option label="迟到" value="LATE"/>
+            <el-option label="缺勤" value="ABSENT"/>
+            <el-option label="请假" value="LEAVE"/>
+          </el-select>
+        </el-form-item>
+        <el-form-item>
+          <el-switch
+              v-model="pageParams.fuzzySearch"
+              size="large"
+              inline-prompt
+              active-text="模糊查询"
+              inactive-text="精准查询"
+              :active-value="true"
+              :inactive-value="false"
+              style="margin-left: 10px"
+          />
+        </el-form-item>
+        <el-form-item>
+          <el-button type="primary" @click="handleSearch">搜索</el-button>
+          <el-button @click="resetSearch">重置</el-button>
+        </el-form-item>
+      </el-form>
+
+      <!-- 考勤记录表格 -->
+      <el-table
+          :data="attendanceList"
+          style="width: 100%"
+          v-loading="loading"
+      >
+        <el-table-column type="index" label="ID" width="80" align="center"/>
+        <el-table-column prop="studentId" label="学生" align="center">
+          <template #default="scope">
+            {{ getStudentName(scope.row.studentId) }}
+          </template>
+        </el-table-column>
+        <el-table-column prop="courseId" label="课程" align="center">
+          <template #default="scope">
+            {{ getCourseName(scope.row.courseId) }}
+          </template>
+        </el-table-column>
+        <el-table-column prop="scheduleId" label="课程安排" align="center">
+          <template #default="scope">
+            {{ getScheduleInfo(scope.row.scheduleId) }}
+          </template>
+        </el-table-column>
+        <el-table-column prop="attendanceDate" label="考勤日期" align="center">
+          <template #default="scope">
+            {{ parseTime(scope.row.attendanceDate) }}
+          </template>
+        </el-table-column>
+        <el-table-column prop="status" label="考勤状态" align="center">
           <template #default="scope">
             <el-tag :type="getStatusType(scope.row.status)">
               {{ getStatusText(scope.row.status) }}
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column prop="location" label="打卡地点" width="200" />
-        <el-table-column prop="remark" label="备注" />
+        <el-table-column label="操作" width="120" align="center">
+          <template #default="scope">
+            <el-button type="primary" link @click="handleViewDetail(scope.row)">详情</el-button>
+          </template>
+        </el-table-column>
       </el-table>
 
       <!-- 分页 -->
       <div class="pagination-container">
         <el-pagination
-          v-model:current-page="currentPage"
-          v-model:page-size="pageSize"
-          :page-sizes="[10, 20, 50, 100]"
-          :total="total"
-          layout="total, sizes, prev, pager, next, jumper"
-          @size-change="handleSizeChange"
-          @current-change="handleCurrentChange"
+            :current-page="pageParams.currentPage"
+            :page-size="pageParams.pageSize"
+            :page-sizes="[10, 20, 50, 100]"
+            :total="pageParams.total"
+            layout="total, sizes, prev, pager, next, jumper"
+            @size-change="handleSizeChange"
+            @current-change="handleCurrentChange"
+            @update:current-page="val => pageParams.currentPage = val"
+            @update:page-size="val => pageParams.pageSize = val"
         />
       </div>
     </el-card>
 
-    <!-- 统计图表对话框 -->
+    <!-- 考勤详情对话框 -->
     <el-dialog
-      v-model="showChartDialog"
-      title="考勤统计图表"
-      width="800px"
-      :close-on-click-modal="false"
+        v-model="showDetailDialog"
+        title="考勤详情"
+        width="600px"
+        :close-on-click-modal="false"
     >
-      <div class="chart-container">
-        <el-tabs v-model="activeChart">
-          <el-tab-pane label="出勤率趋势" name="attendance">
-            <div ref="attendanceChartRef" class="chart"></div>
-          </el-tab-pane>
-          <el-tab-pane label="考勤状态分布" name="status">
-            <div ref="statusChartRef" class="chart"></div>
-          </el-tab-pane>
-          <el-tab-pane label="班级出勤对比" name="class">
-            <div ref="classChartRef" class="chart"></div>
-          </el-tab-pane>
-        </el-tabs>
-      </div>
+      <el-descriptions :column="1" border>
+        <el-descriptions-item label="学生">{{ getStudentName(currentAttendance.studentId) }}</el-descriptions-item>
+        <el-descriptions-item label="课程">{{ getCourseName(currentAttendance.courseId) }}</el-descriptions-item>
+        <el-descriptions-item label="课程安排">{{ getScheduleInfo(currentAttendance.scheduleId) }}</el-descriptions-item>
+        <el-descriptions-item label="考勤日期">{{ parseTime(currentAttendance.attendanceDate) }}</el-descriptions-item>
+        <el-descriptions-item label="考勤状态">
+          <el-tag :type="getStatusType(currentAttendance.status)">
+            {{ getStatusText(currentAttendance.status) }}
+          </el-tag>
+        </el-descriptions-item>
+        <el-descriptions-item label="添加时间">{{ parseTime(currentAttendance.addTime) }}</el-descriptions-item>
+        <el-descriptions-item label="更新时间">{{ parseTime(currentAttendance.updateTime) }}</el-descriptions-item>
+      </el-descriptions>
     </el-dialog>
   </div>
 </template>
 
 <script setup>
-import {ref, reactive, onMounted, nextTick, watch} from 'vue'
-import { ElMessage } from 'element-plus'
-import {
-  Search,
-  Refresh,
-  Download,
-  Calendar,
-  Check,
-  Timer,
-  Close
-} from '@element-plus/icons-vue'
-import * as echarts from 'echarts'
+import {ref, reactive, onMounted} from 'vue'
+import {ElMessage, ElMessageBox} from 'element-plus'
+import {Download, Delete, Calendar, Check, Timer, Close} from '@element-plus/icons-vue'
+import {parseTime} from '@/utils/Utils'
+import {getAllStudents} from '@/api/student.js'
+import {getAllCourses} from '@/api/course.js'
+import {getAllPageAttendanceRecords, exportAttendanceRecords} from '@/api/attendanceRecord.js'
+import {getAllCourseSchedules} from '@/api/courseSchedule.js'
 
 // 搜索表单
 const searchForm = reactive({
   studentId: '',
-  name: '',
-  classId: '',
   courseId: '',
-  status: '',
-  dateRange: []
+  status: ''
 })
 
 // 选项数据
-const classOptions = ref([])
+const studentOptions = ref([])
 const courseOptions = ref([])
+const scheduleOptions = ref([])
+
+// 考勤记录列表数据
+const attendanceList = ref([])
+const loading = ref(false)
+const pageParams = reactive({
+  currentPage: 1,
+  pageSize: 10,
+  total: 0,
+  fuzzySearch: true  // 默认启用模糊查询
+})
+
+// 详情对话框
+const showDetailDialog = ref(false)
+const currentAttendance = reactive({})
 
 // 统计数据
 const statistics = reactive({
@@ -221,61 +244,75 @@ const statistics = reactive({
   absentRate: 0
 })
 
-// 考勤记录列表
-const attendanceList = ref([])
-const loading = ref(false)
-const currentPage = ref(1)
-const pageSize = ref(10)
-const total = ref(0)
+// 计算统计数据
+function calculateStatistics(records) {
+  const total = records.length
+  if (total === 0) {
+    Object.assign(statistics, {
+      totalCount: 0,
+      attendanceRate: 0,
+      lateRate: 0,
+      absentRate: 0
+    })
+    return
+  }
 
-// 图表相关
-const showChartDialog = ref(false)
-const activeChart = ref('attendance')
-const attendanceChartRef = ref(null)
-const statusChartRef = ref(null)
-const classChartRef = ref(null)
-let attendanceChart = null
-let statusChart = null
-let classChart = null
+  const counts = {
+    PRESENT: 0,
+    LATE: 0,
+    ABSENT: 0,
+    LEAVE: 0
+  }
 
-// 获取班级选项
-const fetchClassOptions = async () => {
+  records.forEach(record => {
+    counts[record.status] = (counts[record.status] || 0) + 1
+  })
+
+  Object.assign(statistics, {
+    totalCount: total,
+    attendanceRate: Math.round((counts.PRESENT / total) * 100),
+    lateRate: Math.round((counts.LATE / total) * 100),
+    absentRate: Math.round((counts.ABSENT / total) * 100)
+  })
+}
+
+// 初始化数据
+onMounted(async () => {
+  await Promise.all([
+    fetchStudentOptions(),
+    fetchCourseOptions(),
+    fetchScheduleOptions(),
+    fetchAttendanceList()
+  ])
+})
+
+// 获取学生选项
+async function fetchStudentOptions() {
   try {
-    // TODO: 调用获取班级列表API
-    classOptions.value = [
-      { classId: '2024001', name: '计算机科学1班' },
-      { classId: '2024002', name: '计算机科学2班' }
-    ]
+    const res = await getAllStudents()
+    studentOptions.value = res.data
   } catch (error) {
-    ElMessage.error('获取班级列表失败')
+    console.error('获取学生列表失败:', error)
   }
 }
 
 // 获取课程选项
-const fetchCourseOptions = async () => {
+async function fetchCourseOptions() {
   try {
-    // TODO: 调用获取课程列表API
-    courseOptions.value = [
-      { courseId: 'CS001', name: '计算机导论' },
-      { courseId: 'CS002', name: '程序设计基础' }
-    ]
+    const res = await getAllCourses()
+    courseOptions.value = res.data
   } catch (error) {
-    ElMessage.error('获取课程列表失败')
+    console.error('获取课程列表失败:', error)
   }
 }
 
-// 获取统计数据
-const fetchStatistics = async () => {
+// 获取课程安排选项
+async function fetchScheduleOptions() {
   try {
-    // TODO: 调用获取统计数据API
-    Object.assign(statistics, {
-      totalCount: 1000,
-      attendanceRate: 95,
-      lateRate: 3,
-      absentRate: 2
-    })
+    const res = await getAllCourseSchedules()
+    scheduleOptions.value = res.data
   } catch (error) {
-    ElMessage.error('获取统计数据失败')
+    console.error('获取课程安排列表失败:', error)
   }
 }
 
@@ -283,201 +320,120 @@ const fetchStatistics = async () => {
 async function fetchAttendanceList() {
   loading.value = true
   try {
-    // 构建查询参数
-    const params = {
-      page: currentPage.value,
-      size: pageSize.value
-    }
-    
-    const res = await getAllAttendanceRecords(params, searchForm)
-    if (res.code === 200) {
-      attendanceList.value = res.data.records
-      total.value = res.data.total
-    } else {
-      ElMessage.error(res.message || '获取考勤记录失败')
-    }
+    const res = await getAllPageAttendanceRecords(pageParams,searchForm)
+    attendanceList.value = res.data.records
+    pageParams.total = res.data.total
+    // 计算统计数据
+    calculateStatistics(res.data.records)
   } catch (error) {
-    console.error('获取考勤记录失败:', error)
-    ElMessage.error('获取考勤记录失败')
+    console.error('获取考勤记录列表失败:', error)
+    ElMessage.error('获取考勤记录列表失败')
   } finally {
     loading.value = false
   }
 }
 
-// 搜索
-const handleSearch = () => {
-  currentPage.value = 1
-  fetchAttendanceList()
-  fetchStatistics()
+// 获取学生名称
+function getStudentName(studentId) {
+  const student = studentOptions.value.find(item => item.id === studentId)
+  return student ? student.name : ''
 }
 
-// 重置搜索
-const resetSearch = () => {
-  searchForm.studentId = ''
-  searchForm.name = ''
-  searchForm.classId = ''
-  searchForm.courseId = ''
-  searchForm.status = ''
-  searchForm.dateRange = []
-  handleSearch()
+// 获取课程名称
+function getCourseName(courseId) {
+  const course = courseOptions.value.find(item => item.id === courseId)
+  return course ? course.courseName : ''
+}
+
+// 获取课程安排信息
+function getScheduleInfo(scheduleId) {
+  const schedule = scheduleOptions.value.find(item => item.id === scheduleId)
+  if (!schedule) return ''
+  
+  const weekDayMap = {
+    1: '周一',
+    2: '周二',
+    3: '周三',
+    4: '周四',
+    5: '周五',
+    6: '周六',
+    7: '周日'
+  }
+  
+  return `${weekDayMap[schedule.weekDay]} ${schedule.classroom}`
 }
 
 // 获取状态类型
-const getStatusType = (status) => {
-  const types = {
-    '1': 'success', // 出勤
-    '2': 'warning', // 迟到
-    '3': 'warning', // 早退
-    '4': 'danger',  // 缺勤
-    '5': 'info'     // 请假
+function getStatusType(status) {
+  const typeMap = {
+    PRESENT: 'success',
+    LATE: 'warning',
+    ABSENT: 'danger',
+    LEAVE: 'info'
   }
-  return types[status] || 'info'
+  return typeMap[status] || 'info'
 }
 
 // 获取状态文本
-const getStatusText = (status) => {
-  const texts = {
-    '1': '出勤',
-    '2': '迟到',
-    '3': '早退',
-    '4': '缺勤',
-    '5': '请假'
+function getStatusText(status) {
+  const textMap = {
+    PRESENT: '出勤',
+    LATE: '迟到',
+    ABSENT: '缺勤',
+    LEAVE: '请假'
   }
-  return texts[status] || '未知'
+  return textMap[status] || status
 }
 
-// 导出数据
-const handleExport = async () => {
+// 处理搜索
+function handleSearch() {
+  pageParams.currentPage = 1
+  fetchAttendanceList()
+}
+
+// 重置搜索
+function resetSearch() {
+  Object.keys(searchForm).forEach(key => {
+    searchForm[key] = ''
+  })
+  pageParams.currentPage = 1
+  pageParams.fuzzySearch = true
+  fetchAttendanceList()
+}
+
+// 处理分页大小变化
+function handleSizeChange(val) {
+  pageParams.pageSize = val
+  fetchAttendanceList()
+}
+
+// 处理页码变化
+function handleCurrentChange(val) {
+  pageParams.currentPage = val
+  fetchAttendanceList()
+}
+
+// 处理查看详情
+function handleViewDetail(row) {
+  Object.assign(currentAttendance, row)
+  showDetailDialog.value = true
+}
+
+// 处理导出
+async function handleExport() {
   try {
-    // TODO: 调用导出考勤数据API
+    const params = {
+      ...searchForm,
+      startTime: searchForm.dateRange?.[0],
+      endTime: searchForm.dateRange?.[1]
+    }
+    await exportAttendanceRecords(params)
     ElMessage.success('导出成功')
   } catch (error) {
+    console.error('导出失败:', error)
     ElMessage.error('导出失败')
   }
 }
-
-// 初始化图表
-const initCharts = async () => {
-  await nextTick()
-  
-  // 出勤率趋势图
-  attendanceChart = echarts.init(attendanceChartRef.value)
-  attendanceChart.setOption({
-    title: {
-      text: '近30天出勤率趋势'
-    },
-    tooltip: {
-      trigger: 'axis'
-    },
-    xAxis: {
-      type: 'category',
-      data: ['3-1', '3-2', '3-3', '3-4', '3-5']
-    },
-    yAxis: {
-      type: 'value',
-      min: 0,
-      max: 100
-    },
-    series: [{
-      data: [95, 93, 96, 94, 95],
-      type: 'line',
-      smooth: true
-    }]
-  })
-
-  // 考勤状态分布图
-  statusChart = echarts.init(statusChartRef.value)
-  statusChart.setOption({
-    title: {
-      text: '考勤状态分布'
-    },
-    tooltip: {
-      trigger: 'item'
-    },
-    legend: {
-      orient: 'vertical',
-      left: 'left'
-    },
-    series: [{
-      type: 'pie',
-      radius: '50%',
-      data: [
-        { value: 950, name: '出勤' },
-        { value: 30, name: '迟到' },
-        { value: 20, name: '缺勤' }
-      ],
-      emphasis: {
-        itemStyle: {
-          shadowBlur: 10,
-          shadowOffsetX: 0,
-          shadowColor: 'rgba(0, 0, 0, 0.5)'
-        }
-      }
-    }]
-  })
-
-  // 班级出勤对比图
-  classChart = echarts.init(classChartRef.value)
-  classChart.setOption({
-    title: {
-      text: '班级出勤率对比'
-    },
-    tooltip: {
-      trigger: 'axis',
-      axisPointer: {
-        type: 'shadow'
-      }
-    },
-    xAxis: {
-      type: 'category',
-      data: ['计算机科学1班', '计算机科学2班']
-    },
-    yAxis: {
-      type: 'value',
-      min: 0,
-      max: 100
-    },
-    series: [{
-      data: [95, 93],
-      type: 'bar'
-    }]
-  })
-}
-
-// 监听图表标签页切换
-watch(activeChart, () => {
-  nextTick(() => {
-    switch (activeChart.value) {
-      case 'attendance':
-        attendanceChart?.resize()
-        break
-      case 'status':
-        statusChart?.resize()
-        break
-      case 'class':
-        classChart?.resize()
-        break
-    }
-  })
-})
-
-// 分页处理
-const handleSizeChange = (val) => {
-  pageSize.value = val
-  fetchAttendanceList()
-}
-
-const handleCurrentChange = (val) => {
-  currentPage.value = val
-  fetchAttendanceList()
-}
-
-onMounted(() => {
-  fetchClassOptions()
-  fetchCourseOptions()
-  fetchStatistics()
-  fetchAttendanceList()
-})
 </script>
 
 <style scoped>
@@ -500,6 +456,12 @@ onMounted(() => {
   margin-bottom: 20px;
 }
 
+.pagination-container {
+  margin-top: 20px;
+  display: flex;
+  justify-content: flex-end;
+}
+
 .statistics-cards {
   margin-bottom: 20px;
 }
@@ -518,20 +480,5 @@ onMounted(() => {
   font-size: 24px;
   font-weight: bold;
   color: #409EFF;
-}
-
-.pagination-container {
-  margin-top: 20px;
-  display: flex;
-  justify-content: flex-end;
-}
-
-.chart-container {
-  height: 400px;
-}
-
-.chart {
-  height: 100%;
-  width: 100%;
 }
 </style> 

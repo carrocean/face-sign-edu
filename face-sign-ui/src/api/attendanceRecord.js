@@ -2,7 +2,7 @@
 import { request } from '@/utils/Request.js';
 
 // 接口配置项
-var prefix = '/api/face/sign/attendance/';
+var prefix = '/api/face/sign/attendance-record/';
 var attendanceRecordUrl = {
     getAllAttendanceRecords: prefix + 'list', // 获取所有考勤记录
     getAllPageAttendanceRecords: prefix + 'page-list', // 条件分页查询
@@ -88,4 +88,7 @@ export class startAttendance {
 }
 
 export class endAttendance {
+}
+
+export class exportAttendanceRecords {
 }

@@ -6,7 +6,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import lombok.Data;
 
-import java.time.LocalDateTime;
+import java.util.Date;
 
 /**
  * 考勤记录实体类
@@ -22,43 +22,24 @@ public class AttendanceRecordEntity extends BaseEntity {
     private Long courseId;
     
     /**
-     * 课程名称
-     */
-    private String courseName;
-    
-    /**
      * 学生ID
      */
     @JsonSerialize(using = ToStringSerializer.class)
     private Long studentId;
-    
+
     /**
-     * 学生姓名
+     * 课程安排ID
      */
-    private String studentName;
-    
-    /**
-     * 考勤日期
-     */
-    private String date;
+    @JsonSerialize(using = ToStringSerializer.class)
+    private Long scheduleId;
     
     /**
      * 考勤时间
      */
-    private String time;
+    private Date attendanceDate;
     
     /**
      * 考勤状态
      */
     private String status;
-    
-    /**
-     * 签到时间
-     */
-    private LocalDateTime checkInTime;
-    
-    /**
-     * 签到图片
-     */
-    private String imageUrl;
 }
