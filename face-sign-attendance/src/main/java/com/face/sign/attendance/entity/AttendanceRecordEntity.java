@@ -2,6 +2,8 @@ package com.face.sign.attendance.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.face.sign.common.base.BaseEntity;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import lombok.Data;
 
 import java.time.LocalDateTime;
@@ -16,6 +18,7 @@ public class AttendanceRecordEntity extends BaseEntity {
     /**
      * 课程ID
      */
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long courseId;
     
     /**
@@ -26,6 +29,7 @@ public class AttendanceRecordEntity extends BaseEntity {
     /**
      * 学生ID
      */
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long studentId;
     
     /**

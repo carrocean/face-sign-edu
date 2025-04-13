@@ -209,7 +209,7 @@ import {
   Picture, Delete
 } from '@element-plus/icons-vue'
 import {parseTime} from '@/utils/Utils'
-import {getAllPageStudents, deleteStudent, updateStudent, saveStudent, batchDeleteStudents} from '@/api/student.js'
+import {getAllPageStudents, deleteStudent, updateStudent, addStudent, batchDeleteStudents} from '@/api/student.js'
 import {getAllClasses} from '@/api/class.js'
 import router from "@/router/index.js";
 
@@ -363,7 +363,7 @@ function handleSubmit() {
         })
       } else {
         // 添加学生
-        saveStudent(studentForm).then(res => {
+        addStudent(studentForm).then(res => {
           if (res.code === 200) {
             ElMessage.success('添加成功')
             showAddDialog.value = false

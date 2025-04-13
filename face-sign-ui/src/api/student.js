@@ -8,6 +8,7 @@ var studentUrl = {
     getAllPageStudents: prefix + 'page-list', // 条件分页查询
     getStudentById: prefix + 'getById', // 根据ID获取学生详情
     saveStudent: prefix + 'save', // 添加新学生
+    addStudent: prefix + 'add', // 新增学生的同时新增用户
     updateStudent: prefix + 'update', // 更新学生
     deleteStudent: prefix + 'delete', // 删除学生
     getStudentByUserId: prefix + 'getByUserId', // 根据用户ID获取学生详情
@@ -52,6 +53,15 @@ export function getStudentByUserId(userId) {
 export function saveStudent(data) {
     return request({
         url: studentUrl.saveStudent,
+        method: 'post',
+        data: data
+    });
+}
+
+// 新增学生的同时新增用户
+export function addStudent(data) {
+    return request({
+        url: studentUrl.addStudent,
         method: 'post',
         data: data
     });

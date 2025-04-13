@@ -11,4 +11,10 @@ public interface IStudentService extends IBaseService<StudentEntity> {
      * @return
      */
     StudentEntity getByUserId(Long id);
+
+    /**
+     * 新增学生
+     * @param student
+     */
+    void addStudent(StudentEntity student);
 }

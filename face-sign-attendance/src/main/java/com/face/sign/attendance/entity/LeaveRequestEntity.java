@@ -2,6 +2,8 @@ package com.face.sign.attendance.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.face.sign.common.base.BaseEntity;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import lombok.Data;
 
 import java.util.Date;
@@ -9,6 +11,7 @@ import java.util.Date;
 @Data
 @TableName("leave_request")
 public class LeaveRequestEntity extends BaseEntity {
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long studentId; // 关联学生表的外键
     private Date startTime; // 请假开始时间
     private Date endTime; // 请假结束时间
