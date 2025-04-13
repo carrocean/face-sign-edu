@@ -73,3 +73,6 @@ export function batchDeleteCourses(ids) {
         data: ids
     });
 }
+
+export class exportCourses {
+}
