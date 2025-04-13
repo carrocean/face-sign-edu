@@ -13,10 +13,10 @@ public interface IBaseService<E extends BaseEntity> extends IService<E> {
 	
 	/**
 	 * 条件分页查询
-	 * @param page 页码
-	 * @param size 每页大小
+	 * @param currentPage 页码
+	 * @param pageSize 每页大小
 	 * @param conditions 查询条件
 	 * @return 分页结果
 	 */
-	IPage<E> page(int page, int size, boolean fuzzySearch, Map<String, Object> conditions);
+	IPage<E> page(int currentPage, int pageSize, boolean fuzzySearch, Map<String, Object> conditions);
 }
