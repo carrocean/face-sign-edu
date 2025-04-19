@@ -44,6 +44,16 @@
           <span>考勤记录</span>
         </el-menu-item>
 
+        <el-menu-item index="/admin/leave">
+          <el-icon><Document /></el-icon>
+          <span>请假管理</span>
+        </el-menu-item>
+
+        <el-menu-item index="/admin/notifications">
+          <el-icon><Bell /></el-icon>
+          <span>通知管理</span>
+        </el-menu-item>
+
         <el-menu-item index="/admin/settings">
           <el-icon><Setting /></el-icon>
           <span>系统设置</span>
@@ -151,4 +161,4 @@ const activeMenu = computed(() => {
   opacity: 0;
   transform: translateX(30px);
 }
-</style> 
+</style>

@@ -81,6 +81,16 @@ const router = createRouter({
           component: () => import('../views/admin/Profile.vue')
         },
         {
+          path: 'notifications',
+          name: 'admin-notifications',
+          component: () => import('../views/admin/Notification.vue')
+        },
+        {
+          path: 'leave',
+          name: 'admin-leave',
+          component: () => import('../views/admin/Leave.vue')
+        },
+        {
           path: 'users/:id',
           name: 'user-detail',
           component: () => import('@/views/admin/UserDetail.vue')

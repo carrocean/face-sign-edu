@@ -1,434 +1,490 @@
 <template>
   <div class="attendance-container">
-    <el-row :gutter="20">
-      <el-col :span="16">
-        <el-card>
-          <template #header>
-            <div class="card-header">
-              <span>考勤记录</span>
-              <el-button type="primary" @click="showExportDialog = true">
-                <el-icon><Download /></el-icon>
-                导出考勤记录
-              </el-button>
-            </div>
-          </template>
-
-          <!-- 搜索栏 -->
-          <el-form :inline="true" :model="searchForm" class="search-form">
-            <el-form-item label="课程">
-              <el-select v-model="searchForm.courseId" placeholder="请选择课程" filterable>
-                <el-option
-                  v-for="course in courseList"
-                  :key="course.id"
-                  :label="course.name"
-                  :value="course.id"
-                />
-              </el-select>
-            </el-form-item>
-            <el-form-item label="日期">
-              <el-date-picker
-                v-model="searchForm.date"
-                type="daterange"
-                range-separator="至"
-                start-placeholder="开始日期"
-                end-placeholder="结束日期"
-              />
-            </el-form-item>
-            <el-form-item>
-              <el-button type="primary" @click="handleSearch">搜索</el-button>
-              <el-button @click="resetSearch">重置</el-button>
-            </el-form-item>
-          </el-form>
-
-          <!-- 考勤记录表格 -->
-          <el-table :data="attendanceList" style="width: 100%" v-loading="loading">
-            <el-table-column prop="courseName" label="课程名称" />
-            <el-table-column prop="teacherName" label="授课教师" />
-            <el-table-column prop="date" label="日期" />
-            <el-table-column prop="time" label="时间" />
-            <el-table-column prop="location" label="上课地点" />
-            <el-table-column prop="status" label="状态">
-              <template #default="scope">
-                <el-tag :type="getStatusType(scope.row.status)">
-                  {{ getStatusText(scope.row.status) }}
-                </el-tag>
-              </template>
-            </el-table-column>
-            <el-table-column label="操作" width="150">
-              <template #default="scope">
-                <el-button
-                  v-if="scope.row.status === 'pending'"
-                  type="primary"
-                  @click="handleSignIn(scope.row)"
-                >签到</el-button>
-                <el-button
-                  v-else-if="scope.row.status === 'present'"
-                  type="success"
-                  disabled
-                >已签到</el-button>
-              </template>
-            </el-table-column>
-          </el-table>
-
-          <!-- 分页 -->
-          <div class="pagination-container">
-            <el-pagination
-              v-model:current-page="currentPage"
-              v-model:page-size="pageSize"
-              :page-sizes="[10, 20, 50, 100]"
-              :total="total"
-              layout="total, sizes, prev, pager, next, jumper"
-              @size-change="handleSizeChange"
-              @current-change="handleCurrentChange"
-            />
-          </div>
-        </el-card>
-      </el-col>
-      <el-col :span="8">
-        <el-card>
-          <template #header>
-            <div class="card-header">
-              <span>今日待签到课程</span>
-            </div>
-          </template>
-          <el-timeline>
-            <el-timeline-item
-              v-for="course in todayCourses"
-              :key="course.id"
-              :timestamp="course.time"
-              :type="getTimelineType(course.status)">
-              <div class="timeline-content">
-                <h4>{{ course.name }}</h4>
-                <p>地点：{{ course.location }}</p>
-                <el-button
-                  v-if="course.status === 'pending'"
-                  type="primary"
-                  size="small"
-                  @click="handleSignIn(course)"
-                >立即签到</el-button>
-              </div>
-            </el-timeline-item>
-          </el-timeline>
-        </el-card>
-      </el-col>
-    </el-row>
-
-    <!-- 签到对话框 -->
-    <el-dialog
-      v-model="signInDialogVisible"
-      title="人脸签到"
-      width="500px"
-    >
-      <div class="sign-in-container">
-        <div class="camera-container">
-          <video ref="videoRef" autoplay playsinline></video>
-          <canvas ref="canvasRef" class="hidden-canvas"></canvas>
-          <div class="face-detection-status" :class="{ 'detected': faceDetected }">
-            {{ faceDetected ? '人脸已检测' : '请将人脸对准摄像头' }}
+    <el-card>
+      <template #header>
+        <div class="card-header">
+          <span>考勤记录管理</span>
+          <div class="header-buttons">
+            <el-button type="success" @click="handleExport">
+              <el-icon>
+                <Download/>
+              </el-icon>
+              导出数据
+            </el-button>
           </div>
         </div>
-        <div class="sign-in-info">
-          <p>课程：{{ currentCourse.name }}</p>
-          <p>时间：{{ currentCourse.time }}</p>
-          <p>地点：{{ currentCourse.location }}</p>
-        </div>
-      </div>
-      <template #footer>
-        <span class="dialog-footer">
-          <el-button @click="signInDialogVisible = false">取消</el-button>
-          <el-button 
-            type="primary" 
-            @click="confirmSignIn" 
-            :loading="signingIn"
-            :disabled="!faceDetected"
-          >
-            确认签到
-          </el-button>
-        </span>
       </template>
+
+      <!-- 统计卡片 -->
+      <el-row :gutter="20" class="statistics-cards">
+        <el-col :span="6">
+          <el-card shadow="hover" class="statistics-card">
+            <template #header>
+              <div class="card-header">
+                <span>总考勤次数</span>
+                <el-icon><Calendar/></el-icon>
+              </div>
+            </template>
+            <div class="card-content">
+              <span class="number">{{ statistics.totalCount }}</span>
+            </div>
+          </el-card>
+        </el-col>
+        <el-col :span="6">
+          <el-card shadow="hover" class="statistics-card">
+            <template #header>
+              <div class="card-header">
+                <span>出勤率</span>
+                <el-icon><Check/></el-icon>
+              </div>
+            </template>
+            <div class="card-content">
+              <span class="number">{{ statistics.attendanceRate }}%</span>
+            </div>
+          </el-card>
+        </el-col>
+        <el-col :span="6">
+          <el-card shadow="hover" class="statistics-card">
+            <template #header>
+              <div class="card-header">
+                <span>迟到率</span>
+                <el-icon><Timer/></el-icon>
+              </div>
+            </template>
+            <div class="card-content">
+              <span class="number">{{ statistics.lateRate }}%</span>
+            </div>
+          </el-card>
+        </el-col>
+        <el-col :span="6">
+          <el-card shadow="hover" class="statistics-card">
+            <template #header>
+              <div class="card-header">
+                <span>缺勤率</span>
+                <el-icon><Close/></el-icon>
+              </div>
+            </template>
+            <div class="card-content">
+              <span class="number">{{ statistics.absentRate }}%</span>
+            </div>
+          </el-card>
+        </el-col>
+      </el-row>
+
+      <!-- 搜索表单 -->
+      <el-form :inline="true" :model="searchForm" class="search-form">
+        <el-form-item label="学生">
+          <el-select v-model="searchForm.studentId" placeholder="请选择学生" clearable style="width: 200px">
+            <el-option
+                v-for="item in studentOptions"
+                :key="item.id"
+                :label="item.name"
+                :value="item.id"
+            />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="课程">
+          <el-select v-model="searchForm.courseId" placeholder="请选择课程" clearable style="width: 200px">
+            <el-option
+                v-for="item in courseOptions"
+                :key="item.id"
+                :label="item.courseName"
+                :value="item.id"
+            />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="考勤状态">
+          <el-select v-model="searchForm.status" placeholder="请选择状态" clearable style="width: 200px">
+            <el-option label="出勤" value="PRESENT"/>
+            <el-option label="迟到" value="LATE"/>
+            <el-option label="缺勤" value="ABSENT"/>
+            <el-option label="请假" value="LEAVE"/>
+          </el-select>
+        </el-form-item>
+        <el-form-item>
+          <el-switch
+              v-model="pageParams.fuzzySearch"
+              size="large"
+              inline-prompt
+              active-text="模糊查询"
+              inactive-text="精准查询"
+              :active-value="true"
+              :inactive-value="false"
+              style="margin-left: 10px"
+          />
+        </el-form-item>
+        <el-form-item>
+          <el-button type="primary" @click="handleSearch">搜索</el-button>
+          <el-button @click="resetSearch">重置</el-button>
+        </el-form-item>
+      </el-form>
+
+      <!-- 考勤记录表格 -->
+      <el-table
+          :data="attendanceList"
+          style="width: 100%"
+          v-loading="loading"
+      >
+        <el-table-column type="index" label="ID" width="80" align="center"/>
+        <el-table-column prop="studentId" label="学生" align="center">
+          <template #default="scope">
+            {{ getStudentName(scope.row.studentId) }}
+          </template>
+        </el-table-column>
+        <el-table-column prop="courseId" label="课程" align="center">
+          <template #default="scope">
+            {{ getCourseName(scope.row.courseId) }}
+          </template>
+        </el-table-column>
+        <el-table-column prop="scheduleId" label="课程安排" align="center">
+          <template #default="scope">
+            {{ getScheduleInfo(scope.row.scheduleId) }}
+          </template>
+        </el-table-column>
+        <el-table-column prop="attendanceDate" label="考勤日期" align="center">
+          <template #default="scope">
+            {{ parseTime(scope.row.attendanceDate) }}
+          </template>
+        </el-table-column>
+        <el-table-column prop="status" label="考勤状态" align="center">
+          <template #default="scope">
+            <el-tag :type="getStatusType(scope.row.status)">
+              {{ getStatusText(scope.row.status) }}
+            </el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column label="操作" width="200" align="center">
+          <template #default="scope">
+            <el-button type="primary" link @click="handleViewDetail(scope.row)">详情</el-button>
+            <el-button type="primary" link @click="handleAdjustStatus(scope.row)">调整状态</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+
+      <!-- 分页 -->
+      <div class="pagination-container">
+        <el-pagination
+            :current-page="pageParams.currentPage"
+            :page-size="pageParams.pageSize"
+            :page-sizes="[10, 20, 50, 100]"
+            :total="pageParams.total"
+            layout="total, sizes, prev, pager, next, jumper"
+            @size-change="handleSizeChange"
+            @current-change="handleCurrentChange"
+            @update:current-page="val => pageParams.currentPage = val"
+            @update:page-size="val => pageParams.pageSize = val"
+        />
+      </div>
+    </el-card>
+
+    <!-- 考勤详情对话框 -->
+    <el-dialog
+        v-model="showDetailDialog"
+        title="考勤详情"
+        width="600px"
+        :close-on-click-modal="false"
+    >
+      <el-descriptions :column="1" border>
+        <el-descriptions-item label="学生">{{ getStudentName(currentAttendance.studentId) }}</el-descriptions-item>
+        <el-descriptions-item label="课程">{{ getCourseName(currentAttendance.courseId) }}</el-descriptions-item>
+        <el-descriptions-item label="课程安排">{{ getScheduleInfo(currentAttendance.scheduleId) }}</el-descriptions-item>
+        <el-descriptions-item label="考勤日期">{{ parseTime(currentAttendance.attendanceDate) }}</el-descriptions-item>
+        <el-descriptions-item label="考勤状态">
+          <el-tag :type="getStatusType(currentAttendance.status)">
+            {{ getStatusText(currentAttendance.status) }}
+          </el-tag>
+        </el-descriptions-item>
+        <el-descriptions-item label="添加时间">{{ parseTime(currentAttendance.addTime) }}</el-descriptions-item>
+        <el-descriptions-item label="更新时间">{{ parseTime(currentAttendance.updateTime) }}</el-descriptions-item>
+      </el-descriptions>
     </el-dialog>
 
-    <!-- 导出对话框 -->
-    <ExportDialog
-      v-model:visible="showExportDialog"
-      type="attendance"
-      :export-function="exportAttendance"
-    />
+    <!-- 状态选择对话框 -->
+    <el-dialog
+        v-model="showStatusDialog"
+        title="调整考勤状态"
+        width="300px"
+        :close-on-click-modal="false"
+    >
+      <el-form :model="currentAttendance" ref="statusForm" label-width="80px">
+        <el-form-item label="考勤状态">
+          <el-select v-model="currentAttendance.status" placeholder="请选择状态">
+            <el-option label="出勤" value="PRESENT"/>
+            <el-option label="迟到" value="LATE"/>
+            <el-option label="缺勤" value="ABSENT"/>
+            <el-option label="请假" value="LEAVE"/>
+          </el-select>
+        </el-form-item>
+        <el-form-item>
+          <el-button type="primary" @click="confirmAdjustStatus">确定</el-button>
+          <el-button @click="cancelAdjustStatus">取消</el-button>
+        </el-form-item>
+      </el-form>
+    </el-dialog>
   </div>
 </template>
 
 <script setup>
-import { ref, reactive, onMounted, onUnmounted, watch } from 'vue'
-import { ElMessage } from 'element-plus'
-import { getAllAttendanceRecords, signIn } from '@/api/attendanceRecord'
-import { getStudentCourses } from '@/api/course'
-import { Download } from '@element-plus/icons-vue'
-import { exportAttendance } from '@/api/export'
-import ExportDialog from '@/components/common/ExportDialog.vue'
+import {ref, reactive, onMounted} from 'vue'
+import {ElMessage, ElMessageBox} from 'element-plus'
+import {Download, Delete, Calendar, Check, Timer, Close} from '@element-plus/icons-vue'
+import {parseTime} from '@/utils/Utils'
+import {getAllStudents} from '@/api/student.js'
+import {getAllCourses} from '@/api/course.js'
+import {getAllPageAttendanceRecords, exportAttendanceRecords, updateAttendanceRecord} from '@/api/attendanceRecord.js'
+import {getAllCourseSchedules} from '@/api/courseSchedule.js'
 
 // 搜索表单
 const searchForm = reactive({
+  studentId: '',
   courseId: '',
-  date: []
+  status: ''
 })
 
-// 表格数据
+// 选项数据
+const studentOptions = ref([])
+const courseOptions = ref([])
+const scheduleOptions = ref([])
+
+// 考勤记录列表数据
+const attendanceList = ref([])
 const loading = ref(false)
-const attendanceList = ref([
-  {
-    id: 1,
-    courseName: '高等数学',
-    teacherName: '张老师',
-    date: '2024-03-25',
-    time: '08:00-09:40',
-    location: '教学楼A101',
-    status: 'PRESENT'
-  },
-  {
-    id: 2,
-    courseName: '大学英语',
-    teacherName: '李老师',
-    date: '2024-03-25',
-    time: '10:00-11:40',
-    location: '教学楼B203',
-    status: 'PENDING'
-  },
-  {
-    id: 3,
-    courseName: '计算机基础',
-    teacherName: '王老师',
-    date: '2024-03-24',
-    time: '14:00-15:40',
-    location: '实验楼C305',
-    status: 'ABSENT'
+const pageParams = reactive({
+  currentPage: 1,
+  pageSize: 10,
+  total: 0,
+  fuzzySearch: true  // 默认启用模糊查询
+})
+
+// 详情对话框
+const showDetailDialog = ref(false)
+const currentAttendance = reactive({})
+
+// 状态选择对话框
+const showStatusDialog = ref(false)
+
+// 统计数据
+const statistics = reactive({
+  totalCount: 0,
+  attendanceRate: 0,
+  lateRate: 0,
+  absentRate: 0
+})
+
+// 计算统计数据
+function calculateStatistics(records) {
+  const total = records.length
+  if (total === 0) {
+    Object.assign(statistics, {
+      totalCount: 0,
+      attendanceRate: 0,
+      lateRate: 0,
+      absentRate: 0
+    })
+    return
   }
-])
-const currentPage = ref(1)
-const pageSize = ref(10)
-const total = ref(0)
 
-// 课程列表
-const courseList = ref([])
-
-// 今日待签到课程
-const todayCourses = ref([
-  {
-    id: 2,
-    name: '大学英语',
-    time: '10:00-11:40',
-    location: '教学楼B203',
-    status: 'PENDING'
+  const counts = {
+    PRESENT: 0,
+    LATE: 0,
+    ABSENT: 0,
+    LEAVE: 0
   }
-])
 
-// 签到相关
-const signInDialogVisible = ref(false)
-const signingIn = ref(false)
-const currentCourse = reactive({})
-const videoRef = ref(null)
-const canvasRef = ref(null)
-const faceDetected = ref(false)
-let stream = null
-let detectInterval = null
-const showExportDialog = ref(false)
+  records.forEach(record => {
+    counts[record.status] = (counts[record.status] || 0) + 1
+  })
 
-// 获取状态标签类型
-const getStatusType = (status) => {
-  const types = {
-    'PENDING': 'warning',
-    'PRESENT': 'success',
-    'ABSENT': 'danger',
-    'LATE': 'warning'
-  }
-  return types[status] || 'info'
+  Object.assign(statistics, {
+    totalCount: total,
+    attendanceRate: Math.round((counts.PRESENT / total) * 100),
+    lateRate: Math.round((counts.LATE / total) * 100),
+    absentRate: Math.round((counts.ABSENT / total) * 100)
+  })
 }
 
-// 获取状态显示文本
-const getStatusText = (status) => {
-  const texts = {
-    'PENDING': '待签到',
-    'PRESENT': '已签到',
-    'ABSENT': '未签到',
-    'LATE': '迟到'
+// 初始化数据
+onMounted(async () => {
+  await Promise.all([
+    fetchStudentOptions(),
+    fetchCourseOptions(),
+    fetchScheduleOptions(),
+    fetchAttendanceList()
+  ])
+})
+
+// 获取学生选项
+async function fetchStudentOptions() {
+  try {
+    const res = await getAllStudents()
+    studentOptions.value = res.data
+  } catch (error) {
+    console.error('获取学生列表失败:', error)
   }
-  return texts[status] || status
 }
 
-// 获取时间线类型
-const getTimelineType = (status) => {
-  const types = {
-    'PENDING': 'warning',
-    'PRESENT': 'success',
-    'ABSENT': 'danger',
-    'LATE': 'warning'
+// 获取课程选项
+async function fetchCourseOptions() {
+  try {
+    const res = await getAllCourses()
+    courseOptions.value = res.data
+  } catch (error) {
+    console.error('获取课程列表失败:', error)
   }
-  return types[status] || 'info'
 }
 
-// 搜索
-const handleSearch = () => {
+// 获取课程安排选项
+async function fetchScheduleOptions() {
+  try {
+    const res = await getAllCourseSchedules()
+    scheduleOptions.value = res.data
+  } catch (error) {
+    console.error('获取课程安排列表失败:', error)
+  }
+}
+
+// 获取考勤记录列表
+async function fetchAttendanceList() {
+  loading.value = true
+  try {
+    const res = await getAllPageAttendanceRecords(pageParams,searchForm)
+    attendanceList.value = res.data.records
+    pageParams.total = res.data.total
+    // 计算统计数据
+    calculateStatistics(res.data.records)
+  } catch (error) {
+    console.error('获取考勤记录列表失败:', error)
+    ElMessage.error('获取考勤记录列表失败')
+  } finally {
+    loading.value = false
+  }
+}
+
+// 获取学生名称
+function getStudentName(studentId) {
+  const student = studentOptions.value.find(item => item.id === studentId)
+  return student ? student.name : ''
+}
+
+// 获取课程名称
+function getCourseName(courseId) {
+  const course = courseOptions.value.find(item => item.id === courseId)
+  return course ? course.courseName : ''
+}
+
+// 获取课程安排信息
+function getScheduleInfo(scheduleId) {
+  const schedule = scheduleOptions.value.find(item => item.id === scheduleId)
+  if (!schedule) return ''
+  
+  const weekDayMap = {
+    1: '周一',
+    2: '周二',
+    3: '周三',
+    4: '周四',
+    5: '周五',
+    6: '周六',
+    7: '周日'
+  }
+  
+  return `${weekDayMap[schedule.weekDay]} ${schedule.classroom}`
+}
+
+// 获取状态类型
+function getStatusType(status) {
+  const typeMap = {
+    PRESENT: 'success',
+    LATE: 'warning',
+    ABSENT: 'danger',
+    LEAVE: 'info'
+  }
+  return typeMap[status] || 'info'
+}
+
+// 获取状态文本
+function getStatusText(status) {
+  const textMap = {
+    PRESENT: '出勤',
+    LATE: '迟到',
+    ABSENT: '缺勤',
+    LEAVE: '请假'
+  }
+  return textMap[status] || status
+}
+
+// 处理搜索
+function handleSearch() {
+  pageParams.currentPage = 1
   fetchAttendanceList()
 }
 
 // 重置搜索
-const resetSearch = () => {
-  searchForm.courseId = ''
-  searchForm.date = []
-  handleSearch()
-}
-
-// 获取考勤记录列表
-const fetchAttendanceList = async () => {
-  // 暂时使用示例数据，后续再对接后端
-  loading.value = false
-}
-
-// 获取课程列表
-const fetchCourseList = async () => {
-  try {
-    const res = await getStudentCourses()
-    if (res.code === 200) {
-      courseList.value = res.data
-    } else {
-      ElMessage.error(res.message || '获取课程列表失败')
-    }
-  } catch (error) {
-    console.error('获取课程列表失败:', error)
-    ElMessage.error('获取课程列表失败')
-  }
-}
-
-// 获取今日待签到课程
-const fetchTodayCourses = async () => {
-  // 暂时使用示例数据，后续再对接后端
-}
-
-// 打开摄像头
-const openCamera = async () => {
-  try {
-    stream = await navigator.mediaDevices.getUserMedia({ video: true })
-    videoRef.value.srcObject = stream
-    // 开始实时人脸检测
-    startFaceDetection()
-  } catch (error) {
-    console.error('打开摄像头失败:', error)
-    ElMessage.error('打开摄像头失败')
-  }
-}
-
-// 关闭摄像头
-const closeCamera = () => {
-  if (stream) {
-    stream.getTracks().forEach(track => track.stop())
-    stream = null
-  }
-  if (detectInterval) {
-    clearInterval(detectInterval)
-    detectInterval = null
-  }
-}
-
-// 开始实时人脸检测
-const startFaceDetection = () => {
-  detectInterval = setInterval(async () => {
-    if (!videoRef.value || !canvasRef.value) return
-    
-    const canvas = canvasRef.value
-    const video = videoRef.value
-    
-    // 设置canvas尺寸
-    canvas.width = video.videoWidth
-    canvas.height = video.videoHeight
-    
-    // 绘制视频帧
-    const ctx = canvas.getContext('2d')
-    ctx.drawImage(video, 0, 0)
-    
-    // 获取图像数据
-    const imageData = canvas.toDataURL('image/jpeg')
-    
-    try {
-      // 调用人脸检测API
-      const detectRes = await detectFace(imageData)
-      faceDetected.value = detectRes.data
-    } catch (error) {
-      console.error('人脸检测失败:', error)
-      faceDetected.value = false
-    }
-  }, 1000) // 每秒检测一次
-}
-
-// 打开签到对话框
-const handleSignIn = (course) => {
-  currentCourse.value = course
-  signInDialogVisible.value = true
-  openCamera()
-}
-
-// 确认签到
-const confirmSignIn = async () => {
-  if (!faceDetected.value) {
-    ElMessage.warning('请确保人脸在摄像头范围内')
-    return
-  }
-  
-  try {
-    signingIn.value = true
-    // 1. 获取视频帧
-    const canvas = canvasRef.value
-    const imageData = canvas.toDataURL('image/jpeg')
-
-    // 2. 调用签到API
-    const signInRes = await signIn({
-      scheduleId: currentCourse.value.id,
-      image: imageData
-    })
-
-    if (signInRes.code === 200) {
-      ElMessage.success('签到成功')
-      signInDialogVisible.value = false
-      fetchAttendanceList()
-      fetchTodayCourses()
-    } else {
-      throw new Error(signInRes.message || '签到失败')
-    }
-  } catch (error) {
-    console.error('签到失败:', error)
-    ElMessage.error(error.message || '签到失败')
-  } finally {
-    signingIn.value = false
-  }
-}
-
-// 监听对话框关闭
-watch(signInDialogVisible, (val) => {
-  if (!val) {
-    closeCamera()
-  }
-})
-
-// 组件卸载时关闭摄像头
-onUnmounted(() => {
-  closeCamera()
-})
-
-// 分页相关方法
-const handleSizeChange = (val) => {
-  pageSize.value = val
+function resetSearch() {
+  Object.keys(searchForm).forEach(key => {
+    searchForm[key] = ''
+  })
+  pageParams.currentPage = 1
+  pageParams.fuzzySearch = true
   fetchAttendanceList()
 }
 
-const handleCurrentChange = (val) => {
-  currentPage.value = val
+// 处理分页大小变化
+function handleSizeChange(val) {
+  pageParams.pageSize = val
   fetchAttendanceList()
 }
 
-// 初始化
-onMounted(() => {
-  fetchCourseList()
+// 处理页码变化
+function handleCurrentChange(val) {
+  pageParams.currentPage = val
   fetchAttendanceList()
-  fetchTodayCourses()
-})
+}
+
+// 处理查看详情
+function handleViewDetail(row) {
+  Object.assign(currentAttendance, row)
+  showDetailDialog.value = true
+}
+
+// 处理导出
+async function handleExport() {
+  try {
+    const params = {
+      ...searchForm,
+      startTime: searchForm.dateRange?.[0],
+      endTime: searchForm.dateRange?.[1]
+    }
+    await exportAttendanceRecords(params)
+    ElMessage.success('导出成功')
+  } catch (error) {
+    console.error('导出失败:', error)
+    ElMessage.error('导出失败')
+  }
+}
+
+// 处理调整状态
+function handleAdjustStatus(row) {
+  Object.assign(currentAttendance, row)
+  showStatusDialog.value = true
+}
+
+// 确认调整状态
+async function confirmAdjustStatus() {
+  try {
+    await updateAttendanceRecord(currentAttendance)
+    ElMessage.success('考勤状态调整成功')
+    showStatusDialog.value = false
+    fetchAttendanceList()
+  } catch (error) {
+    console.error('调整考勤状态失败:', error)
+    ElMessage.error('调整考勤状态失败')
+  }
+}
+
+// 取消调整状态
+function cancelAdjustStatus() {
+  showStatusDialog.value = false
+}
 </script>
 
 <style scoped>
@@ -442,6 +498,11 @@ onMounted(() => {
   align-items: center;
 }
 
+.header-buttons {
+  display: flex;
+  gap: 10px;
+}
+
 .search-form {
   margin-bottom: 20px;
 }
@@ -452,63 +513,23 @@ onMounted(() => {
   justify-content: flex-end;
 }
 
-.timeline-content {
-  h4 {
-    margin: 0;
-  }
-  p {
-    margin: 5px 0;
-    color: #666;
-  }
+.statistics-cards {
+  margin-bottom: 20px;
 }
 
-.sign-in-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 20px;
-}
-
-.camera-container {
-  width: 400px;
-  height: 300px;
-  background-color: #000;
-  border-radius: 4px;
-  overflow: hidden;
-  position: relative;
-
-  video {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
-
-  .hidden-canvas {
-    display: none;
-  }
-
-  .face-detection-status {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    padding: 10px;
-    background-color: rgba(0, 0, 0, 0.5);
-    color: #fff;
-    text-align: center;
-    transition: all 0.3s;
-
-    &.detected {
-      background-color: rgba(67, 160, 71, 0.5);
-    }
-  }
-}
-
-.sign-in-info {
+.statistics-card {
   text-align: center;
-  p {
-    margin: 5px 0;
-    color: #666;
-  }
 }
-</style> 
+
+.statistics-card .card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.statistics-card .card-content {
+  font-size: 24px;
+  font-weight: bold;
+  color: #409EFF;
+}
+</style>
