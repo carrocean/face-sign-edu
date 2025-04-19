@@ -1,7 +1,7 @@
 package com.face.sign.user.service.impl;
 
-import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.face.sign.common.base.BaseServiceImpl;
 import com.face.sign.common.util.exception.BizException;
 import com.face.sign.user.entity.StudentEntity;

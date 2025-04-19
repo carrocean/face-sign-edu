@@ -16,13 +16,13 @@ public class WebConfig implements WebMvcConfigurer {
 //        // 拦截所有请求，除了登录和注册接口
 //        registry.addInterceptor(jwtInterceptor)
 //                .addPathPatterns("/**") // 拦截所有请求
-//                .excludePathPatterns("/api/face/sign/user/login", "/api/face/sign/user/register"); // 排除登录和注册接口
+//                .excludePathPatterns("/**/login", "/**/register"); // 排除所有后缀为/login和/register的请求
 //    }
 
     @Override
     public void addCorsMappings(CorsRegistry registry) {
-        registry.addMapping("/api/**")
-                .allowedOrigins("http://localhost") // 允许的来源
+        registry.addMapping("/**")
+                .allowedOriginPatterns("*") // 允许所有来源
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS") // 允许的HTTP方法
                 .allowedHeaders("*") // 允许的请求头
                 .allowCredentials(true) // 允许发送Cookie

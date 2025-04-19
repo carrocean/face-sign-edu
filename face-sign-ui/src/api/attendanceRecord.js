@@ -11,7 +11,8 @@ var attendanceRecordUrl = {
     updateAttendanceRecord: prefix + 'update', // 更新考勤记录
     deleteAttendanceRecord: prefix + 'delete', // 删除考勤记录
     batchDeleteAttendanceRecords: prefix + 'delete/batch', // 批量删除考勤记录
-    signIn: prefix + 'sign-in' // 签到
+    signIn: prefix + 'sign-in', // 签到
+    preview: prefix + 'preview' //预览学生图片
 };
 
 // 条件分页查询
@@ -81,6 +82,14 @@ export function signIn(data) {
         url: attendanceRecordUrl.signIn,
         method: 'post',
         data: data
+    });
+}
+
+// 预览学生图片
+export function preview(userId) {
+    return request({
+        url: attendanceRecordUrl.preview + '/' + userId,
+        method: 'get'
     });
 }
 

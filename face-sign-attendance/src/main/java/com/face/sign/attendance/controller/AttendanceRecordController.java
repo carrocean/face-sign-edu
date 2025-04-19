@@ -5,10 +5,7 @@ import com.face.sign.attendance.service.IAttendanceRecordService;
 import com.face.sign.common.base.BaseController;
 import com.face.sign.common.util.JsonMsgDataBean;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 @RestController
@@ -30,4 +27,28 @@ public class AttendanceRecordController extends BaseController<AttendanceRecordE
         }
         return JsonMsgDataBean.buildFail("人脸验证失败");
     }
+
+    /**
+     * 上传照片
+     * @param userId
+     * @param file
+     * @return
+     */
+    @PostMapping("/upload/{userId}")
+    public JsonMsgDataBean upload(@PathVariable String userId, MultipartFile file) {
+        attendanceRecordService.uploadImage(userId, file);
+        return JsonMsgDataBean.buildSuccess(userId);
+    }
+
+    /**
+     * 预览学生照片
+     * @param userId
+     * @return
+     */
+    @GetMapping("/preview/{userId}")
+    public JsonMsgDataBean preview(@PathVariable String userId) {
+        String url = attendanceRecordService.preview(userId);
+        return JsonMsgDataBean.buildSuccess(url);
+    }
+
 }

@@ -153,9 +153,10 @@
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column label="操作" width="120" align="center">
+        <el-table-column label="操作" width="200" align="center">
           <template #default="scope">
             <el-button type="primary" link @click="handleViewDetail(scope.row)">详情</el-button>
+            <el-button type="primary" link @click="handleAdjustStatus(scope.row)">调整状态</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -197,6 +198,29 @@
         <el-descriptions-item label="更新时间">{{ parseTime(currentAttendance.updateTime) }}</el-descriptions-item>
       </el-descriptions>
     </el-dialog>
+
+    <!-- 状态选择对话框 -->
+    <el-dialog
+        v-model="showStatusDialog"
+        title="调整考勤状态"
+        width="300px"
+        :close-on-click-modal="false"
+    >
+      <el-form :model="currentAttendance" ref="statusForm" label-width="80px">
+        <el-form-item label="考勤状态">
+          <el-select v-model="currentAttendance.status" placeholder="请选择状态">
+            <el-option label="出勤" value="PRESENT"/>
+            <el-option label="迟到" value="LATE"/>
+            <el-option label="缺勤" value="ABSENT"/>
+            <el-option label="请假" value="LEAVE"/>
+          </el-select>
+        </el-form-item>
+        <el-form-item>
+          <el-button type="primary" @click="confirmAdjustStatus">确定</el-button>
+          <el-button @click="cancelAdjustStatus">取消</el-button>
+        </el-form-item>
+      </el-form>
+    </el-dialog>
   </div>
 </template>
 
@@ -207,7 +231,7 @@ import {Download, Delete, Calendar, Check, Timer, Close} from '@element-plus/ico
 import {parseTime} from '@/utils/Utils'
 import {getAllStudents} from '@/api/student.js'
 import {getAllCourses} from '@/api/course.js'
-import {getAllPageAttendanceRecords, exportAttendanceRecords} from '@/api/attendanceRecord.js'
+import {getAllPageAttendanceRecords, exportAttendanceRecords, updateAttendanceRecord} from '@/api/attendanceRecord.js'
 import {getAllCourseSchedules} from '@/api/courseSchedule.js'
 
 // 搜索表单
@@ -235,6 +259,9 @@ const pageParams = reactive({
 // 详情对话框
 const showDetailDialog = ref(false)
 const currentAttendance = reactive({})
+
+// 状态选择对话框
+const showStatusDialog = ref(false)
 
 // 统计数据
 const statistics = reactive({
@@ -434,6 +461,30 @@ async function handleExport() {
     ElMessage.error('导出失败')
   }
 }
+
+// 处理调整状态
+function handleAdjustStatus(row) {
+  Object.assign(currentAttendance, row)
+  showStatusDialog.value = true
+}
+
+// 确认调整状态
+async function confirmAdjustStatus() {
+  try {
+    await updateAttendanceRecord(currentAttendance)
+    ElMessage.success('考勤状态调整成功')
+    showStatusDialog.value = false
+    fetchAttendanceList()
+  } catch (error) {
+    console.error('调整考勤状态失败:', error)
+    ElMessage.error('调整考勤状态失败')
+  }
+}
+
+// 取消调整状态
+function cancelAdjustStatus() {
+  showStatusDialog.value = false
+}
 </script>
 
 <style scoped>
@@ -481,4 +532,4 @@ async function handleExport() {
   font-weight: bold;
   color: #409EFF;
 }
-</style> 
+</style>

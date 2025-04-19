@@ -96,11 +96,11 @@ public class MinioUtil {
      * @param bucketName
      * @return Boolean
      */
-    public Boolean upload(MultipartFile file,String bucketName) {
-        // 修饰过的文件名 非源文件名
-        String fileName = "2021-07/21/";
-        fileName = fileName+file.getOriginalFilename();
+    public Boolean upload(MultipartFile file,String bucketName, String fileName) {
         try {
+            if(!bucketExists(bucketName)) {
+                makeBucket(bucketName);
+            }
             PutObjectArgs objectArgs = PutObjectArgs.builder().bucket(bucketName).object(fileName)
                     .stream(file.getInputStream(),file.getSize(),-1).contentType(file.getContentType()).build();
             //文件名称相同会覆盖

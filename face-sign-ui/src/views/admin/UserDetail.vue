@@ -11,6 +11,25 @@
                 <el-icon><Edit /></el-icon>
                 编辑
               </el-button>
+            
+              <el-upload
+                v-if="userDetail.role === 'student'"
+                class="upload-demo"
+                :action=uploadUrl
+                :limit="1"
+                :headers="headers"
+                :show-file-list="false"
+                :on-success="handleUploadSuccess"
+                :on-error="handleUploadError"
+              >
+                <el-button type="primary">
+                  <el-icon>
+                    <Upload></Upload>
+                  </el-icon>
+                  <span>上传/修改照片</span>
+                </el-button>
+              </el-upload>
+
               <el-button @click="goBack">
                 <el-icon><ArrowLeft /></el-icon>
                 返回
@@ -47,19 +66,19 @@
             <el-descriptions-item label="姓名">{{ roleDetail.name }}</el-descriptions-item>
             <el-descriptions-item label="学号">{{ roleDetail.studentNumber }}</el-descriptions-item>
             <el-descriptions-item label="班级">{{ roleDetail.className }}</el-descriptions-item>
-            <el-descriptions-item label="人脸图像">
-              <el-image 
-                v-if="roleDetail.faceImage"
-                :src="roleDetail.faceImage"
-                style="width: 100px; height: 100px"
-                :preview-src-list="[roleDetail.faceImage]"
-              />
-              <span v-else>未上传</span>
-            </el-descriptions-item>
             <el-descriptions-item label="手机号">{{ roleDetail.phone }}</el-descriptions-item>
             <el-descriptions-item label="邮箱">{{ roleDetail.email }}</el-descriptions-item>
             <el-descriptions-item label="创建时间">{{ parseTime(roleDetail.addTime) }}</el-descriptions-item>
             <el-descriptions-item label="更新时间">{{ parseTime(roleDetail.updateTime) }}</el-descriptions-item>
+            <el-descriptions-item label="人脸图像">
+              <el-image
+                v-if="studentImageUrl !== ''"
+                :src="studentImageUrl"
+                style="width: auto; height: 100px;"
+                :preview-src-list="[roleDetail.faceImage]"
+              />
+              <span v-else>未上传</span>
+            </el-descriptions-item>
           </template>
         </el-descriptions>
       </el-card>
@@ -237,9 +256,12 @@ import { getTeacherByUserId, updateTeacher } from '@/api/teacher.js'
 import { getStudentByUserId, updateStudent} from "@/api/student.js"
 import { getAdministratorByUserId, updateAdministrator } from "@/api/administrator.js"
 import {getAllClasses} from "@/api/class.js"
+import { preview } from '@/api/attendanceRecord.js'
 
 import { parseTime } from '@/utils/Utils'
-import { ArrowLeft, Edit } from '@element-plus/icons-vue'
+import { ArrowLeft, Edit, Upload } from '@element-plus/icons-vue'
+import common from "@/libs/globalFunction/common.js";
+import globalConfig from "@/config/index.js";
 
 const route = useRoute()
 const router = useRouter()
@@ -251,6 +273,7 @@ const userDetail = reactive({
   role: ''
 })
 const roleDetail = reactive({})
+const studentImageUrl = ref('')
 
 // 编辑相关
 const editDialogVisible = ref(false)
@@ -270,11 +293,11 @@ const editForm = reactive({
 const editRules = {
   name: [{ required: true, message: '请输入姓名', trigger: 'blur' }],
   phone: [
-    { required: true, message: '请输入手机号', trigger: 'blur' },
+    { required: false, message: '请输入手机号', trigger: 'blur' },
     { pattern: /^1[3-9]\d{9}$/, message: '请输入正确的手机号', trigger: 'blur' }
   ],
   email: [
-    { required: true, message: '请输入邮箱', trigger: 'blur' },
+    { required: false, message: '请输入邮箱', trigger: 'blur' },
     { type: 'email', message: '请输入正确的邮箱地址', trigger: 'blur' }
   ],
   teacherNumber: [{ required: true, message: '请输入工号', trigger: 'blur' }],
@@ -325,6 +348,22 @@ const getRoleLabel = (role) => {
   return labels[role] || role
 }
 
+const token = common.getCookies(globalConfig.tokenKeyName)
+const headers = ref({
+  'token': token
+})
+
+let baseUrl = '';
+switch (process.env.NODE_ENV) {
+  case 'development':
+    baseUrl = "http://localhost:30001"  //开发环境url
+    break
+  case 'production':
+    baseUrl = "http://carrocean.top:30001"   //生产环境url
+    break
+}
+const uploadUrl = ref(null)
+
 // 获取用户详情
 async function fetchUserDetail() {
   try {
@@ -332,6 +371,7 @@ async function fetchUserDetail() {
     const res = await getUserById(userId)
     if (res.code === 200) {
       Object.assign(userDetail, res.data)
+      uploadUrl.value = baseUrl + '/api/face/sign/attendance-record/upload/' + userId
       
       // 根据角色获取详细信息
       if (userDetail.role === 'admin') {
@@ -348,6 +388,12 @@ async function fetchUserDetail() {
         const studentRes = await getStudentByUserId(userId)
         if (studentRes.code === 200) {
           Object.assign(roleDetail, studentRes.data)
+          const imagesRes = await preview(userId)
+          if(imagesRes.code === 200){
+           studentImageUrl.value = imagesRes.data; 
+          } else {
+            studentImageUrl.value = '';
+          }
         }
       }
     } else {
@@ -375,7 +421,7 @@ async function fetchClassList() {
 
 // 打开编辑对话框
 function handleEdit() {
-  resetForm()
+  Object.assign(editForm, roleDetail)
   editDialogVisible.value = true
 }
 
@@ -449,6 +495,22 @@ const handleUserEdit = () => {
     status: userDetail.status
   })
   userEditDialogVisible.value = true
+}
+
+// 处理人脸图像上传成功
+const handleUploadSuccess = (response) => {
+  if (response.code === 200) {
+    ElMessage.success('上传成功')
+    roleDetail.faceImage = response.data.url
+    fetchUserDetail()
+  } else {
+    ElMessage.error(response.message || '上传失败')
+  }
+}
+
+const handleUploadError = (error) => {
+  console.error('上传失败:', error)
+  ElMessage.error('上传失败') 
 }
 
 // 提交用户基本信息编辑
@@ -556,4 +618,4 @@ onMounted(() => {
 :deep(.el-switch) {
   margin-left: 0;
 }
-</style> 
+</style>

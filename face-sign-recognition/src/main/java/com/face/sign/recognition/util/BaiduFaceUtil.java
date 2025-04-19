@@ -27,7 +27,7 @@ public class BaiduFaceUtil {
 
         this.defaultOptions = new HashMap<>();
         // 图片质量控制：NONE-不控制, LOW-较低要求, NORMAL-一般要求, HIGH-较高要求
-        defaultOptions.put("quality_control", "NORMAL");
+        defaultOptions.put("quality_control", "LOW");
         // 活体检测控制：NONE-不控制, LOW-低要求(高通过率), NORMAL-一般要求, HIGH-高要求(高拒绝率)
         defaultOptions.put("liveness_control", "LOW");
     }

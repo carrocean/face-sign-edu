@@ -15,4 +15,17 @@ public interface IAttendanceRecordService extends IBaseService<AttendanceRecordE
      */
     Boolean signIn(Long scheduleId, MultipartFile image);
 
+    /**
+     * 上传照片
+     * @param userId
+     * @param image
+     */
+    void uploadImage(String userId, MultipartFile image);
+
+    /**
+     * 预览照片
+     * @param userId
+     * @return
+     */
+    String preview(String userId);
 }
