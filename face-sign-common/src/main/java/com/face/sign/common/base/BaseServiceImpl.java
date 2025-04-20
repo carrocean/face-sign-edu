@@ -1,7 +1,6 @@
 package com.face.sign.common.base;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.face.sign.common.util.mybatisplus.QueryWrapperUtils;
@@ -19,7 +18,7 @@ public class BaseServiceImpl<Entity extends BaseEntity, M extends IBaseMapper<En
 	protected M mapper;
 
 	@Override
-	public IPage<Entity> page(int currentPage, int pageSize, boolean pageSearch, boolean fuzzySearch, Map<String, Object> conditions) {
+	public Object page(int currentPage, int pageSize, boolean pageSearch, boolean fuzzySearch, Map<String, Object> conditions) {
 		QueryWrapper<Entity> queryWrapper = new QueryWrapper<>();
 		if(fuzzySearch){
 			QueryWrapperUtils.buildLikeQueryWrapper(queryWrapper, conditions);

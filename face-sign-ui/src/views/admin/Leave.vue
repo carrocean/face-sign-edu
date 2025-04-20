@@ -78,7 +78,7 @@
         </el-table-column>
         <el-table-column prop="classId" label="班级" align="center">
           <template #default="scope">
-            {{ getClassName(scope.row.studentId) }}
+            {{ getClassName(scope.row.classId) }}
           </template>
         </el-table-column>
         <el-table-column prop="status" label="状态" align="center">
@@ -127,7 +127,7 @@
     >
       <el-descriptions :column="1" border>
         <el-descriptions-item label="学生">{{ getStudentName(currentLeave.studentId) }}</el-descriptions-item>
-        <el-descriptions-item label="班级">{{ getClassName(currentLeave.studentId) }}</el-descriptions-item>
+        <el-descriptions-item label="班级">{{ getClassName(currentLeave.classId) }}</el-descriptions-item>
         <el-descriptions-item label="请假时间">{{ parseTime(currentLeave.startTime) }} - {{ parseTime(currentLeave.endTime) }}</el-descriptions-item>
         <el-descriptions-item label="请假状态">
           <el-tag :type="getStatusType(currentLeave.status)">
@@ -310,46 +310,6 @@ function handleDelete(row) {
   })
 }
 
-const handleApprove = async (row) => {
-  try {
-    const data = {
-      'status': 'approved',
-      'userId': row.userId
-    }
-
-    const res = await updateLeaveRequest(data)
-    if (res.code === 200) {
-      ElMessage.success('已批准')
-      await fetchLeaves()
-    } else {
-      ElMessage.error(res.message || '批准失败')
-    }
-  } catch (error) {
-    console.error('批准失败:', error)
-    ElMessage.error('批准失败')
-  }
-}
-
-const handleReject = async (row) => {
-  try {
-    const data = {
-      'status': 'rejected',
-      'userId': row.userId
-    }
-
-    const res = await updateLeaveRequest(data)
-    if (res.code === 200) {
-      ElMessage.success('已拒绝')
-      await fetchLeaves()
-    } else {
-      ElMessage.error(res.message || '拒绝失败')
-    }
-  } catch (error) {
-    console.error('拒绝失败:', error)
-    ElMessage.error('拒绝失败')
-  }
-}
-
 // 处理搜索
 function handleSearch() {
   pageParams.currentPage = 1
@@ -366,30 +326,28 @@ function resetSearch() {
   fetchLeaves()
 }
 
-// 获取教师名称
+// 获取学生名称
 function getStudentName(studentId) {
-  const student = studentOptions.value.find(item => item.id === studentId)
+  const student = studentOptions.value.find(item => item.id == studentId)
   return student ? student.name : ''
 }
 
 // 获取班级名称
-function getClassName(studentId) {
-  const student = studentOptions.value.find(item => item.id === studentId);
-  if (!student) return '';
-  const classItem = classOptions.value.find(item => item.id === student.classId);
-  return classItem ? classItem.className : '';
+function getClassName(classId) {
+  const classItem = classOptions.value.find(item => item.id == classId)
+  return classItem ? classItem.className : ''
 }
 
 // 处理分页大小变化
 function handleSizeChange(val) {
   pageParams.pageSize = val
-  fetchCourseList()
+  fetchLeaves()
 }
 
 // 处理页码变化
 function handleCurrentChange(val) {
   pageParams.currentPage = val
-  fetchCourseList()
+  fetchLeaves()
 }
 
 // 处理导出 TODO

@@ -1,7 +1,6 @@
 package com.face.sign.common.base;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.face.sign.common.util.JsonMsgDataBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -46,7 +45,7 @@ public abstract class BaseController<E extends BaseEntity, S extends IBaseServic
             @RequestParam(defaultValue = "true") boolean fuzzySearch,
             @RequestParam(defaultValue = "true") boolean pageSearch,
             @RequestBody(required = false) Map<String, Object> searchForm) {
-        IPage<E> pageResult = baseService.page(currentPage, pageSize, pageSearch, fuzzySearch, searchForm);
+        Object pageResult = baseService.page(currentPage, pageSize, pageSearch, fuzzySearch, searchForm);
         return JsonMsgDataBean.buildSuccess(pageResult);
     }
 

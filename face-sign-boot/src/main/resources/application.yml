@@ -31,6 +31,12 @@ mybatis-plus:
     map-underscore-to-camel-case: true
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
 
+mybatis:
+  mapper-locations: classpath*:com/face/sign/**/mapper/*.xml
+  configuration:
+    map-underscore-to-camel-case: true
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
 logging:
   config: classpath:logback-spring.xml
 
