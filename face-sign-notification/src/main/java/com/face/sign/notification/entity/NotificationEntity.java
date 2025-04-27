@@ -18,5 +18,5 @@ public class NotificationEntity extends BaseEntity {
     private String title; // 通知标题
     private String content; // 通知内容
     private Date sendTime; // 发送时间
-    private boolean isRead; // 是否已读
+    private String isRead; // 是否已读
 }
