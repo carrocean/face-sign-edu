@@ -6,6 +6,8 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import lombok.Data;
 
+import java.util.Date;
+
 @Data
 @TableName("course")
 public class CourseEntity extends BaseEntity {
@@ -14,7 +16,7 @@ public class CourseEntity extends BaseEntity {
     private Long teacherId; // 关联教师表的外键
     @JsonSerialize(using = ToStringSerializer.class)
     private Long classId; // 关联班级表的外键
-    private String semester; // 开课学期
+    private Date semester; // 开课学期
     private int startWeek; // 开始周数
     private int endWeek; // 结束周数
 }

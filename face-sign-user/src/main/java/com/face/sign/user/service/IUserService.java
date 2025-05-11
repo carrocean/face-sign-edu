@@ -1,7 +1,11 @@
 package com.face.sign.user.service;
 
 import com.face.sign.common.base.IBaseService;
+import com.face.sign.user.bean.dto.ExcelLogDto;
 import com.face.sign.user.entity.UserEntity;
+import com.face.sign.user.qo.UserQo;
+
+import java.util.List;
 
 public interface IUserService extends IBaseService<UserEntity> {
 
@@ -21,4 +25,15 @@ public interface IUserService extends IBaseService<UserEntity> {
      */
     int register(UserEntity user);
 
+    /**
+     * 修改密码
+     * @param user
+     */
+    void resetPassword(UserQo user, String token);
+
+    /**
+     * 导出日志
+     * @return
+     */
+    List<ExcelLogDto> exportLogs();
 }

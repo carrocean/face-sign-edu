@@ -1,107 +1,3 @@
-<script setup>
-import { ref, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
-import {
-  Calendar,
-  Timer,
-  DataLine,
-  User
-} from '@element-plus/icons-vue'
-
-const router = useRouter()
-
-// 统计数据
-const statistics = ref({
-  todayCourses: 0,
-  pendingSignIn: 0,
-  attendanceRate: 0,
-  totalStudents: 0
-})
-
-// 今日课程
-const todayCourses = ref([])
-
-// 周考勤数据
-const weeklyAttendance = ref([])
-
-// 获取状态标签类型
-const getStatusType = (status) => {
-  const types = {
-    'pending': 'warning',
-    'active': 'success',
-    'ended': 'info'
-  }
-  return types[status] || 'info'
-}
-
-// 获取状态显示文本
-const getStatusText = (status) => {
-  const texts = {
-    'pending': '待开始',
-    'active': '进行中',
-    'ended': '已结束'
-  }
-  return texts[status] || status
-}
-
-// 开始签到
-const handleStartSignIn = (course) => {
-  router.push({
-    path: '/teacher/attendance',
-    query: { courseId: course.id }
-  })
-}
-
-// 查看考勤
-const handleViewAttendance = (course) => {
-  router.push({
-    path: '/teacher/attendance',
-    query: { courseId: course.id, view: 'true' }
-  })
-}
-
-// 获取仪表盘数据
-const fetchDashboardData = () => {
-  // TODO: 调用后端API获取数据
-  // 模拟数据
-  statistics.value = {
-    todayCourses: 4,
-    pendingSignIn: 2,
-    attendanceRate: 95,
-    totalStudents: 120
-  }
-
-  todayCourses.value = [
-    {
-      id: 1,
-      name: '高等数学',
-      time: '08:00-09:40',
-      location: '教学楼A101',
-      status: 'active'
-    },
-    {
-      id: 2,
-      name: '大学物理',
-      time: '10:00-11:40',
-      location: '教学楼B202',
-      status: 'pending'
-    }
-  ]
-
-  weeklyAttendance.value = [
-    { day: '周一', rate: 95 },
-    { day: '周二', rate: 92 },
-    { day: '周三', rate: 88 },
-    { day: '周四', rate: 96 },
-    { day: '周五', rate: 90 }
-  ]
-}
-
-onMounted(() => {
-  fetchDashboardData()
-})
-</script>
-
 <template>
   <div class="dashboard-container">
     <!-- 数据统计卡片 -->
@@ -243,6 +139,111 @@ onMounted(() => {
     </el-row>
   </div>
 </template>
+
+<script setup>
+import { ref, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
+import {
+  Calendar,
+  Timer,
+  DataLine,
+  User
+} from '@element-plus/icons-vue'
+
+const router = useRouter()
+
+// 统计数据
+const statistics = ref({
+  todayCourses: 0,
+  pendingSignIn: 0,
+  attendanceRate: 0,
+  totalStudents: 0
+})
+
+// 今日课程
+const todayCourses = ref([])
+
+// 周考勤数据
+const weeklyAttendance = ref([])
+
+// 获取状态标签类型
+const getStatusType = (status) => {
+  const types = {
+    'pending': 'warning',
+    'active': 'success',
+    'ended': 'info'
+  }
+  return types[status] || 'info'
+}
+
+// 获取状态显示文本
+const getStatusText = (status) => {
+  const texts = {
+    'pending': '待开始',
+    'active': '进行中',
+    'ended': '已结束'
+  }
+  return texts[status] || status
+}
+
+// 开始签到
+const handleStartSignIn = (course) => {
+  router.push({
+    path: '/teacher/attendance',
+    query: { courseId: course.id }
+  })
+}
+
+// 查看考勤
+const handleViewAttendance = (course) => {
+  router.push({
+    path: '/teacher/attendance',
+    query: { courseId: course.id, view: 'true' }
+  })
+}
+
+// 获取仪表盘数据
+const fetchDashboardData = () => {
+  // TODO: 调用后端API获取数据
+  // 模拟数据
+  statistics.value = {
+    todayCourses: 4,
+    pendingSignIn: 2,
+    attendanceRate: 95,
+    totalStudents: 120
+  }
+
+  todayCourses.value = [
+    {
+      id: 1,
+      name: '高等数学',
+      time: '08:00-09:40',
+      location: '教学楼A101',
+      status: 'active'
+    },
+    {
+      id: 2,
+      name: '大学物理',
+      time: '10:00-11:40',
+      location: '教学楼B202',
+      status: 'pending'
+    }
+  ]
+
+  weeklyAttendance.value = [
+    { day: '周一', rate: 95 },
+    { day: '周二', rate: 92 },
+    { day: '周三', rate: 88 },
+    { day: '周四', rate: 96 },
+    { day: '周五', rate: 90 }
+  ]
+}
+
+onMounted(() => {
+  fetchDashboardData()
+})
+</script>
+
 
 <style scoped>
 .dashboard-container {

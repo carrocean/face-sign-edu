@@ -10,13 +10,36 @@ var notificationUrl = {
     saveNotification: prefix + 'save', // 添加新通知
     updateNotification: prefix + 'update', // 更新通知
     deleteNotification: prefix + 'delete', // 删除通知
-    batchDeleteNotifications: prefix + 'delete/batch' // 批量删除通知
+    batchDeleteNotifications: prefix + 'delete/batch', // 批量删除通知
+    getAttendanceRecordsByStudent: prefix + 'page-student', // 根据学生获取通知分页列表
+    getAttendanceRecordsByTeacher: prefix + 'page-teacher' // 根据教师获取通知分页列表
+
 };
 
 // 条件分页查询
 export function getAllPageNotifications(params, data) {
     return request({
         url: notificationUrl.getAllPageNotifications,
+        method: 'post',
+        params: params,
+        data: data
+    });
+}
+
+// 根据学生获取通知分页列表
+export function getAttendanceRecordsByStudent(params, data) {
+    return request({
+        url: notificationUrl.getAttendanceRecordsByStudent,
+        method: 'post',
+        params: params,
+        data: data
+    });
+}
+
+// 根据教师获取通知分页列表
+export function getAttendanceRecordsByTeacher(params, data) {
+    return request({
+        url: notificationUrl.getAttendanceRecordsByTeacher,
         method: 'post',
         params: params,
         data: data

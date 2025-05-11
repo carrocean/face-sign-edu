@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.face.sign.course.mapper.CourseMapper">
+
+    <select id="getRecentSemester" resultType="java.util.Date">
+        SELECT MAX(semester) AS recentSemester
+        FROM course
+        WHERE semester <![CDATA[ < ]]> #{currentDate}
+    </select>
+
+    <select id="getNowCourseSchedules" resultType="com.face.sign.course.bean.dto.CourseScheduleDto">
+        SELECT
+            c.id AS courseId,
+            c.course_name AS courseName,
+            c.teacher_id AS teacherId,
+            c.class_id AS classId,
+            c.semester,
+            c.start_week AS startWeek,
+            c.end_week AS endWeek,
+            cs.id AS scheduleId,
+            cs.the_week AS theWeek,
+            cs.week_day AS weekDay,
+            cs.period,
+            cs.classroom
+        FROM
+            course c
+                JOIN
+            course_schedule cs ON c.id = cs.course_id
+        WHERE
+            c.semester = #{semester}
+          AND cs.the_week = #{theWeek}
+          AND cs.week_day = #{weekDay}
+          AND cs.period = #{period}
+    </select>
+
+</mapper>

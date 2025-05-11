@@ -10,7 +10,8 @@ var classUrl = {
     saveClass: prefix + 'save', // 添加新班级
     updateClass: prefix + 'update', // 更新班级
     deleteClass: prefix + 'delete', // 删除班级
-    batchDeleteClasses: prefix + 'delete/batch' // 批量删除班级
+    batchDeleteClasses: prefix + 'delete/batch', // 批量删除班级
+    exportStudents: prefix + 'export-student', // 导出学生
 };
 
 // 条件分页查询
@@ -71,5 +72,14 @@ export function batchDeleteClasses(ids) {
         url: classUrl.batchDeleteClasses,
         method: 'delete',
         data: ids
+    });
+}
+
+export function exportStudents(data) {
+    return request({
+        url: classUrl.exportStudents,
+        method: 'post',
+        data: data,
+        responseType: 'blob'
     });
 }

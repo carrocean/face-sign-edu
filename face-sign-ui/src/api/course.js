@@ -10,7 +10,9 @@ var courseUrl = {
     saveCourse: prefix + 'save', // 添加新课程
     updateCourse: prefix + 'update', // 更新课程
     deleteCourse: prefix + 'delete', // 删除课程
-    batchDeleteCourses: prefix + 'delete/batch' // 批量删除课程
+    batchDeleteCourses: prefix + 'delete/batch', // 批量删除课程
+    exportCourses: prefix + 'export-course', // 导出课程
+
 };
 
 // 条件分页查询
@@ -74,5 +76,11 @@ export function batchDeleteCourses(ids) {
     });
 }
 
-export class exportCourses {
+export function exportCourses(data) {
+    return request({
+        url: courseUrl.exportCourses,
+        method: 'post',
+        data: data,
+        responseType: 'blob'
+    });
 }

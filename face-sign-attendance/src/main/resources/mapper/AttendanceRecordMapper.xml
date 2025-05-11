@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.face.sign.attendance.mapper.AttendanceRecordMapper">
+
+    <select id="selectStudentAttendanceRecordPage" resultType="com.face.sign.attendance.bean.vo.StudentAttendanceRecordVo">
+        SELECT
+            c.course_name,
+            t.name as teacherName,
+            cs.the_week,
+            cs.week_day,
+            cs.period,
+            ar.attendance_date,
+            ar.status,
+            s.name as studentName
+        FROM
+            attendance_record ar
+                LEFT JOIN
+            course_schedule cs ON ar.schedule_id = cs.id
+                LEFT JOIN
+            course c ON cs.course_id = c.id
+                LEFT JOIN
+            teacher t ON c.teacher_id = t.id
+                LEFT JOIN
+            student s on s.id = ar.student_id
+        <where>
+            ar.student_id = #{conditions.studentId}
+            <if test="conditions.courseName != null and conditions.courseName != ''">
+                AND c.course_name LIKE CONCAT('%', #{conditions.courseName}, '%')
+            </if>
+            <if test="conditions.status != null and conditions.status != ''">
+                AND ar.status = #{conditions.status}
+            </if>
+        </where>
+        order by ar.id desc
+    </select>
+
+    <select id="selectAdminAttendanceRecordPage" resultType="com.face.sign.attendance.bean.vo.AdminAttendanceRecordVo">
+        SELECT
+        c.course_name,
+        t.name as teacherName,
+        cs.the_week,
+        cs.week_day,
+        cs.period,
+        cs.classroom,
+        ar.attendance_date,
+        ar.status,
+        s.name as studentName,
+        s.student_number,
+        cl.class_name
+        FROM
+        attendance_record ar
+        LEFT JOIN
+        course_schedule cs ON ar.schedule_id = cs.id
+        LEFT JOIN
+        course c ON cs.course_id = c.id
+        LEFT JOIN
+        teacher t ON c.teacher_id = t.id
+        LEFT JOIN
+        student s on s.id = ar.student_id
+        LEFT JOIN
+        class cl ON cl.id = s.class_id
+        <where>
+            <if test="conditions.studentId != null and conditions.studentId != ''">
+                AND ar.student_id = #{conditions.studentId}
+            </if>
+            <if test="conditions.courseId != null and conditions.courseId != ''">
+                AND c.id = #{conditions.courseId}
+            </if>
+            <if test="conditions.status != null and conditions.status != ''">
+                AND ar.status = #{conditions.status}
+            </if>
+        </where>
+        order by ar.id desc
+    </select>
+
+    <select id="selectTeacherAttendanceRecordPage" resultType="com.face.sign.attendance.bean.vo.TeacherAttendanceRecordVo">
+        SELECT
+        c.course_name,
+        t.name as teacherName,
+        cs.the_week,
+        cs.week_day,
+        cs.period,
+        cs.classroom,
+        ar.attendance_date,
+        ar.status,
+        s.name as studentName,
+        s.student_number,
+        cl.class_name
+        FROM
+        attendance_record ar
+        LEFT JOIN
+        course_schedule cs ON ar.schedule_id = cs.id
+        LEFT JOIN
+        course c ON cs.course_id = c.id
+        LEFT JOIN
+        teacher t ON c.teacher_id = t.id
+        LEFT JOIN
+        student s on s.id = ar.student_id
+        LEFT JOIN
+        class cl ON cl.id = s.class_id
+        <where>
+            <if test="conditions.courseIds != null and !conditions.courseIds.isEmpty()">
+                ar.course_id in
+                <foreach collection="conditions.courseIds" item="courseId" open="(" separator="," close=")">
+                    #{courseId}
+                </foreach>
+            </if>
+            <if test="conditions.className != null and conditions.className != ''">
+                AND cl.class_name LIKE CONCAT('%', #{conditions.className}, '%')
+            </if>
+            <if test="conditions.courseName != null and conditions.courseName != ''">
+                AND c.course_name LIKE CONCAT('%', #{conditions.courseName}, '%')
+            </if>
+            <if test="conditions.status != null and conditions.status != ''">
+                AND ar.status = #{conditions.status}
+            </if>
+        </where>
+        order by ar.id desc
+    </select>
+
+    <select id="selectStudentCountVo" resultType="com.face.sign.attendance.bean.vo.StudentCountVo">
+        SELECT
+            -- 今日课程数量
+            (SELECT COUNT(DISTINCT cs.id)
+             FROM course_schedule cs
+                      JOIN course c ON cs.course_id = c.id
+             WHERE c.semester = #{semester}
+               AND cs.the_week = #{currentWeek}
+               AND cs.week_day = #{currentDayOfWeek}
+               AND cs.id IN (SELECT schedule_id
+                             FROM attendance_record
+                             WHERE student_id = #{studentId})) AS todayCourses,
+            -- 本周考勤率
+            (SELECT IFNULL((COUNT(ar.id) / (SELECT COUNT(*) FROM attendance_record WHERE YEARWEEK(attendance_date, 1) = YEARWEEK(#{weekStart}, 1) AND student_id = #{studentId}) * 100), 0)
+             FROM attendance_record ar
+             WHERE YEARWEEK(ar.attendance_date, 1) = YEARWEEK(#{weekStart}, 1)
+               AND ar.status = '出勤'
+               AND ar.student_id = #{studentId}) AS attendanceRate,
+            -- 待签到课程数量
+            (SELECT COUNT(DISTINCT cs.id)
+             FROM course_schedule cs
+                      JOIN course c ON cs.course_id = c.id
+             WHERE c.semester = #{semester}
+               AND cs.the_week = #{currentWeek}
+               AND cs.week_day = #{currentDayOfWeek}
+               AND cs.id NOT IN (SELECT schedule_id
+                                 FROM attendance_record
+                                 WHERE attendance_date >= #{todayStart}
+                                   AND student_id = #{studentId})) AS pendingSignIn,
+            -- 总课程数量
+            (SELECT COUNT(DISTINCT cs.id)
+             FROM course_schedule cs
+                      JOIN course c ON cs.course_id = c.id
+                      JOIN attendance_record ar ON cs.id = ar.schedule_id
+             WHERE ar.student_id = #{studentId}) AS totalCourses
+    </select>
+
+</mapper>

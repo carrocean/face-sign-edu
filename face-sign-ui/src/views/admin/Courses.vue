@@ -15,12 +15,22 @@
               </el-icon>
               批量删除
             </el-button>
-            <el-button type="primary" @click="handleImport">
-              <el-icon>
-                <Upload/>
-              </el-icon>
-              批量导入
-            </el-button>
+            <el-upload
+                class="upload-demo"
+                :action=uploadUrl
+                :limit="1"
+                :headers="headers"
+                :show-file-list="false"
+                :on-success="handleUploadSuccess"
+                :on-error="handleUploadError"
+            >
+              <el-button type="primary">
+                <el-icon>
+                  <Upload></Upload>
+                </el-icon>
+                <span>批量导入</span>
+              </el-button>
+            </el-upload>
             <el-button type="success" @click="handleExport">
               <el-icon>
                 <Download/>
@@ -103,7 +113,11 @@
             {{ getClassName(scope.row.classId) }}
           </template>
         </el-table-column>
-        <el-table-column prop="semester" label="学期" align="center"/>
+        <el-table-column prop="semester" label="学期开始时间" align="center">
+          <template #default="scope">
+            {{ parseTime(scope.row.semester) }}
+          </template>
+        </el-table-column>
         <el-table-column label="周数" align="center">
           <template #default="scope">
             {{ scope.row.startWeek }}-{{ scope.row.endWeek }}周
@@ -175,8 +189,13 @@
             />
           </el-select>
         </el-form-item>
-        <el-form-item label="学期" prop="semester">
-          <el-input v-model="courseForm.semester"/>
+        <el-form-item label="学期开始时间" prop="semester">
+          <el-date-picker
+              v-model="courseForm.semester"
+              type="date"
+              placeholder="选择学期开始时间"
+              :default-value="new Date"
+          />
         </el-form-item>
         <el-form-item label="起始周" prop="startWeek">
           <el-input-number v-model="courseForm.startWeek" :min="1" :max="20"/>
@@ -195,36 +214,6 @@
       </template>
     </el-dialog>
 
-    <!-- 批量导入对话框 -->
-    <el-dialog
-        v-model="showImportDialog"
-        title="批量导入课程"
-        width="400px"
-        :close-on-click-modal="false"
-    >
-      <el-upload
-          class="upload-demo"
-          drag
-          action="/api/face/sign/admin/course/import"
-          :headers="uploadHeaders"
-          :on-success="handleImportSuccess"
-          :on-error="handleImportError"
-          :before-upload="beforeUpload"
-      >
-        <el-icon class="el-icon--upload">
-          <upload-filled/>
-        </el-icon>
-        <div class="el-upload__text">
-          将文件拖到此处，或<em>点击上传</em>
-        </div>
-        <template #tip>
-          <div class="el-upload__tip">
-            只能上传 xlsx 文件，且文件大小不超过 10MB
-          </div>
-        </template>
-      </el-upload>
-    </el-dialog>
-
   </div>
 </template>
 
@@ -241,7 +230,7 @@ import {
   Delete
 } from '@element-plus/icons-vue'
 import {parseTime} from '@/utils/Utils'
-import {getAllClasses} from '@/api/class.js'
+import {exportStudents, getAllClasses} from '@/api/class.js'
 import {getAllTeachers} from '@/api/teacher.js'
 import {
   getAllPageCourses,
@@ -252,6 +241,8 @@ import {
   exportCourses
 } from '@/api/course.js'
 import {useRouter} from 'vue-router'
+import common from "@/libs/globalFunction/common.js";
+import globalConfig from "@/config/index.js";
 
 const {proxy} = getCurrentInstance()
 
@@ -317,6 +308,9 @@ const rules = {
   semester: [
     {required: true, message: '请输入学期', trigger: 'blur'}
   ],
+  startTime: [
+    {required: true, message: '请选择学期开始时间', trigger: 'change'}
+  ],
   startWeek: [
     {required: true, message: '请输入起始周', trigger: 'blur'},
     {type: 'number', min: 1, max: 20, message: '周数在 1 到 20 之间', trigger: 'blur'}
@@ -326,6 +320,22 @@ const rules = {
     {type: 'number', min: 1, max: 20, message: '周数在 1 到 20 之间', trigger: 'blur'}
   ]
 }
+
+const token = common.getCookies(globalConfig.tokenKeyName)
+const headers = ref({
+  'token': token
+})
+
+let baseUrl = '';
+switch (process.env.NODE_ENV) {
+  case 'development':
+    baseUrl = "http://localhost:30001"  //开发环境url
+    break
+  case 'production':
+    baseUrl = "http://carrocean.top:30001"   //生产环境url
+    break
+}
+const uploadUrl = baseUrl + '/api/face/sign/course/import-course'
 
 // 初始化数据
 onMounted(async () => {
@@ -519,24 +529,45 @@ function handleCancel() {
   showAddDialog.value = false
 }
 
-// 处理导入 TODO
-function handleImport() {
-  showImportDialog.value = true
+// 处理上传成功
+const handleUploadSuccess = (response) => {
+  if (response.code === 200) {
+    ElMessage.success('上传成功')
+    fetchCourseList()
+  } else {
+    ElMessage.error(response.message || '上传失败')
+  }
 }
 
-// 处理导出 TODO
+const handleUploadError = (error) => {
+  console.error('上传失败:', error)
+  ElMessage.error('上传失败')
+}
+
+// 处理导出
 async function handleExport() {
   try {
     const params = {
-      ...searchForm,
-      fuzzySearch: pageParams.fuzzySearch
+      ...searchForm
     }
-    await exportCourses(params)
-    ElMessage.success('导出成功')
+    const res = await exportCourses(params)
+    if (res) {
+      let blob = new Blob([res], { type: 'application/vnd.ms-excel;charset=utf-8' })
+      let downloadElement = document.createElement('a');
+      let href = window.URL.createObjectURL(blob); //创建下载的链接
+      downloadElement.href = href;
+      downloadElement.download = '课程列表.xlsx'; //下载后文件名
+      document.body.appendChild(downloadElement);
+      downloadElement.click(); //点击下载
+      document.body.removeChild(downloadElement); //下载完成移除元素
+      window.URL.revokeObjectURL(href); //释放掉blob对象
+    }
   } catch (error) {
     console.error('导出失败:', error)
+    ElMessage.error('导出失败')
   }
 }
+
 
 // 处理查看课程安排
 function handleViewSchedule(row) {
@@ -544,29 +575,6 @@ function handleViewSchedule(row) {
   router.push(`/admin/course/${id}`)
 }
 
-// 上传相关方法  TODO
-function beforeUpload(file) {
-  const isXLSX = file.type === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-  const isLt10M = file.size / 1024 / 1024 < 10
-
-  if (!isXLSX) {
-    ElMessage.error('只能上传 xlsx 格式的文件!')
-  }
-  if (!isLt10M) {
-    ElMessage.error('文件大小不能超过 10MB!')
-  }
-  return isXLSX && isLt10M
-}
-
-function handleImportSuccess(response) {
-  ElMessage.success('导入成功')
-  showImportDialog.value = false
-  fetchCourseList()
-}
-
-function handleImportError() {
-  ElMessage.error('导入失败')
-}
 </script>
 
 <style scoped>
@@ -604,4 +612,4 @@ function handleImportError() {
 :deep(.el-upload-dragger) {
   width: 100%;
 }
-</style> 
+</style>

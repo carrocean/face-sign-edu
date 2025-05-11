@@ -25,12 +25,6 @@
         </el-form-item>
 
         <el-form-item>
-          <div class="no-account">
-            <a href="#" class="a-link" @click="toRegister">注册</a>
-          </div>
-        </el-form-item>
-
-        <el-form-item>
           <el-button type="primary" class="op-btn" size="large" @click="doSubmit">
             <span>登录</span>
           </el-button>
@@ -83,6 +77,7 @@ function doSubmit() {
           proxy.$common.setCookies(proxy.$config.tokenKeyName, res.data.token) //  存储登录状态
           proxy.$common.setCookies(proxy.$config.account, res.data.account)
           proxy.$common.setCookies(proxy.$config.userRole, res.data.role)
+          proxy.$common.setCookies(proxy.$config.userId, res.data.id)
           
           ElMessage.success("登录成功");
           

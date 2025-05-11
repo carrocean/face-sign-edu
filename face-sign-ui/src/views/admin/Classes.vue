@@ -5,28 +5,6 @@
         <div class="card-header">
           <span>班级管理</span>
           <div class="header-buttons">
-            <el-button
-                v-if="selectedClasses.length > 0"
-                type="danger"
-                @click="handleBatchDelete"
-            >
-              <el-icon>
-                <Delete/>
-              </el-icon>
-              批量删除
-            </el-button>
-            <el-button type="primary" @click="handleImport">
-              <el-icon>
-                <Upload/>
-              </el-icon>
-              批量导入
-            </el-button>
-            <el-button type="success" @click="handleExport">
-              <el-icon>
-                <Download/>
-              </el-icon>
-              导出数据
-            </el-button>
             <el-button type="primary" @click="handleAdd">
               <el-icon>
                 <Plus/>
@@ -67,7 +45,6 @@
           v-loading="loading"
           @selection-change="handleSelectionChange"
       >
-        <el-table-column type="selection" width="50" align="center"/>
         <el-table-column type="index" label="ID" width="80" align="center"/>
         <el-table-column prop="className" label="班级名称" align="center"/>
         <el-table-column prop="addTime" label="创建时间" align="center">
@@ -83,7 +60,6 @@
         <el-table-column label="操作" width="200" align="center">
           <template #default="scope">
             <el-button type="primary" link @click="handleEdit(scope.row)">编辑</el-button>
-            <el-button type="danger" link @click="handleDelete(scope.row)">删除</el-button>
           </template>
         </el-table-column>
       </el-table>

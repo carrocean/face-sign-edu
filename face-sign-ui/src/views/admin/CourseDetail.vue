@@ -22,7 +22,7 @@
         <el-descriptions-item label="课程名称">{{ courseInfo.courseName }}</el-descriptions-item>
         <el-descriptions-item label="授课教师">{{ getTeacherName(courseInfo.teacherId) }}</el-descriptions-item>
         <el-descriptions-item label="班级">{{ getClassName(courseInfo.classId) }}</el-descriptions-item>
-        <el-descriptions-item label="学期">{{ courseInfo.semester }}</el-descriptions-item>
+        <el-descriptions-item label="学期">{{ parseTime(courseInfo.semester) }}</el-descriptions-item>
         <el-descriptions-item label="开课周数">{{ courseInfo.startWeek }} - {{ courseInfo.endWeek }}周</el-descriptions-item>
         <el-descriptions-item label="添加时间">{{ parseTime(courseInfo.addTime) }}</el-descriptions-item>
         <el-descriptions-item label="更新时间">{{ parseTime(courseInfo.updateTime) }}</el-descriptions-item>

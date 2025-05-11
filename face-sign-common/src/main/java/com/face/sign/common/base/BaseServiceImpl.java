@@ -25,7 +25,7 @@ public class BaseServiceImpl<Entity extends BaseEntity, M extends IBaseMapper<En
 		} else {
 			QueryWrapperUtils.buildQueryWrapper(queryWrapper, conditions);
 		}
-		queryWrapper.orderByDesc("id");
+		queryWrapper.orderByDesc("add_time");
 		
 		if(pageSearch){
 			return mapper.selectPage(new Page<>(currentPage, pageSize), queryWrapper);

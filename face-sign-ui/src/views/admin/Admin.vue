@@ -54,11 +54,6 @@
           <span>通知管理</span>
         </el-menu-item>
 
-        <el-menu-item index="/admin/settings">
-          <el-icon><Setting /></el-icon>
-          <span>系统设置</span>
-        </el-menu-item>
-
         <el-menu-item index="/admin/logs">
           <el-icon><Document /></el-icon>
           <span>日志管理</span>

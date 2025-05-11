@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.face.sign.course.mapper.CourseScheduleMapper">
+
+    <select id="getTodayCourseStudent" resultType="com.face.sign.course.bean.vo.TodayCourseStudentVo">
+        SELECT
+        c.id AS courseId,
+        c.course_name AS courseName,
+        t.name AS teacherName,
+        cs.id AS scheduleId,
+        cs.period,
+        cs.classroom
+        FROM
+        course_schedule cs
+        JOIN
+        course c ON cs.course_id = c.id
+        JOIN
+        teacher t ON c.teacher_id = t.id
+        LEFT JOIN
+        attendance_record ar ON cs.id = ar.schedule_id AND ar.student_id = #{studentId}
+        WHERE
+        c.semester LIKE CONCAT('%', #{semester}, '%')
+        AND cs.the_week = #{currentWeek}
+        AND cs.week_day = #{currentDayOfWeek}
+        AND c.class_id = #{classId}
+    </select>
+
+</mapper>

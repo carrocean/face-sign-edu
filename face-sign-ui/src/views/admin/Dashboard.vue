@@ -156,15 +156,33 @@ onMounted(() => {
 
 <style scoped>
 .dashboard-container {
-  padding: 20px;
-}
-
-.mt-20 {
-  margin-top: 20px;
+  .mt-20 {
+    margin-top: 20px;
+  }
 }
 
 .data-card {
-  height: 120px;
+  .card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .card-content {
+    text-align: center;
+    padding: 20px 0;
+
+    .number {
+      font-size: 36px;
+      font-weight: bold;
+      color: #303133;
+    }
+
+    .label {
+      margin-top: 8px;
+      color: #909399;
+    }
+  }
 }
 
 .card-header {
@@ -173,14 +191,73 @@ onMounted(() => {
   align-items: center;
 }
 
-.card-content {
-  text-align: center;
+.attendance-chart {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  height: 200px;
   padding: 20px 0;
+
+  .chart-item {
+    flex: 1;
+    text-align: center;
+    margin: 0 10px;
+
+    .chart-bar {
+      height: 150px;
+      background-color: #f0f2f5;
+      border-radius: 4px;
+      position: relative;
+      margin-bottom: 10px;
+
+      .bar-fill {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background-color: #409EFF;
+        border-radius: 4px;
+        transition: height 0.3s ease;
+      }
+    }
+
+    .chart-label {
+      color: #606266;
+      font-size: 12px;
+    }
+  }
 }
 
-.number {
-  font-size: 24px;
-  font-weight: bold;
-  color: #409EFF;
+.attendance-legend {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  margin-top: 20px;
+
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #606266;
+    font-size: 12px;
+
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+
+      &.high {
+        background-color: #67C23A;
+      }
+
+      &.medium {
+        background-color: #E6A23C;
+      }
+
+      &.low {
+        background-color: #F56C6C;
+      }
+    }
+  }
 }
 </style> 

@@ -12,7 +12,8 @@ var teacherUrl = {
     updateTeacher: prefix + 'update', // 更新教师
     deleteTeacher: prefix + 'delete', // 删除教师
     getTeacherByUserId: prefix + 'getByUserId', // 根据用户ID获取教师详情
-    batchDeleteTeachers: prefix + 'delete/batch' // 批量删除教师
+    batchDeleteTeachers: prefix + 'delete/batch', // 批量删除教师
+    exportTeachers: prefix + 'export-teacher', // 导出学生
 };
 
 // 条件分页查询
@@ -90,5 +91,14 @@ export function batchDeleteTeachers(ids) {
         url: teacherUrl.batchDeleteTeachers,
         method: 'delete',
         data: ids
+    });
+}
+
+export function exportTeachers(data) {
+    return request({
+        url: teacherUrl.exportTeachers,
+        method: 'post',
+        data: data,
+        responseType: 'blob'
     });
 }

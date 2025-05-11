@@ -5,6 +5,7 @@ import { request } from '@/utils/Request.js';
 var prefix = '/api/face/sign/user/';
 var userUrl = {
     login: prefix + 'login',
+    logout: prefix + 'logout',
     register: prefix + 'register',
     checkUserLoginInfo: prefix + 'checkUserLoginInfo',
     getAllUsers: prefix + 'list', // 获取所有用户
@@ -13,12 +14,22 @@ var userUrl = {
     saveUser: prefix + 'save', // 添加新用户
     updateUser: prefix + 'update', // 更新用户
     deleteUser: prefix + 'delete', // 删除用户
-    batchDelete: prefix + 'delete/batch' // 批量删除用户
+    batchDelete: prefix + 'delete/batch', // 批量删除用户
+    resetPassword: prefix + 'resetPassword', // 修改密码
+    exportLogs: prefix + 'export-log', // 导出日志
 }
 
 export function login(data) {
     return request({
         url: userUrl.login,
+        method: 'post',
+        data:data,
+    })
+}
+
+export function logout(data) {
+    return request({
+        url: userUrl.logout,
         method: 'post',
         data:data,
     })
@@ -75,6 +86,15 @@ export function saveUser(data) {
 }
 
 // 更新用户
+export function resetPassword(data) {
+    return request({
+        url: userUrl.resetPassword,
+        method: 'post',
+        data: data
+    });
+}
+
+// 更新密码
 export function updateUser(data) {
     return request({
         url: userUrl.updateUser,
@@ -101,5 +121,14 @@ export function batchDeleteUsers(userIds) {
         url: userUrl.batchDelete,
         method: 'delete',
         data: userIds
+    });
+}
+
+export function exportLogs(data) {
+    return request({
+        url: userUrl.exportLogs,
+        method: 'post',
+        data: data,
+        responseType: 'blob'
     });
 }

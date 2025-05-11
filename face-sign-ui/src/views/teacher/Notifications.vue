@@ -1,89 +1,71 @@
 <template>
-  <div class="notifications-container">
+  <div class="notification-container">
     <el-card>
       <template #header>
         <div class="card-header">
           <span>通知管理</span>
-          <el-button type="primary" @click="handleSendNotification">
-            <el-icon><Message /></el-icon>
-            发送通知
-          </el-button>
+          <div class="header-buttons">
+            <el-button type="primary" @click="handleAddNotification">
+              <el-icon>
+                <Plus />
+              </el-icon>
+              发送通知
+            </el-button>
+          </div>
         </div>
       </template>
 
+
       <!-- 搜索表单 -->
-      <el-form :model="searchForm" inline class="search-form">
-        <el-form-item label="通知类型">
-          <el-select v-model="searchForm.type" placeholder="请选择通知类型">
-            <el-option label="考勤提醒" value="ATTENDANCE" />
-            <el-option label="课程变更" value="COURSE" />
-            <el-option label="请假审批" value="LEAVE" />
-            <el-option label="系统通知" value="SYSTEM" />
-          </el-select>
-        </el-form-item>
-        <el-form-item label="发送时间">
-          <el-date-picker
-            v-model="searchForm.dateRange"
-            type="daterange"
-            range-separator="至"
-            start-placeholder="开始日期"
-            end-placeholder="结束日期"
-            value-format="YYYY-MM-DD"
-          />
-        </el-form-item>
-        <el-form-item label="状态">
-          <el-select v-model="searchForm.status" placeholder="请选择状态">
-            <el-option label="已发送" value="SENT" />
-            <el-option label="发送中" value="SENDING" />
-            <el-option label="发送失败" value="FAILED" />
-          </el-select>
+      <el-form :inline="true" :model="searchForm" class="search-form">
+        <el-form-item label="标题">
+          <el-input v-model="searchForm.title" placeholder="请输入标题名称" clearable style="width: 200px"/>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" @click="handleSearch">
-            <el-icon><Search /></el-icon>
-            搜索
-          </el-button>
-          <el-button @click="handleReset">
-            <el-icon><Refresh /></el-icon>
-            重置
-          </el-button>
+          <el-switch
+              v-model="pageParams.fuzzySearch"
+              size="large"
+              inline-prompt
+              active-text="模糊查询"
+              inactive-text="精准查询"
+              :active-value="true"
+              :inactive-value="false"
+              style="margin-left: 10px"
+          />
+        </el-form-item>
+        <el-form-item>
+          <el-button type="primary" @click="handleSearch">搜索</el-button>
+          <el-button @click="resetSearch">重置</el-button>
         </el-form-item>
       </el-form>
 
-      <!-- 通知列表 -->
+
+      <!-- 通知表格 -->
       <el-table
-        v-loading="loading"
-        :data="notificationList"
-        style="width: 100%"
-        border
+          :data="notificationList"
+          style="width: 100%"
+          v-loading="loading"
       >
-        <el-table-column prop="title" label="通知标题" />
-        <el-table-column prop="type" label="通知类型" width="120">
+        <el-table-column type="index" label="ID" width="80" align="center"/>
+        <el-table-column prop="title" label="标题" align="center">
           <template #default="scope">
-            {{ getTypeName(scope.row.type) }}
+            {{ scope.row.title }}
           </template>
         </el-table-column>
-        <el-table-column prop="target" label="接收对象" width="120">
+        <el-table-column prop="senderId" label="发送者" align="center">
           <template #default="scope">
-            {{ getTargetName(scope.row.target) }}
+            {{ getName(scope.row.senderId) }}
           </template>
         </el-table-column>
-        <el-table-column prop="sendTime" label="发送时间" width="180" />
-        <el-table-column prop="status" label="状态" width="100">
+        <el-table-column prop="receiverId" label="接收者" align="center">
           <template #default="scope">
-            <el-tag :type="getStatusType(scope.row.status)">
-              {{ getStatusText(scope.row.status) }}
-            </el-tag>
+            {{ getName(scope.row.receiverId) }}
           </template>
         </el-table-column>
-        <el-table-column label="操作" width="150" fixed="right">
+        <el-table-column label="操作" width="250" align="center">
           <template #default="scope">
-            <el-button type="primary" link @click="handleViewDetail(scope.row)">
-              详情
-            </el-button>
-            <el-button type="danger" link @click="handleDelete(scope.row)">
-              删除
-            </el-button>
+            <el-button type="primary" link @click="handleViewDetail(scope.row)">详情</el-button>
+            <el-button type="danger" link @click="handleDelete(scope.row)">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -91,382 +73,317 @@
       <!-- 分页 -->
       <div class="pagination-container">
         <el-pagination
-          v-model:current-page="currentPage"
-          v-model:page-size="pageSize"
-          :page-sizes="[10, 20, 50, 100]"
-          :total="total"
-          layout="total, sizes, prev, pager, next, jumper"
-          @size-change="handleSizeChange"
-          @current-change="handleCurrentChange"
+            :current-page="pageParams.currentPage"
+            :page-size="pageParams.pageSize"
+            :page-sizes="[10, 20, 50, 100]"
+            :total="pageParams.total"
+            layout="total, sizes, prev, pager, next, jumper"
+            @size-change="handleSizeChange"
+            @current-change="handleCurrentChange"
+            @update:current-page="val => pageParams.currentPage = val"
+            @update:page-size="val => pageParams.pageSize = val"
         />
       </div>
     </el-card>
 
-    <!-- 发送通知对话框 -->
-    <el-dialog
-      v-model="showSendDialog"
-      title="发送通知"
-      width="600px"
-      :close-on-click-modal="false"
-    >
-      <el-form
-        ref="notificationFormRef"
-        :model="notificationForm"
-        :rules="notificationRules"
-        label-width="100px"
-      >
-        <el-form-item label="通知类型" prop="type">
-          <el-select v-model="notificationForm.type" placeholder="请选择通知类型">
-            <el-option label="考勤提醒" value="ATTENDANCE" />
-            <el-option label="课程变更" value="COURSE" />
-            <el-option label="请假审批" value="LEAVE" />
-            <el-option label="系统通知" value="SYSTEM" />
-          </el-select>
-        </el-form-item>
-        <el-form-item label="接收对象" prop="target">
-          <el-select v-model="notificationForm.target" placeholder="请选择接收对象">
-            <el-option label="所有学生" value="ALL" />
-            <el-option label="指定课程" value="COURSE" />
-            <el-option label="指定班级" value="CLASS" />
-          </el-select>
-        </el-form-item>
-        <el-form-item
-          v-if="notificationForm.target === 'COURSE'"
-          label="选择课程"
-          prop="courseId"
-        >
-          <el-select v-model="notificationForm.courseId" placeholder="请选择课程">
-            <el-option
-              v-for="course in courseOptions"
-              :key="course.id"
-              :label="course.name"
-              :value="course.id"
-            />
-          </el-select>
-        </el-form-item>
-        <el-form-item
-          v-if="notificationForm.target === 'CLASS'"
-          label="选择班级"
-          prop="classId"
-        >
-          <el-select v-model="notificationForm.classId" placeholder="请选择班级">
-            <el-option
-              v-for="class_ in classOptions"
-              :key="class_.id"
-              :label="class_.name"
-              :value="class_.id"
-            />
-          </el-select>
-        </el-form-item>
-        <el-form-item label="通知标题" prop="title">
-          <el-input v-model="notificationForm.title" placeholder="请输入通知标题" />
-        </el-form-item>
-        <el-form-item label="通知内容" prop="content">
-          <el-input
-            v-model="notificationForm.content"
-            type="textarea"
-            :rows="4"
-            placeholder="请输入通知内容"
-          />
-        </el-form-item>
-        <el-form-item label="模板" prop="templateId">
-          <el-select v-model="notificationForm.templateId" placeholder="请选择模板">
-            <el-option label="不使用模板" value="" />
-            <el-option
-              v-for="template in templateOptions"
-              :key="template.id"
-              :label="template.name"
-              :value="template.id"
-            />
-          </el-select>
-        </el-form-item>
-      </el-form>
-      <template #footer>
-        <span class="dialog-footer">
-          <el-button @click="showSendDialog = false">取消</el-button>
-          <el-button type="primary" @click="handleSubmit" :loading="submitting">
-            发送
-          </el-button>
-        </span>
-      </template>
-    </el-dialog>
-
     <!-- 通知详情对话框 -->
     <el-dialog
-      v-model="showDetailDialog"
-      title="通知详情"
-      width="600px"
-      :close-on-click-modal="false"
+        v-model="showDetailDialog"
+        title="通知详情"
+        width="600px"
+        :close-on-click-modal="false"
     >
-      <el-descriptions :column="2" border>
+      <el-descriptions :column="1" border>
+        <el-descriptions-item label="发送者">{{ getName(currentNotification.senderId) }}</el-descriptions-item>
+        <el-descriptions-item label="接收者">{{ getName(currentNotification.receiverId) }}</el-descriptions-item>
         <el-descriptions-item label="通知标题">{{ currentNotification.title }}</el-descriptions-item>
-        <el-descriptions-item label="通知类型">{{ getTypeName(currentNotification.type) }}</el-descriptions-item>
-        <el-descriptions-item label="接收对象">{{ getTargetName(currentNotification.target) }}</el-descriptions-item>
-        <el-descriptions-item label="发送时间">{{ currentNotification.sendTime }}</el-descriptions-item>
-        <el-descriptions-item label="状态">
-          <el-tag :type="getStatusType(currentNotification.status)">
-            {{ getStatusText(currentNotification.status) }}
+        <el-descriptions-item label="通知内容">{{ currentNotification.content }}</el-descriptions-item>
+        <el-descriptions-item label="发送时间">{{ parseTime(currentNotification.sendTime) }}</el-descriptions-item>
+        <el-descriptions-item label="是否已读">
+          <el-tag :type="getIsReadType(currentNotification.isRead)">
+            {{ getIsReadLabel(currentNotification.isRead) }}
           </el-tag>
         </el-descriptions-item>
-        <el-descriptions-item label="发送人">{{ currentNotification.sender }}</el-descriptions-item>
-        <el-descriptions-item label="通知内容" :span="2">
-          {{ currentNotification.content }}
-        </el-descriptions-item>
-        <el-descriptions-item label="发送结果" :span="2">
-          <el-table :data="currentNotification.results" style="width: 100%">
-            <el-table-column prop="name" label="接收人" />
-            <el-table-column prop="status" label="状态" width="100">
-              <template #default="scope">
-                <el-tag :type="scope.row.status === 'SUCCESS' ? 'success' : 'danger'">
-                  {{ scope.row.status === 'SUCCESS' ? '成功' : '失败' }}
-                </el-tag>
-              </template>
-            </el-table-column>
-            <el-table-column prop="message" label="备注" />
-          </el-table>
-        </el-descriptions-item>
+        <el-descriptions-item label="添加时间">{{ parseTime(currentNotification.addTime) }}</el-descriptions-item>
+        <el-descriptions-item label="更新时间">{{ parseTime(currentNotification.updateTime) }}</el-descriptions-item>
       </el-descriptions>
     </el-dialog>
+
+    <!-- 添加通知对话框 -->
+    <el-dialog
+        v-model="showAddDialog"
+        title="添加通知"
+        width="600px"
+        :close-on-click-modal="false"
+    >
+      <el-form :model="addNotificationForm" ref="addNotificationFormRef" label-width="80px">
+        <el-form-item label="发送者">
+          <el-input v-model="addNotificationForm.senderId" :value="userId" disabled/>
+        </el-form-item>
+        <el-form-item label="接收者">
+          <el-select v-model="addNotificationForm.receiverId" placeholder="请选择接收者">
+            <el-option v-for="item in studentOptions" :key="item.userId" :label="getName(item.userId)" :value="item.userId"/>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="标题">
+          <el-input v-model="addNotificationForm.title" placeholder="请输入标题" />
+        </el-form-item>
+        <el-form-item label="内容">
+          <el-input v-model="addNotificationForm.content" type="textarea" placeholder="请输入内容" />
+        </el-form-item>
+        <el-form-item>
+          <el-button type="primary" @click="confirmAddNotification">确定</el-button>
+          <el-button @click="cancelAddNotification">取消</el-button>
+        </el-form-item>
+      </el-form>
+    </el-dialog>
+
   </div>
 </template>
 
 <script setup>
-import { ref, reactive, onMounted } from 'vue'
-import { ElMessage, ElMessageBox } from 'element-plus'
+import {ref, onMounted, reactive, getCurrentInstance} from 'vue'
 import {
-  Message,
-  Search,
-  Refresh
-} from '@element-plus/icons-vue'
+  ElMessage,
+  ElTag,
+  ElForm,
+  ElFormItem,
+  ElSelect,
+  ElOption,
+  ElDatePicker,
+  ElButton,
+  ElMessageBox
+} from 'element-plus'
+import { getAttendanceRecordsByTeacher, updateNotification, deleteNotification, saveNotification } from '@/api/notification.js'
+import {getAllAdministrators} from '@/api/administrator.js'
+import {getAllStudents} from '@/api/student.js'
+import {getAllTeachers} from '@/api/teacher.js'
+import {getAllUsers} from '@/api/user.js'
+import {Delete, Download, Plus, Upload} from "@element-plus/icons-vue";
+import {parseTime} from "@/utils/Utils.js";
+const {proxy} = getCurrentInstance()
 
-// 搜索表单
-const searchForm = reactive({
-  type: '',
-  dateRange: [],
-  status: ''
-})
+const addNotificationFormRef = ref(null);
 
-// 通知列表数据
-const loading = ref(false)
 const notificationList = ref([])
-const currentPage = ref(1)
-const pageSize = ref(10)
-const total = ref(0)
-
-// 发送通知对话框
-const showSendDialog = ref(false)
-const submitting = ref(false)
-const notificationFormRef = ref(null)
-const notificationForm = reactive({
-  type: '',
-  target: '',
-  courseId: '',
-  classId: '',
-  title: '',
-  content: '',
-  templateId: ''
+const searchForm = reactive({
+})
+const loading = ref(false)
+const pageParams = reactive({
+  currentPage: 1,
+  pageSize: 10,
+  total: 0,
+  fuzzySearch: true  // 默认启用模糊查询
 })
 
-// 表单验证规则
-const notificationRules = {
-  type: [
-    { required: true, message: '请选择通知类型', trigger: 'change' }
-  ],
-  target: [
-    { required: true, message: '请选择接收对象', trigger: 'change' }
-  ],
-  courseId: [
-    { required: true, message: '请选择课程', trigger: 'change' }
-  ],
-  classId: [
-    { required: true, message: '请选择班级', trigger: 'change' }
-  ],
-  title: [
-    { required: true, message: '请输入通知标题', trigger: 'blur' },
-    { min: 2, max: 50, message: '长度在 2 到 50 个字符', trigger: 'blur' }
-  ],
-  content: [
-    { required: true, message: '请输入通知内容', trigger: 'blur' },
-    { min: 5, max: 500, message: '长度在 5 到 500 个字符', trigger: 'blur' }
-  ]
-}
-
-// 课程选项
-const courseOptions = ref([
-  { id: 1, name: '高等数学' },
-  { id: 2, name: '大学物理' }
-])
-
-// 班级选项
-const classOptions = ref([
-  { id: 1, name: '计算机1班' },
-  { id: 2, name: '计算机2班' }
-])
-
-// 模板选项
-const templateOptions = ref([
-  { id: 1, name: '考勤提醒模板' },
-  { id: 2, name: '课程变更模板' }
-])
-
-// 通知详情对话框
-const showDetailDialog = ref(false)
-const currentNotification = ref({})
-
-// 获取通知类型名称
-const getTypeName = (type) => {
-  const types = {
-    'ATTENDANCE': '考勤提醒',
-    'COURSE': '课程变更',
-    'LEAVE': '请假审批',
-    'SYSTEM': '系统通知'
-  }
-  return types[type] || type
-}
-
-// 获取接收对象名称
-const getTargetName = (target) => {
-  const targets = {
-    'ALL': '所有学生',
-    'COURSE': '指定课程',
-    'CLASS': '指定班级'
-  }
-  return targets[target] || target
-}
+const userOptions = ref([])
+const adminOptions = ref([])
+const studentOptions = ref([])
+const teacherOptions = ref([])
+const userId = proxy.$common.getCookies(proxy.$config.userId)
 
 // 获取状态标签类型
-const getStatusType = (status) => {
+const getIsReadType = (isRead) => {
   const types = {
-    'SENT': 'success',
-    'SENDING': 'warning',
-    'FAILED': 'danger'
+    '0': 'warning',
+    '1': 'success',
   }
-  return types[status] || 'info'
+  return types[isRead] || 'info'
 }
 
 // 获取状态显示文本
-const getStatusText = (status) => {
-  const texts = {
-    'SENT': '已发送',
-    'SENDING': '发送中',
-    'FAILED': '发送失败'
+const getIsReadLabel = (isRead) => {
+  const labels = {
+    '0': '未读',
+    '1': '已读'
   }
-  return texts[status] || status
+  return labels[isRead] || read
 }
 
-// 获取通知列表
+// 详情对话框
+const showDetailDialog = ref(false)
+const currentNotification = reactive({})
+// 添加通知对话框
+const showAddDialog = ref(false)
+const addNotificationForm = reactive({
+  senderId: '',
+  receiverId: '',
+  title: '',
+  content: ''
+})
+
+// 获取用户选项
+async function fetchUserOptions() {
+  try {
+    const res = await getAllUsers()
+    userOptions.value = res.data
+  } catch (error) {
+    console.error('获取用户列表失败:', error)
+  }
+}
+
+// 获取管理员选项
+async function fetchAdminOptions() {
+  try {
+    const res = await getAllAdministrators()
+    adminOptions.value = res.data
+  } catch (error) {
+    console.error('获取管理员列表失败:', error)
+  }
+}
+
+// 获取学生选项
+async function fetchStudentOptions() {
+  try {
+    const res = await getAllStudents()
+    studentOptions.value = res.data
+  } catch (error) {
+    console.error('获取学生列表失败:', error)
+  }
+}
+
+// 获取教师选项
+async function fetchTeacherOptions() {
+  try {
+    const res = await getAllTeachers()
+    teacherOptions.value = res.data
+  } catch (error) {
+    console.error('获取教师列表失败:', error)
+  }
+}
+
 async function fetchNotifications() {
   loading.value = true
   try {
-    // 构建查询参数
-    const params = {
-      page: currentPage.value,
-      size: pageSize.value
-    }
-    
-    const res = await getAllNotifications(params, searchForm)
-    if (res.code === 200) {
-      notificationList.value = res.data.records
-      total.value = res.data.total
-    } else {
-      ElMessage.error(res.message || '获取通知列表失败')
-    }
+    const res = await getAttendanceRecordsByTeacher(pageParams, searchForm)
+    notificationList.value = res.data.records
+    pageParams.total = res.data.total
   } catch (error) {
     console.error('获取通知列表失败:', error)
-    ElMessage.error('获取通知列表失败')
+    ElMessage.error('获取通知列表失败:', error)
   } finally {
     loading.value = false
   }
 }
 
-// 搜索
-const handleSearch = () => {
-  currentPage.value = 1
-  fetchNotifications()
-}
-
-// 重置搜索
-const handleReset = () => {
-  Object.assign(searchForm, {
-    type: '',
-    dateRange: [],
-    status: ''
-  })
-  handleSearch()
-}
-
-// 发送通知
-const handleSendNotification = () => {
-  showSendDialog.value = true
-}
-
-// 提交表单
-const handleSubmit = async () => {
-  if (!notificationFormRef.value) return
-  await notificationFormRef.value.validate(async (valid) => {
-    if (valid) {
-      submitting.value = true
-      try {
-        // TODO: 调用发送通知API
-        ElMessage.success('发送成功')
-        showSendDialog.value = false
-        fetchNotifications()
-      } catch (error) {
-        ElMessage.error('发送失败')
-      } finally {
-        submitting.value = false
-      }
-    }
-  })
-}
-
-// 查看详情
-const handleViewDetail = (row) => {
-  currentNotification.value = row
+// 处理查看详情
+function handleViewDetail(row) {
+  Object.assign(currentNotification, row)
   showDetailDialog.value = true
 }
 
-// 删除通知
-const handleDelete = async (row) => {
-  try {
-    await ElMessageBox.confirm(
-      '确定要删除该通知吗？',
+// 处理删除
+function handleDelete(row) {
+  ElMessageBox.confirm(
+      `确定要删除该通知申请吗？`,
       '警告',
       {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       }
-    )
-    // TODO: 调用删除通知API
-    ElMessage.success('删除成功')
-    fetchNotifications()
-  } catch (error) {
-    if (error !== 'cancel') {
-      ElMessage.error('删除失败')
+  ).then(async () => {
+    try {
+      await deleteNotification(row.id)
+      ElMessage.success('删除成功')
+      await fetchNotifications()
+    } catch (error) {
+      console.error('删除失败:', error)
     }
+  })
+}
+
+// 处理搜索
+function handleSearch() {
+  pageParams.currentPage = 1
+  fetchNotifications()
+}
+
+// 重置搜索
+function resetSearch() {
+  Object.keys(searchForm).forEach(key => {
+    searchForm[key] = ''
+  })
+  pageParams.currentPage = 1
+  pageParams.fuzzySearch = true
+  fetchNotifications()
+}
+
+// 获取名称
+function getName(userId) {
+    const student = studentOptions.value.find(item => item.userId == userId)
+    return student ? student.name : ''
+}
+
+
+// 处理分页大小变化
+function handleSizeChange(val) {
+  pageParams.pageSize = val
+  fetchNotifications()
+}
+
+// 处理页码变化
+function handleCurrentChange(val) {
+  pageParams.currentPage = val
+  fetchNotifications()
+}
+
+// 处理导出 TODO
+async function handleExport() {
+  try {
+    const params = {
+      ...searchForm,
+      fuzzySearch: pageParams.fuzzySearch
+    }
+    // await exportCourses(params)
+    ElMessage.success('导出成功')
+  } catch (error) {
+    console.error('导出失败:', error)
   }
 }
 
-// 分页大小改变
-const handleSizeChange = (val) => {
-  pageSize.value = val
-  fetchNotifications()
+// 处理添加通知
+function handleAddNotification() {
+  showAddDialog.value = true
 }
 
-// 当前页改变
-const handleCurrentChange = (val) => {
-  currentPage.value = val
-  fetchNotifications()
+// 确认添加通知
+async function confirmAddNotification() {
+  try {
+    await saveNotification(addNotificationForm)
+    ElMessage.success('添加成功')
+    resetAddForm()
+    showAddDialog.value = false
+    await fetchNotifications()
+  } catch (error) {
+    console.error('添加失败:', error)
+  }
+}
+
+// 取消添加通知
+function cancelAddNotification() {
+  resetAddForm()
+  showAddDialog.value = false
+}
+
+// 重置表单
+function resetAddForm() {
+  Object.keys(addNotificationForm).forEach(key => {
+    addNotificationForm[key] = ''
+  })
 }
 
 onMounted(() => {
   fetchNotifications()
+  fetchStudentOptions()
+  fetchTeacherOptions()
+  fetchAdminOptions()
+  fetchUserOptions()
 })
 </script>
 
 <style scoped>
-.notifications-container {
+.notification-container {
   padding: 20px;
 }
 
@@ -479,16 +396,4 @@ onMounted(() => {
 .search-form {
   margin-bottom: 20px;
 }
-
-.pagination-container {
-  margin-top: 20px;
-  display: flex;
-  justify-content: flex-end;
-}
-
-.dialog-footer {
-  display: flex;
-  justify-content: flex-end;
-  gap: 10px;
-}
-</style> 
+</style>

@@ -73,25 +73,11 @@
 
       <!-- 搜索表单 -->
       <el-form :inline="true" :model="searchForm" class="search-form">
-        <el-form-item label="学生">
-          <el-select v-model="searchForm.studentId" placeholder="请选择学生" clearable style="width: 200px">
-            <el-option
-                v-for="item in studentOptions"
-                :key="item.id"
-                :label="item.name"
-                :value="item.id"
-            />
-          </el-select>
+        <el-form-item label="班级">
+          <el-input v-model="searchForm.className" placeholder="请输入班级名称" clearable style="width: 200px"/>
         </el-form-item>
         <el-form-item label="课程">
-          <el-select v-model="searchForm.courseId" placeholder="请选择课程" clearable style="width: 200px">
-            <el-option
-                v-for="item in courseOptions"
-                :key="item.id"
-                :label="item.courseName"
-                :value="item.id"
-            />
-          </el-select>
+          <el-input v-model="searchForm.courseName" placeholder="请输入课程名称" clearable style="width: 200px"/>
         </el-form-item>
         <el-form-item label="考勤状态">
           <el-select v-model="searchForm.status" placeholder="请选择状态" clearable style="width: 200px">
@@ -100,18 +86,6 @@
             <el-option label="缺勤" value="ABSENT"/>
             <el-option label="请假" value="LEAVE"/>
           </el-select>
-        </el-form-item>
-        <el-form-item>
-          <el-switch
-              v-model="pageParams.fuzzySearch"
-              size="large"
-              inline-prompt
-              active-text="模糊查询"
-              inactive-text="精准查询"
-              :active-value="true"
-              :inactive-value="false"
-              style="margin-left: 10px"
-          />
         </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="handleSearch">搜索</el-button>
@@ -126,19 +100,12 @@
           v-loading="loading"
       >
         <el-table-column type="index" label="ID" width="80" align="center"/>
-        <el-table-column prop="studentId" label="学生" align="center">
+        <el-table-column prop="className" label="班级" align="center"/>
+        <el-table-column prop="studentName" label="学生" align="center"/>
+        <el-table-column prop="courseName" label="课程" align="center"/>
+        <el-table-column label="上课时间" align="center">
           <template #default="scope">
-            {{ getStudentName(scope.row.studentId) }}
-          </template>
-        </el-table-column>
-        <el-table-column prop="courseId" label="课程" align="center">
-          <template #default="scope">
-            {{ getCourseName(scope.row.courseId) }}
-          </template>
-        </el-table-column>
-        <el-table-column prop="scheduleId" label="课程安排" align="center">
-          <template #default="scope">
-            {{ getScheduleInfo(scope.row.scheduleId) }}
+            第{{ scope.row.theWeek }}周 星期{{ getWeekDayText(scope.row.weekDay) }} 第{{ scope.row.period }}节
           </template>
         </el-table-column>
         <el-table-column prop="attendanceDate" label="考勤日期" align="center">
@@ -185,17 +152,18 @@
         :close-on-click-modal="false"
     >
       <el-descriptions :column="1" border>
-        <el-descriptions-item label="学生">{{ getStudentName(currentAttendance.studentId) }}</el-descriptions-item>
-        <el-descriptions-item label="课程">{{ getCourseName(currentAttendance.courseId) }}</el-descriptions-item>
-        <el-descriptions-item label="课程安排">{{ getScheduleInfo(currentAttendance.scheduleId) }}</el-descriptions-item>
+        <el-descriptions-item label="班级">{{ currentAttendance.className }}</el-descriptions-item>
+        <el-descriptions-item label="学生">{{ currentAttendance.studentName }}</el-descriptions-item>
+        <el-descriptions-item label="课程">{{ currentAttendance.courseName }}</el-descriptions-item>
+        <el-descriptions-item label="上课时间">
+          第{{ currentAttendance.theWeek }}周 星期{{ getWeekDayText(currentAttendance.weekDay) }} 第{{ currentAttendance.period }}节
+        </el-descriptions-item>
         <el-descriptions-item label="考勤日期">{{ parseTime(currentAttendance.attendanceDate) }}</el-descriptions-item>
         <el-descriptions-item label="考勤状态">
           <el-tag :type="getStatusType(currentAttendance.status)">
             {{ getStatusText(currentAttendance.status) }}
           </el-tag>
         </el-descriptions-item>
-        <el-descriptions-item label="添加时间">{{ parseTime(currentAttendance.addTime) }}</el-descriptions-item>
-        <el-descriptions-item label="更新时间">{{ parseTime(currentAttendance.updateTime) }}</el-descriptions-item>
       </el-descriptions>
     </el-dialog>
 
@@ -231,7 +199,11 @@ import {Download, Delete, Calendar, Check, Timer, Close} from '@element-plus/ico
 import {parseTime} from '@/utils/Utils'
 import {getAllStudents} from '@/api/student.js'
 import {getAllCourses} from '@/api/course.js'
-import {getAllPageAttendanceRecords, exportAttendanceRecords, updateAttendanceRecord} from '@/api/attendanceRecord.js'
+import {
+  getAllPageAttendanceRecords,
+  updateAttendanceRecord,
+  getAttendanceRecordsByTeacher, exportTeacherAttendanceRecords
+} from '@/api/attendanceRecord.js'
 import {getAllCourseSchedules} from '@/api/courseSchedule.js'
 
 // 搜索表单
@@ -347,7 +319,7 @@ async function fetchScheduleOptions() {
 async function fetchAttendanceList() {
   loading.value = true
   try {
-    const res = await getAllPageAttendanceRecords(pageParams,searchForm)
+    const res = await getAttendanceRecordsByTeacher(pageParams,searchForm)
     attendanceList.value = res.data.records
     pageParams.total = res.data.total
     // 计算统计数据
@@ -450,12 +422,20 @@ function handleViewDetail(row) {
 async function handleExport() {
   try {
     const params = {
-      ...searchForm,
-      startTime: searchForm.dateRange?.[0],
-      endTime: searchForm.dateRange?.[1]
+      ...searchForm
     }
-    await exportAttendanceRecords(params)
-    ElMessage.success('导出成功')
+    const res = await exportTeacherAttendanceRecords(params)
+    if (res) {
+      let blob = new Blob([res], { type: 'application/vnd.ms-excel;charset=utf-8' })
+      let downloadElement = document.createElement('a');
+      let href = window.URL.createObjectURL(blob); //创建下载的链接
+      downloadElement.href = href;
+      downloadElement.download = '考勤记录.xlsx'; //下载后文件名
+      document.body.appendChild(downloadElement);
+      downloadElement.click(); //点击下载
+      document.body.removeChild(downloadElement); //下载完成移除元素
+      window.URL.revokeObjectURL(href); //释放掉blob对象
+    }
   } catch (error) {
     console.error('导出失败:', error)
     ElMessage.error('导出失败')
@@ -474,7 +454,7 @@ async function confirmAdjustStatus() {
     await updateAttendanceRecord(currentAttendance)
     ElMessage.success('考勤状态调整成功')
     showStatusDialog.value = false
-    fetchAttendanceList()
+    await fetchAttendanceList()
   } catch (error) {
     console.error('调整考勤状态失败:', error)
     ElMessage.error('调整考勤状态失败')
@@ -484,6 +464,12 @@ async function confirmAdjustStatus() {
 // 取消调整状态
 function cancelAdjustStatus() {
   showStatusDialog.value = false
+}
+
+// 获取课程安排信息
+function getWeekDayText(weekDay) {
+  const weekDays = ['一', '二', '三', '四', '五', '六', '日'];
+  return weekDays[weekDay]; // weekDay 从 1 开始，数组索引从 0 开始
 }
 </script>
 

@@ -17,7 +17,7 @@
         <module>face-sign-attendance</module>
         <module>face-sign-notification</module>
         <module>face-sign-recognition</module>
-        <module>face-sign-system</module>
+<!--        <module>face-sign-system</module>-->
         <!--        <module>cloud-disks-ui</module>-->
     </modules>
 
@@ -159,6 +159,13 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-logging</artifactId>
+        </dependency>
+
+        <!--hutool 工具类-->
+        <dependency>
+            <groupId>cn.hutool</groupId>
+            <artifactId>hutool-all</artifactId>
+            <version>${hutool.version}</version>
         </dependency>
 
 

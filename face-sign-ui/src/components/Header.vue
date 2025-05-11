@@ -13,7 +13,6 @@
             </span>
         <template #dropdown>
           <el-dropdown-menu>
-            <el-dropdown-item command="profile">个人信息</el-dropdown-item>
             <el-dropdown-item command="logout">退出登录</el-dropdown-item>
           </el-dropdown-menu>
         </template>
@@ -30,20 +29,23 @@ import config from "@/config/index.js";
 import router from "@/router/index.js";
 import {ElMessage} from "element-plus";
 import {ArrowDown} from "@element-plus/icons-vue";
+import {logout} from "@/api/user.js";
 const {proxy} = getCurrentInstance()
 
 const account = ref(proxy.$common.getCookies(proxy.$config.account) || '学生')
 
 function handleCommand (command) {
-  if (command === 'profile') {
-    router.push('/student/profile')
-  } else if (command === 'logout') {
-    // 清除登录信息
-    common.removeCookies(config.tokenKeyName)
-    common.removeCookies(config.userRole)
-    common.removeCookies(config.account)
-    ElMessage.success('退出成功')
-    router.push('/login')
+  if(command === 'logout') {
+    logout().then(res => {
+      if(res.code === 200) {
+        // 清除登录信息
+        common.removeCookies(config.tokenKeyName)
+        common.removeCookies(config.userRole)
+        common.removeCookies(config.account)
+        ElMessage.success('退出成功')
+        router.push('/login')
+      }
+    });
   }
 }
 

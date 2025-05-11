@@ -11,12 +11,6 @@
               </el-icon>
               发送通知
             </el-button>
-            <el-button type="success" @click="handleExport">
-              <el-icon>
-                <Download/>
-              </el-icon>
-              导出数据
-            </el-button>
           </div>
         </div>
       </template>

@@ -20,12 +20,6 @@
         <el-form-item label="操作人">
           <el-input v-model="searchForm.userId" placeholder="请输入操作人ID" clearable style="width: 200px"/>
         </el-form-item>
-        <el-form-item label="操作类型">
-          <el-input v-model="searchForm.operation" placeholder="请输入操作类型" clearable style="width: 200px"/>
-        </el-form-item>
-        <el-form-item label="IP地址">
-          <el-input v-model="searchForm.ipAddress" placeholder="请输入IP地址" clearable style="width: 200px"/>
-        </el-form-item>
         <el-form-item>
           <el-switch
               v-model="pageParams.fuzzySearch"
@@ -105,7 +99,8 @@ import {ref, reactive, onMounted} from 'vue'
 import {ElMessage} from 'element-plus'
 import {Download} from '@element-plus/icons-vue'
 import {parseTime} from '@/utils/Utils'
-import {getAllPageSystemLogs, exportLogs} from '@/api/systemLog.js'
+import {getAllPageSystemLogs} from '@/api/systemLog.js'
+import {exportLogs} from "@/api/user.js";
 
 // 搜索表单
 const searchForm = reactive({
@@ -186,21 +181,46 @@ function handleViewDetail(row) {
   showDetailDialog.value = true
 }
 
-// 处理导出 TODO
+
+// 处理上传成功
+const handleUploadSuccess = (response) => {
+  if (response.code === 200) {
+    ElMessage.success('上传成功')
+    fetchStudentList()
+  } else {
+    ElMessage.error(response.message || '上传失败')
+  }
+}
+
+const handleUploadError = (error) => {
+  console.error('上传失败:', error)
+  ElMessage.error('上传失败')
+}
+
+// 处理导出
 async function handleExport() {
   try {
     const params = {
-      ...searchForm,
-      startTime: searchForm.dateRange?.[0],
-      endTime: searchForm.dateRange?.[1]
+      ...searchForm
     }
-    await exportLogs(params)
-    ElMessage.success('导出成功')
+    const res = await exportLogs(params)
+    if (res) {
+      let blob = new Blob([res], { type: 'application/vnd.ms-excel;charset=utf-8' })
+      let downloadElement = document.createElement('a');
+      let href = window.URL.createObjectURL(blob); //创建下载的链接
+      downloadElement.href = href;
+      downloadElement.download = '日志.xlsx'; //下载后文件名
+      document.body.appendChild(downloadElement);
+      downloadElement.click(); //点击下载
+      document.body.removeChild(downloadElement); //下载完成移除元素
+      window.URL.revokeObjectURL(href); //释放掉blob对象
+    }
   } catch (error) {
     console.error('导出失败:', error)
     ElMessage.error('导出失败')
   }
 }
+
 </script>
 
 <style scoped>

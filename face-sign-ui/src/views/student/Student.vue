@@ -17,7 +17,7 @@
         
         <el-menu-item index="/student/attendance">
           <el-icon><Calendar /></el-icon>
-          <span>考勤打卡</span>
+          <span>考勤记录</span>
         </el-menu-item>
 
         <el-menu-item index="/student/courses">
@@ -38,11 +38,6 @@
         <el-menu-item index="/student/profile">
           <el-icon><User /></el-icon>
           <span>个人信息</span>
-        </el-menu-item>
-
-        <el-menu-item index="/student/help">
-          <el-icon><QuestionFilled /></el-icon>
-          <span>帮助中心</span>
         </el-menu-item>
       </el-menu>
     </el-aside>

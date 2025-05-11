@@ -11,7 +11,9 @@ var courseScheduleUrl = {
     addCourseSchedule: prefix + 'add', // 批量添加课程安排
     updateCourseSchedule: prefix + 'update', // 更新课程表
     deleteCourseSchedule: prefix + 'delete', // 删除课程表
-    batchDeleteCourseSchedules: prefix + 'delete/batch' // 批量删除课程表
+    batchDeleteCourseSchedules: prefix + 'delete/batch', // 批量删除课程表
+    getCourseSchedulesByStudent: prefix + 'page-student', // 根据学生获取课程分页列表
+    getTodayCourseByStudent: prefix + 'today-student' // 获取学生当日课表
 };
 
 // 条件分页查询
@@ -24,10 +26,28 @@ export function getAllPageCourseSchedules(params, data) {
     });
 }
 
+// 根据学生获取课程分页列表
+export function getCourseSchedulesByStudent(params, data) {
+    return request({
+        url: courseScheduleUrl.getCourseSchedulesByStudent,
+        method: 'post',
+        params: params,
+        data: data
+    });
+}
+
 // 获取所有课程表
 export function getAllCourseSchedules() {
     return request({
         url: courseScheduleUrl.getAllCourseSchedules,
+        method: 'get'
+    });
+}
+
+// 获取学生当日课表
+export function getTodayCourseByStudent() {
+    return request({
+        url: courseScheduleUrl.getTodayCourseByStudent,
         method: 'get'
     });
 }

@@ -12,13 +12,37 @@ var attendanceRecordUrl = {
     deleteAttendanceRecord: prefix + 'delete', // 删除考勤记录
     batchDeleteAttendanceRecords: prefix + 'delete/batch', // 批量删除考勤记录
     signIn: prefix + 'sign-in', // 签到
-    preview: prefix + 'preview' //预览学生图片
+    preview: prefix + 'preview', //预览学生图片
+    getAttendanceRecordsByTeacher: prefix + 'page-teacher', // 根据教师获取考勤分页列表
+    getAttendanceRecordsByStudent: prefix + 'page-student', // 根据学生获取考勤分页列表
+    exportTeacherAttendanceRecords: prefix + 'export-teacher', // 教师导出考勤记录
+    exportAdminAttendanceRecords: prefix + 'export-admin' // 管理员导出考勤记录
 };
 
 // 条件分页查询
 export function getAllPageAttendanceRecords(params, data) {
     return request({
         url: attendanceRecordUrl.getAllPageAttendanceRecords,
+        method: 'post',
+        params: params,
+        data: data
+    });
+}
+
+// 根据教师获取考勤分页列表
+export function getAttendanceRecordsByTeacher(params, data) {
+    return request({
+        url: attendanceRecordUrl.getAttendanceRecordsByTeacher,
+        method: 'post',
+        params: params,
+        data: data
+    });
+}
+
+// 根据学生获取考勤分页列表
+export function getAttendanceRecordsByStudent(params, data) {
+    return request({
+        url: attendanceRecordUrl.getAttendanceRecordsByStudent,
         method: 'post',
         params: params,
         data: data
@@ -99,5 +123,20 @@ export class startAttendance {
 export class endAttendance {
 }
 
-export class exportAttendanceRecords {
+export function exportTeacherAttendanceRecords(data) {
+    return request({
+        url: attendanceRecordUrl.exportTeacherAttendanceRecords,
+        method: 'post',
+        data: data,
+        responseType: 'blob'
+    });
+}
+
+export function exportAdminAttendanceRecords(data) {
+    return request({
+        url: attendanceRecordUrl.exportAdminAttendanceRecords,
+        method: 'post',
+        data: data,
+        responseType: 'blob'
+    });
 }

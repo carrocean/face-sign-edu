@@ -118,16 +118,54 @@ public class MinioUtil {
      * @param bucketName
      * @return
      */
-    public String preview(String fileName,String bucketName){
-        // 查看文件地址
-        GetPresignedObjectUrlArgs build = new GetPresignedObjectUrlArgs().builder().bucket(bucketName).object(fileName).method(Method.GET).build();
+    /**
+     * 预览图片
+     * @param fileName 文件名称
+     * @param bucketName 存储桶名称
+     * @return 预览链接
+     */
+    public String preview(String fileName, String bucketName) {
+        // 检查存储桶是否存在
+        if (!bucketExists(bucketName)) {
+            log.error("存储桶 {} 不存在", bucketName);
+            return "";
+        }
+
+        // 检查文件是否存在
+        boolean fileExists = false;
+        try {
+            Iterable<Result<Item>> results = minioClient.listObjects(
+                    ListObjectsArgs.builder().bucket(bucketName).build());
+            for (Result<Item> result : results) {
+                if (result.get().objectName().equals(fileName)) {
+                    fileExists = true;
+                    break;
+                }
+            }
+        } catch (Exception e) {
+            log.error("检查文件是否存在时出现异常", e);
+            return "";
+        }
+
+        if (!fileExists) {
+            log.error("文件 {} 在存储桶 {} 中不存在", fileName, bucketName);
+            return "";
+        }
+
+        // 获取预览链接
+        GetPresignedObjectUrlArgs build = new GetPresignedObjectUrlArgs()
+                .builder()
+                .bucket(bucketName)
+                .object(fileName)
+                .method(Method.GET)
+                .build();
         try {
             String url = minioClient.getPresignedObjectUrl(build);
             return url;
         } catch (Exception e) {
-            log.error("预览图片出现异常",e);
+            log.error("获取预览链接时出现异常", e);
         }
-        return null;
+        return "";
     }
 
     /**

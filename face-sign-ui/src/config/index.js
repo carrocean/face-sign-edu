@@ -21,7 +21,9 @@ const config = {
 
     userRole: 'userRole',
 
-    account: 'account'
+    account: 'account',
+
+    userId: 'userId'
 }
 
 export default config

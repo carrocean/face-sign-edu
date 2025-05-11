@@ -22,13 +22,13 @@
           <el-icon><Calendar /></el-icon>
           <span>考勤管理</span>
         </el-menu-item>
-        <el-menu-item index="/teacher/notifications">
-          <el-icon><Message /></el-icon>
-          <span>通知管理</span>
-        </el-menu-item>
         <el-menu-item index="/teacher/leave-approval">
           <el-icon><Document /></el-icon>
           <span>请假审批</span>
+        </el-menu-item>
+        <el-menu-item index="/teacher/notifications">
+          <el-icon><Message /></el-icon>
+          <span>通知管理</span>
         </el-menu-item>
         <el-menu-item index="/teacher/profile">
           <el-icon><User /></el-icon>

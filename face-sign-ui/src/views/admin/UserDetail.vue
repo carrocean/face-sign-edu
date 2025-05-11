@@ -65,7 +65,7 @@
             <el-descriptions-item label="学生ID">{{ roleDetail.id }}</el-descriptions-item>
             <el-descriptions-item label="姓名">{{ roleDetail.name }}</el-descriptions-item>
             <el-descriptions-item label="学号">{{ roleDetail.studentNumber }}</el-descriptions-item>
-            <el-descriptions-item label="班级">{{ roleDetail.className }}</el-descriptions-item>
+            <el-descriptions-item label="班级">{{ getClassName(roleDetail.classId) }}</el-descriptions-item>
             <el-descriptions-item label="手机号">{{ roleDetail.phone }}</el-descriptions-item>
             <el-descriptions-item label="邮箱">{{ roleDetail.email }}</el-descriptions-item>
             <el-descriptions-item label="创建时间">{{ parseTime(roleDetail.addTime) }}</el-descriptions-item>
@@ -550,6 +550,12 @@ const submitUserEdit = async () => {
       }
     }
   })
+}
+
+// 获取班级名称
+function getClassName(classId) {
+  const classItem = classOptions.value.find(c => c.id === classId)
+  return classItem ? classItem.className : '-'
 }
 
 // 初始化

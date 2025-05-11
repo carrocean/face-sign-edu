@@ -15,8 +15,8 @@ import java.util.Date;
 @Component
 public class JwtUtils {
 
-    // token时效：30分钟
-    private static final Integer jwtDefaultExpire = 1000 * 60 * 30;
+    // token时效：一天
+    private static final Integer jwtDefaultExpire = 1000 * 60 * 30 * 2 * 24;
 
     private static final String jwtDefaultSecret = "face-sign-eud-theauthenticationtokenlistfunctioncomponentof" +
             "thecomponentlistinformationoftheback-endtechnologyframeworkinthetechnologyassetlistofsinyattatechnologyco.," +
@@ -66,6 +66,22 @@ public class JwtUtils {
                 .build()
                 .parseSignedClaims(jwtToken);
         return claimsJws;
+    }
+
+    /**
+     * 获取当前用户
+     * @param jwtToken
+     * @return
+     */
+    public static JwtUser getJwtUser(String jwtToken) {
+        Jws<Claims> claimsJws = Jwts.parser()
+                .verifyWith(Keys.hmacShaKeyFor(jwtDefaultSecret.getBytes(StandardCharsets.UTF_8)))
+                .build()
+                .parseSignedClaims(jwtToken);
+        JwtUser jwtUser = new JwtUser();
+        jwtUser.setId(claimsJws.getPayload().get("id", String.class));
+        jwtUser.setUserName(claimsJws.getPayload().get("userName", String.class));
+        return jwtUser;
     }
 
 }

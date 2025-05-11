@@ -28,7 +28,7 @@ instance.interceptors.request.use(
     (config)=> {
         // 登录请求不需要token
         if (!config.url.includes('/login')) {
-            config.headers['token'] = common.getCookies(globalConfig.tokenKeyName)
+            config.headers[globalConfig.tokenKeyName] = common.getCookies(globalConfig.tokenKeyName)
         }
         return config;
     },

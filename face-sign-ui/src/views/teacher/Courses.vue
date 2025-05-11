@@ -4,36 +4,6 @@
       <template #header>
         <div class="card-header">
           <span>课程管理</span>
-          <div class="header-buttons">
-            <el-button
-                v-if="selectedCourses.length > 0"
-                type="danger"
-                @click="handleBatchDelete"
-            >
-              <el-icon>
-                <Delete/>
-              </el-icon>
-              批量删除
-            </el-button>
-            <el-button type="primary" @click="handleImport">
-              <el-icon>
-                <Upload/>
-              </el-icon>
-              批量导入
-            </el-button>
-            <el-button type="success" @click="handleExport">
-              <el-icon>
-                <Download/>
-              </el-icon>
-              导出数据
-            </el-button>
-            <el-button type="primary" @click="handleAdd">
-              <el-icon>
-                <Plus/>
-              </el-icon>
-              添加课程
-            </el-button>
-          </div>
         </div>
       </template>
 
@@ -41,16 +11,6 @@
       <el-form :inline="true" :model="searchForm" class="search-form">
         <el-form-item label="课程名称">
           <el-input v-model="searchForm.courseName" placeholder="请输入课程名称" clearable style="width: 200px"/>
-        </el-form-item>
-        <el-form-item label="教师">
-          <el-select v-model="searchForm.teacherId" placeholder="请选择教师" clearable style="width: 200px">
-            <el-option
-                v-for="item in teacherOptions"
-                :key="item.id"
-                :label="item.name"
-                :value="item.id"
-            />
-          </el-select>
         </el-form-item>
         <el-form-item label="班级">
           <el-select v-model="searchForm.classId" placeholder="请选择班级" clearable style="width: 200px">
@@ -103,7 +63,11 @@
             {{ getClassName(scope.row.classId) }}
           </template>
         </el-table-column>
-        <el-table-column prop="semester" label="学期" align="center"/>
+        <el-table-column prop="semester" label="学期开始时间" align="center">
+          <template #default="scope">
+            {{ parseTime(scope.row.semester) }}
+          </template>
+        </el-table-column>
         <el-table-column label="周数" align="center">
           <template #default="scope">
             {{ scope.row.startWeek }}-{{ scope.row.endWeek }}周
@@ -117,8 +81,6 @@
         <el-table-column label="操作" width="250" align="center">
           <template #default="scope">
             <el-button type="primary" link @click="handleViewSchedule(scope.row)">详情</el-button>
-            <el-button type="primary" link @click="handleEdit(scope.row)">编辑</el-button>
-            <el-button type="danger" link @click="handleDelete(scope.row)">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -252,10 +214,14 @@ import {
   exportCourses
 } from '@/api/course.js'
 import {useRouter} from 'vue-router'
+import common from "@/libs/globalFunction/common.js";
+import globalConfig from "@/config/index.js";
 
 const {proxy} = getCurrentInstance()
 
 const router = useRouter()
+
+const userId = common.getCookies(globalConfig.userId)
 
 // 选中的课程
 const selectedCourses = ref([])
@@ -327,15 +293,6 @@ const rules = {
   ]
 }
 
-// 初始化数据
-onMounted(async () => {
-  await Promise.all([
-    fetchClassOptions(),
-    fetchTeacherOptions(),
-    fetchCourseList()
-  ])
-})
-
 // 获取班级选项
 async function fetchClassOptions() {
   try {
@@ -351,6 +308,10 @@ async function fetchTeacherOptions() {
   try {
     const res = await getAllTeachers()
     teacherOptions.value = res.data
+    const teacher = teacherOptions.value.find(item => item.id == userId)
+    if (teacher) {
+      searchForm.teacherId = teacher.id
+    }
   } catch (error) {
     console.error('获取教师列表失败:', error)
   }
@@ -360,6 +321,7 @@ async function fetchTeacherOptions() {
 async function fetchCourseList() {
   loading.value = true
   try {
+    console.log(searchForm)
     const res = await getAllPageCourses(pageParams, searchForm)
     courseList.value = res.data.records
     pageParams.total = res.data.total
@@ -541,7 +503,7 @@ async function handleExport() {
 // 处理查看课程安排
 function handleViewSchedule(row) {
   let id = row.id
-  router.push(`/admin/course/${id}`)
+  router.push(`/teacher/course/${id}`)
 }
 
 // 上传相关方法  TODO
@@ -567,6 +529,13 @@ function handleImportSuccess(response) {
 function handleImportError() {
   ElMessage.error('导入失败')
 }
+
+// 初始化数据
+onMounted(async () => {
+  await fetchClassOptions();
+  await fetchTeacherOptions();
+  await fetchCourseList();
+})
 </script>
 
 <style scoped>
@@ -604,4 +573,4 @@ function handleImportError() {
 :deep(.el-upload-dragger) {
   width: 100%;
 }
-</style> 
+</style>

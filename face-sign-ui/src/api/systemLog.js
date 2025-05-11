@@ -73,6 +73,3 @@ export function batchDeleteSystemLogs(ids) {
         data: ids
     });
 }
-
-export class exportLogs {
-}

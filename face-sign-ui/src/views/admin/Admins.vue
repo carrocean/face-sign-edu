@@ -15,18 +15,6 @@
               </el-icon>
               批量删除
             </el-button>
-            <el-button type="primary" @click="handleImport">
-              <el-icon>
-                <Upload/>
-              </el-icon>
-              批量导入
-            </el-button>
-            <el-button type="success" @click="handleExport">
-              <el-icon>
-                <Download/>
-              </el-icon>
-              导出数据
-            </el-button>
             <el-button type="primary" @click="handleAdd">
               <el-icon>
                 <Plus/>

@@ -1,208 +1,320 @@
 <template>
-  <div class="messages-container">
-    <el-card class="message-card">
+  <div class="notification-container">
+    <el-card>
       <template #header>
         <div class="card-header">
-          <span>消息中心</span>
-          <el-button type="primary" @click="markAllAsRead">全部标记为已读</el-button>
+          <span>通知管理</span>
         </div>
       </template>
 
-      <!-- 消息类型筛选 -->
-      <div class="filter-container">
-        <el-radio-group v-model="messageType" @change="handleTypeChange">
-          <el-radio-button label="all">全部</el-radio-button>
-          <el-radio-button label="attendance">考勤通知</el-radio-button>
-          <el-radio-button label="course">课程通知</el-radio-button>
-          <el-radio-button label="system">系统通知</el-radio-button>
-        </el-radio-group>
-      </div>
 
-      <!-- 消息列表 -->
-      <div class="message-list">
-        <div
-          v-for="message in messages"
-          :key="message.id"
-          class="message-item"
-          :class="{ 'unread': !message.read }"
-          @click="viewMessage(message)"
-        >
-          <div class="message-icon">
-            <el-icon :size="24">
-              <component :is="getMessageIcon(message.type)" />
-            </el-icon>
-          </div>
-          <div class="message-content">
-            <div class="message-title">
-              <span>{{ message.title }}</span>
-              <el-tag v-if="!message.read" size="small" type="danger">未读</el-tag>
-            </div>
-            <div class="message-brief">{{ message.content }}</div>
-            <div class="message-time">{{ message.time }}</div>
-          </div>
-        </div>
-      </div>
+      <!-- 搜索表单 -->
+      <el-form :inline="true" :model="searchForm" class="search-form">
+        <el-form-item label="标题">
+          <el-input v-model="searchForm.title" placeholder="请输入标题名称" clearable style="width: 200px"/>
+        </el-form-item>
+        <el-form-item label="状态">
+          <el-select v-model="searchForm.isRead" placeholder="请选择状态" clearable style="width: 200px">
+            <el-option label="未读" value="0" />
+            <el-option label="已读" value="1" />
+          </el-select>
+        </el-form-item>
+        <el-form-item>
+          <el-switch
+              v-model="pageParams.fuzzySearch"
+              size="large"
+              inline-prompt
+              active-text="模糊查询"
+              inactive-text="精准查询"
+              :active-value="true"
+              :inactive-value="false"
+              style="margin-left: 10px"
+          />
+        </el-form-item>
+        <el-form-item>
+          <el-button type="primary" @click="handleSearch">搜索</el-button>
+          <el-button @click="resetSearch">重置</el-button>
+        </el-form-item>
+      </el-form>
+
+
+      <!-- 通知表格 -->
+      <el-table
+          :data="notificationList"
+          style="width: 100%"
+          v-loading="loading"
+      >
+        <el-table-column type="index" label="ID" width="80" align="center"/>
+        <el-table-column prop="title" label="标题" align="center">
+          <template #default="scope">
+            {{ scope.row.title }}
+          </template>
+        </el-table-column>
+        <el-table-column prop="senderId" label="发送者" align="center">
+          <template #default="scope">
+            {{ getName(scope.row.senderId) }}
+          </template>
+        </el-table-column>
+        <el-table-column prop="receiverId" label="接收者" align="center">
+          <template #default="scope">
+            {{ getName(scope.row.receiverId) }}
+          </template>
+        </el-table-column>
+        <el-table-column prop="isRead" label="状态" align="center">
+          <template #default="scope">
+            <el-tag :type="getIsReadType(scope.row.isRead)">
+              {{ getIsReadLabel(scope.row.isRead) }}
+            </el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column label="操作" width="250" align="center">
+          <template #default="scope">
+            <el-button type="primary" link @click="handleViewDetail(scope.row)">详情</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
 
       <!-- 分页 -->
       <div class="pagination-container">
         <el-pagination
-          v-model:current-page="currentPage"
-          v-model:page-size="pageSize"
-          :page-sizes="[10, 20, 30, 50]"
-          layout="total, sizes, prev, pager, next, jumper"
-          :total="total"
-          @size-change="handleSizeChange"
-          @current-change="handleCurrentChange"
+            :current-page="pageParams.currentPage"
+            :page-size="pageParams.pageSize"
+            :page-sizes="[10, 20, 50, 100]"
+            :total="pageParams.total"
+            layout="total, sizes, prev, pager, next, jumper"
+            @size-change="handleSizeChange"
+            @current-change="handleCurrentChange"
+            @update:current-page="val => pageParams.currentPage = val"
+            @update:page-size="val => pageParams.pageSize = val"
         />
       </div>
     </el-card>
 
-    <!-- 消息详情对话框 -->
+    <!-- 通知详情对话框 -->
     <el-dialog
-      v-model="showMessageDetail"
-      title="消息详情"
-      width="600px"
+        v-model="showDetailDialog"
+        title="通知详情"
+        width="600px"
+        :close-on-click-modal="false"
     >
-      <div v-if="currentMessage" class="message-detail">
-        <h3>{{ currentMessage.title }}</h3>
-        <div class="message-meta">
-          <span>发送时间：{{ currentMessage.time }}</span>
-          <el-tag size="small" :type="getMessageTypeTag(currentMessage.type)">
-            {{ getMessageTypeText(currentMessage.type) }}
-          </el-tag>
-        </div>
-        <div class="message-content">
-          {{ currentMessage.content }}
-        </div>
-      </div>
+      <el-descriptions :column="1" border>
+        <el-descriptions-item label="通知标题">{{ currentNotification.title }}</el-descriptions-item>
+        <el-descriptions-item label="通知内容">{{ currentNotification.content }}</el-descriptions-item>
+        <el-descriptions-item label="发送者">{{ getName(currentNotification.senderId) }}</el-descriptions-item>
+        <el-descriptions-item label="接收者">{{ getName(currentNotification.receiverId) }}</el-descriptions-item>
+        <el-descriptions-item label="发送时间">{{ parseTime(currentNotification.sendTime) }}</el-descriptions-item>
+      </el-descriptions>
     </el-dialog>
+
+
   </div>
 </template>
 
 <script setup>
-import { ref, reactive } from 'vue'
-import { ElMessage } from 'element-plus'
+import {ref, onMounted, reactive} from 'vue'
 import {
-  Bell,
-  Calendar,
-  Reading,
-  InfoFilled
-} from '@element-plus/icons-vue'
+  ElMessage,
+  ElTag,
+  ElForm,
+  ElFormItem,
+  ElSelect,
+  ElOption,
+  ElDatePicker,
+  ElButton,
+  ElMessageBox
+} from 'element-plus'
+import { getAttendanceRecordsByStudent, updateNotification, deleteNotification, saveNotification } from '@/api/notification.js'
+import {getAllAdministrators} from '@/api/administrator.js'
+import {getAllStudents} from '@/api/student.js'
+import {getAllTeachers} from '@/api/teacher.js'
+import {getAllUsers} from '@/api/user.js'
+import {Delete, Download, Plus, Upload} from "@element-plus/icons-vue";
+import {parseTime} from "@/utils/Utils.js";
 
-// 消息类型
-const messageType = ref('all')
+const notificationList = ref([])
+const searchForm = reactive({
+})
+const loading = ref(false)
+const pageParams = reactive({
+  currentPage: 1,
+  pageSize: 10,
+  total: 0,
+  fuzzySearch: true  // 默认启用模糊查询
+})
 
-// 模拟数据
-const messages = ref([
-  {
-    id: 1,
-    type: 'attendance',
-    title: '考勤提醒',
-    content: '您今天上午的课程《高等数学》还未打卡，请及时完成考勤。',
-    time: '2024-03-28 09:30',
-    read: false
-  },
-  {
-    id: 2,
-    type: 'course',
-    title: '课程变更通知',
-    content: '《大学物理》课程时间调整为明天下午2点，请准时参加。',
-    time: '2024-03-27 15:20',
-    read: true
-  },
-  {
-    id: 3,
-    type: 'system',
-    title: '系统维护通知',
-    content: '系统将于今晚22:00-23:00进行例行维护，期间可能无法使用。',
-    time: '2024-03-27 10:00',
-    read: false
-  }
-])
+const userOptions = ref([])
+const adminOptions = ref([])
+const studentOptions = ref([])
+const teacherOptions = ref([])
 
-// 分页相关
-const currentPage = ref(1)
-const pageSize = ref(10)
-const total = ref(100)
-
-// 消息详情相关
-const showMessageDetail = ref(false)
-const currentMessage = ref(null)
-
-// 获取消息图标
-const getMessageIcon = (type) => {
-  const icons = {
-    attendance: Calendar,
-    course: Reading,
-    system: InfoFilled
-  }
-  return icons[type] || Bell
-}
-
-// 获取消息类型标签
-const getMessageTypeTag = (type) => {
+// 获取状态标签类型
+const getIsReadType = (isRead) => {
   const types = {
-    attendance: 'warning',
-    course: 'success',
-    system: 'info'
+    '0': 'warning',
+    '1': 'success',
   }
-  return types[type] || 'info'
+  return types[isRead] || 'info'
 }
 
-// 获取消息类型文本
-const getMessageTypeText = (type) => {
-  const texts = {
-    attendance: '考勤通知',
-    course: '课程通知',
-    system: '系统通知'
+// 获取状态显示文本
+const getIsReadLabel = (isRead) => {
+  const labels = {
+    '0': '未读',
+    '1': '已读'
   }
-  return texts[type] || '其他'
+  return labels[isRead] || read
 }
 
-// 查看消息详情
-const viewMessage = (message) => {
-  currentMessage.value = message
-  showMessageDetail.value = true
-  if (!message.read) {
-    message.read = true
-    // TODO: 调用后端API标记消息为已读
+// 详情对话框
+const showDetailDialog = ref(false)
+const currentNotification = reactive({})
+// 添加通知对话框
+const showAddDialog = ref(false)
+const addNotificationForm = reactive({
+  senderId: '',
+  receiverId: '',
+  title: '',
+  content: ''
+})
+
+// 获取用户选项
+async function fetchUserOptions() {
+  try {
+    const res = await getAllUsers()
+    userOptions.value = res.data
+  } catch (error) {
+    console.error('获取用户列表失败:', error)
   }
 }
 
-// 全部标记为已读
-const markAllAsRead = () => {
-  messages.value.forEach(message => {
-    message.read = true
+// 获取管理员选项
+async function fetchAdminOptions() {
+  try {
+    const res = await getAllAdministrators()
+    adminOptions.value = res.data
+  } catch (error) {
+    console.error('获取管理员列表失败:', error)
+  }
+}
+
+// 获取学生选项
+async function fetchStudentOptions() {
+  try {
+    const res = await getAllStudents()
+    studentOptions.value = res.data
+  } catch (error) {
+    console.error('获取学生列表失败:', error)
+  }
+}
+
+// 获取教师选项
+async function fetchTeacherOptions() {
+  try {
+    const res = await getAllTeachers()
+    teacherOptions.value = res.data
+  } catch (error) {
+    console.error('获取教师列表失败:', error)
+  }
+}
+
+async function fetchNotifications() {
+  loading.value = true
+  try {
+    const res = await getAttendanceRecordsByStudent(pageParams, searchForm)
+    notificationList.value = res.data.records
+    pageParams.total = res.data.total
+  } catch (error) {
+    console.error('获取通知列表失败:', error)
+    ElMessage.error('获取通知列表失败:', error)
+  } finally {
+    loading.value = false
+  }
+}
+
+// 处理查看详情
+function handleViewDetail(row) {
+  const updateRead = reactive({
+    id: row.id,
+    isRead: "1"
   })
-  // TODO: 调用后端API标记所有消息为已读
-  ElMessage.success('已全部标记为已读')
+  updateNotification(updateRead)
+  fetchNotifications()
+
+  Object.assign(currentNotification, row)
+  showDetailDialog.value = true
 }
 
-// 消息类型筛选
-const handleTypeChange = (type) => {
-  // TODO: 根据类型筛选消息
-  console.log('筛选类型:', type)
+// 处理搜索
+function handleSearch() {
+  pageParams.currentPage = 1
+  fetchNotifications()
 }
 
-// 分页处理
-const handleSizeChange = (val) => {
-  pageSize.value = val
-  // TODO: 重新加载数据
+// 重置搜索
+function resetSearch() {
+  Object.keys(searchForm).forEach(key => {
+    searchForm[key] = ''
+  })
+  pageParams.currentPage = 1
+  pageParams.fuzzySearch = true
+  fetchNotifications()
 }
 
-const handleCurrentChange = (val) => {
-  currentPage.value = val
-  // TODO: 重新加载数据
+// 获取学生名称
+function getName(userId) {
+  const user = userOptions.value.find(item => item.id == userId)
+  if (user.role === 'admin') {
+    const admin = adminOptions.value.find(item => item.userId == userId)
+    return admin ? admin.name : ''
+  } else if(user.role === 'teacher') {
+    const teacher = teacherOptions.value.find(item => item.userId == userId)
+    return teacher ? teacher.name : ''
+  } else if(user.role === 'student') {
+    const student = studentOptions.value.find(item => item.userId == userId)
+    return student ? student.name : ''
+  }
+  return ''
 }
+
+
+// 处理分页大小变化
+function handleSizeChange(val) {
+  pageParams.pageSize = val
+  fetchNotifications()
+}
+
+// 处理页码变化
+function handleCurrentChange(val) {
+  pageParams.currentPage = val
+  fetchNotifications()
+}
+
+// 处理导出 TODO
+async function handleExport() {
+  try {
+    const params = {
+      ...searchForm,
+      fuzzySearch: pageParams.fuzzySearch
+    }
+    // await exportCourses(params)
+    ElMessage.success('导出成功')
+  } catch (error) {
+    console.error('导出失败:', error)
+  }
+}
+
+onMounted(() => {
+  fetchNotifications()
+  fetchStudentOptions()
+  fetchTeacherOptions()
+  fetchAdminOptions()
+  fetchUserOptions()
+})
 </script>
 
 <style scoped>
-.messages-container {
+.notification-container {
   padding: 20px;
-}
-
-.message-card {
-  margin-bottom: 20px;
 }
 
 .card-header {
@@ -211,80 +323,7 @@ const handleCurrentChange = (val) => {
   align-items: center;
 }
 
-.filter-container {
+.search-form {
   margin-bottom: 20px;
 }
-
-.message-list {
-  margin-bottom: 20px;
-}
-
-.message-item {
-  display: flex;
-  padding: 15px;
-  border-bottom: 1px solid #eee;
-  cursor: pointer;
-  transition: background-color 0.3s;
-}
-
-.message-item:hover {
-  background-color: #f5f7fa;
-}
-
-.message-item.unread {
-  background-color: #f0f9ff;
-}
-
-.message-icon {
-  margin-right: 15px;
-  color: #409EFF;
-}
-
-.message-content {
-  flex: 1;
-}
-
-.message-title {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 5px;
-  font-weight: bold;
-}
-
-.message-brief {
-  color: #666;
-  margin-bottom: 5px;
-}
-
-.message-time {
-  font-size: 12px;
-  color: #999;
-}
-
-.pagination-container {
-  display: flex;
-  justify-content: flex-end;
-}
-
-.message-detail {
-  padding: 20px;
-}
-
-.message-detail h3 {
-  margin-bottom: 15px;
-}
-
-.message-meta {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
-  color: #666;
-}
-
-.message-content {
-  line-height: 1.6;
-  color: #333;
-}
-</style> 
+</style>

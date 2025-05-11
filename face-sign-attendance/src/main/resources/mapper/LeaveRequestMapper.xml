@@ -45,4 +45,14 @@
         ORDER BY
         lr.id DESC
     </select>
+
+    <select id="checkNowIsLeaveByStudent" resultType="com.face.sign.attendance.entity.LeaveRequestEntity">
+        SELECT *
+        FROM leave_request
+        WHERE student_id = #{studentId}
+          AND approver_id = #{teacherId}
+          AND start_time <![CDATA[ <= ]]> #{now}
+          AND end_time <![CDATA[ >= ]]> #{now}
+          AND status = 'approved'
+    </select>
 </mapper>
